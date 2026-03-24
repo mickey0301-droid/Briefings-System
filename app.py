@@ -427,8 +427,8 @@ enabled_expert_names = [display_expert_name(e) for e in experts if e.get("enable
 # =========================================================
 # Tabs
 # =========================================================
-tab_briefings, tab_insights, tab_sources, tab_formats, tab_automation, tab_reports = st.tabs(
-    ["Briefings", "Insights", "Sources", "Formats", "Schedule", "Reports"]
+tab_briefings, tab_insights, tab_sources, tab_experts, tab_formats, tab_automation, tab_reports = st.tabs(
+    ["Briefings", "Insights", "Sources", "自訂專家", "Formats", "Schedule", "Reports"]
 )
 
 
@@ -992,8 +992,11 @@ with tab_sources:
         _cn_df = pd.DataFrame(_cn_rows) if _cn_rows else pd.DataFrame(columns=["name", "category", "description"])
         st.dataframe(_cn_df[["name", "category", "description"]], use_container_width=True, hide_index=True)
 
-    st.markdown("---")
-    st.subheader("Experts 管理（仍在 Sources 頁下方）")
+# =========================================================
+# 自訂專家
+# =========================================================
+with tab_experts:
+    st.subheader("自訂專家管理")
 
     with st.expander("單筆新增專家", expanded=False):
         c1, c2 = st.columns(2)
