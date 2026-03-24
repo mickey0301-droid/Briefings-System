@@ -427,8 +427,8 @@ enabled_expert_names = [display_expert_name(e) for e in experts if e.get("enable
 # =========================================================
 # Tabs
 # =========================================================
-tab_briefings, tab_insights, tab_sources, tab_experts, tab_formats, tab_automation, tab_reports = st.tabs(
-    ["Briefings", "Insights", "Sources", "自訂專家", "Formats", "Schedule", "Reports"]
+tab_briefings, tab_insights, tab_sources, tab_formats, tab_automation, tab_reports = st.tabs(
+    ["Briefings", "Insights", "Sources", "Formats", "Schedule", "Reports"]
 )
 
 
@@ -797,8 +797,8 @@ with tab_insights:
 with tab_sources:
     st.subheader("Sources 管理")
 
-    src_tab_add, src_tab_tw, src_tab_intl, src_tab_global, src_tab_cn = st.tabs([
-        "新增來源", "自訂台灣媒體", "自訂國際媒體", "全球媒體", "中國媒體"
+    src_tab_add, src_tab_tw, src_tab_intl, src_tab_experts, src_tab_global, src_tab_cn = st.tabs([
+        "新增來源", "自訂台灣媒體", "自訂國際媒體", "自訂專家", "全球媒體", "中國媒體"
     ])
 
     tw_sources = [s for s in editable_sources if "自訂台灣媒體" in (s.get("category") or [])]
@@ -978,6 +978,159 @@ with tab_sources:
                 st.success(f"已刪除 {len(del_intl)} 筆。")
                 st.rerun()
 
+    # ── 自訂專家 ──────────────────────────────────────────────────────────────
+    with src_tab_experts:
+
+        with st.expander("單筆新增專家", expanded=False):
+            c1, c2 = st.columns(2)
+            with c1:
+                exp_name_zh = st.text_input("中文名 name_zh", key="single_exp_name_zh")
+                exp_name_en = st.text_input("英文名 name_en", key="single_exp_name_en")
+                exp_aliases = st.text_input("aliases（逗號分隔）", key="single_exp_aliases")
+                exp_category = st.text_input("category（逗號分隔）", key="single_exp_category")
+            with c2:
+                exp_affiliation = st.text_input("affiliation", key="single_exp_affiliation")
+                exp_region = st.text_input("region", key="single_exp_region")
+                exp_enabled = st.checkbox("enabled", value=True, key="single_exp_enabled")
+                exp_description = st.text_area("description", key="single_exp_description", height=120)
+
+            if st.button("新增專家", key="add_single_expert"):
+                new_item = editor_row_to_expert(
+                    {
+                        "name_zh": exp_name_zh,
+                        "name_en": exp_name_en,
+                        "aliases": exp_aliases,
+                        "category": exp_category,
+                        "affiliation": exp_affiliation,
+                        "region": exp_region,
+                        "enabled": exp_enabled,
+                        "description": exp_description,
+                    }
+                )
+                current = load_experts()
+                display_name = display_expert_name(new_item)
+                if not display_name or display_name == "Unnamed Expert":
+                    st.error("至少要填中文名或英文名。")
+                else:
+                    current.append(new_item)
+                    save_experts(current)
+                    st.success("已新增專家。")
+                    st.rerun()
+
+        st.markdown("### 表格式批次貼上新增專家")
+        st.caption("可直接從外部複製多列資料貼到下表，再按「批次加入專家」。")
+
+        expert_batch_columns = ["name_zh", "name_en", "aliases", "category", "affiliation", "region", "enabled", "description"]
+        expert_batch_default = pd.DataFrame([{c: "" for c in expert_batch_columns} for _ in range(8)])
+        expert_batch_default["enabled"] = True
+
+        expert_batch_df = st.data_editor(
+            expert_batch_default,
+            num_rows="dynamic",
+            use_container_width=True,
+            height=280,
+            key="expert_batch_editor",
+            column_config={
+                "name_zh": st.column_config.TextColumn("name_zh"),
+                "name_en": st.column_config.TextColumn("name_en"),
+                "aliases": st.column_config.TextColumn("aliases"),
+                "category": st.column_config.TextColumn("category"),
+                "affiliation": st.column_config.TextColumn("affiliation"),
+                "region": st.column_config.TextColumn("region"),
+                "enabled": st.column_config.CheckboxColumn("enabled", default=True),
+                "description": st.column_config.TextColumn("description"),
+            },
+        )
+
+        if st.button("批次加入專家", key="batch_add_experts"):
+            rows = _clean_batch_df(expert_batch_df)
+            if not rows:
+                st.warning("沒有可加入的專家資料。")
+            else:
+                current = load_experts()
+                name_set = {display_expert_name(x) for x in current}
+                added = 0
+                for row in rows:
+                    item = editor_row_to_expert(row)
+                    disp = display_expert_name(item)
+                    if not disp or disp == "Unnamed Expert":
+                        continue
+                    if disp in name_set:
+                        current = [x for x in current if display_expert_name(x) != disp]
+                    current.append(item)
+                    name_set.add(disp)
+                    added += 1
+                save_experts(current)
+                st.success(f"已批次加入 / 更新 {added} 筆專家。")
+                st.rerun()
+
+        st.markdown("### 既有專家清單")
+        st.caption("這裡也可以直接貼上多列資料、修改既有資料、增加新列，再按儲存。")
+
+        experts_df = _build_expert_editor_df(experts, blank_rows=10)
+
+        edited_experts_df = st.data_editor(
+            experts_df,
+            num_rows="dynamic",
+            use_container_width=True,
+            height=420,
+            key="editable_experts_editor",
+            column_config={
+                "name_zh": st.column_config.TextColumn("name_zh"),
+                "name_en": st.column_config.TextColumn("name_en"),
+                "aliases": st.column_config.TextColumn("aliases"),
+                "category": st.column_config.TextColumn("category"),
+                "affiliation": st.column_config.TextColumn("affiliation"),
+                "region": st.column_config.TextColumn("region"),
+                "enabled": st.column_config.CheckboxColumn("enabled", default=True),
+                "description": st.column_config.TextColumn("description"),
+            },
+        )
+
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("儲存專家清單編輯", key="save_experts_table", use_container_width=True):
+                rows = _clean_batch_df(edited_experts_df)
+                cleaned = []
+                for row in rows:
+                    item = editor_row_to_expert(row)
+                    disp = display_expert_name(item)
+                    if disp and disp != "Unnamed Expert":
+                        cleaned.append(item)
+                save_experts(cleaned)
+                st.success("專家清單已儲存。")
+                st.rerun()
+
+        with c2:
+            expert_delete_options = [display_expert_name(x) for x in experts]
+            delete_expert_names = st.multiselect("刪除專家", options=expert_delete_options, key="delete_expert_names")
+            if st.button("刪除選取專家", key="delete_experts_btn", use_container_width=True):
+                current = load_experts()
+                current = [x for x in current if display_expert_name(x) not in delete_expert_names]
+                save_experts(current)
+                st.success(f"已刪除 {len(delete_expert_names)} 筆專家。")
+                st.rerun()
+
+        st.markdown("### 專家搜尋名稱預覽")
+        preview_rows = []
+        for e in load_experts():
+            preview_rows.append(
+                {
+                    "display_name": display_expert_name(e),
+                    "search_names": ", ".join(e.get("search_names", [])),
+                    "aliases": ", ".join(e.get("aliases", [])),
+                    "category": ", ".join(e.get("category", [])),
+                    "affiliation": e.get("affiliation", ""),
+                    "region": e.get("region", ""),
+                    "enabled": e.get("enabled", True),
+                }
+            )
+        if preview_rows:
+            st.dataframe(pd.DataFrame(preview_rows), use_container_width=True, hide_index=True)
+        else:
+            st.info("目前尚無專家資料。")
+
+
     # ── 全球媒體 ──────────────────────────────────────────────────────────────
     with src_tab_global:
         st.caption(f"共 {len(global_sources_ui)} 筆（唯讀）")
@@ -991,161 +1144,6 @@ with tab_sources:
         _cn_rows = [source_to_editor_row(x) for x in fixed_sources]
         _cn_df = pd.DataFrame(_cn_rows) if _cn_rows else pd.DataFrame(columns=["name", "category", "description"])
         st.dataframe(_cn_df[["name", "category", "description"]], use_container_width=True, hide_index=True)
-
-# =========================================================
-# 自訂專家
-# =========================================================
-with tab_experts:
-    st.subheader("自訂專家管理")
-
-    with st.expander("單筆新增專家", expanded=False):
-        c1, c2 = st.columns(2)
-        with c1:
-            exp_name_zh = st.text_input("中文名 name_zh", key="single_exp_name_zh")
-            exp_name_en = st.text_input("英文名 name_en", key="single_exp_name_en")
-            exp_aliases = st.text_input("aliases（逗號分隔）", key="single_exp_aliases")
-            exp_category = st.text_input("category（逗號分隔）", key="single_exp_category")
-        with c2:
-            exp_affiliation = st.text_input("affiliation", key="single_exp_affiliation")
-            exp_region = st.text_input("region", key="single_exp_region")
-            exp_enabled = st.checkbox("enabled", value=True, key="single_exp_enabled")
-            exp_description = st.text_area("description", key="single_exp_description", height=120)
-
-        if st.button("新增專家", key="add_single_expert"):
-            new_item = editor_row_to_expert(
-                {
-                    "name_zh": exp_name_zh,
-                    "name_en": exp_name_en,
-                    "aliases": exp_aliases,
-                    "category": exp_category,
-                    "affiliation": exp_affiliation,
-                    "region": exp_region,
-                    "enabled": exp_enabled,
-                    "description": exp_description,
-                }
-            )
-            current = load_experts()
-            display_name = display_expert_name(new_item)
-            if not display_name or display_name == "Unnamed Expert":
-                st.error("至少要填中文名或英文名。")
-            else:
-                current.append(new_item)
-                save_experts(current)
-                st.success("已新增專家。")
-                st.rerun()
-
-    st.markdown("### 表格式批次貼上新增專家")
-    st.caption("可直接從外部複製多列資料貼到下表，再按「批次加入專家」。")
-
-    expert_batch_columns = ["name_zh", "name_en", "aliases", "category", "affiliation", "region", "enabled", "description"]
-    expert_batch_default = pd.DataFrame([{c: "" for c in expert_batch_columns} for _ in range(8)])
-    expert_batch_default["enabled"] = True
-
-    expert_batch_df = st.data_editor(
-        expert_batch_default,
-        num_rows="dynamic",
-        use_container_width=True,
-        height=280,
-        key="expert_batch_editor",
-        column_config={
-            "name_zh": st.column_config.TextColumn("name_zh"),
-            "name_en": st.column_config.TextColumn("name_en"),
-            "aliases": st.column_config.TextColumn("aliases"),
-            "category": st.column_config.TextColumn("category"),
-            "affiliation": st.column_config.TextColumn("affiliation"),
-            "region": st.column_config.TextColumn("region"),
-            "enabled": st.column_config.CheckboxColumn("enabled", default=True),
-            "description": st.column_config.TextColumn("description"),
-        },
-    )
-
-    if st.button("批次加入專家", key="batch_add_experts"):
-        rows = _clean_batch_df(expert_batch_df)
-        if not rows:
-            st.warning("沒有可加入的專家資料。")
-        else:
-            current = load_experts()
-            name_set = {display_expert_name(x) for x in current}
-            added = 0
-            for row in rows:
-                item = editor_row_to_expert(row)
-                disp = display_expert_name(item)
-                if not disp or disp == "Unnamed Expert":
-                    continue
-                if disp in name_set:
-                    current = [x for x in current if display_expert_name(x) != disp]
-                current.append(item)
-                name_set.add(disp)
-                added += 1
-            save_experts(current)
-            st.success(f"已批次加入 / 更新 {added} 筆專家。")
-            st.rerun()
-
-    st.markdown("### 既有專家清單")
-    st.caption("這裡也可以直接貼上多列資料、修改既有資料、增加新列，再按儲存。")
-
-    experts_df = _build_expert_editor_df(experts, blank_rows=10)
-
-    edited_experts_df = st.data_editor(
-        experts_df,
-        num_rows="dynamic",
-        use_container_width=True,
-        height=420,
-        key="editable_experts_editor",
-        column_config={
-            "name_zh": st.column_config.TextColumn("name_zh"),
-            "name_en": st.column_config.TextColumn("name_en"),
-            "aliases": st.column_config.TextColumn("aliases"),
-            "category": st.column_config.TextColumn("category"),
-            "affiliation": st.column_config.TextColumn("affiliation"),
-            "region": st.column_config.TextColumn("region"),
-            "enabled": st.column_config.CheckboxColumn("enabled", default=True),
-            "description": st.column_config.TextColumn("description"),
-        },
-    )
-
-    c1, c2 = st.columns(2)
-    with c1:
-        if st.button("儲存專家清單編輯", key="save_experts_table", use_container_width=True):
-            rows = _clean_batch_df(edited_experts_df)
-            cleaned = []
-            for row in rows:
-                item = editor_row_to_expert(row)
-                disp = display_expert_name(item)
-                if disp and disp != "Unnamed Expert":
-                    cleaned.append(item)
-            save_experts(cleaned)
-            st.success("專家清單已儲存。")
-            st.rerun()
-
-    with c2:
-        expert_delete_options = [display_expert_name(x) for x in experts]
-        delete_expert_names = st.multiselect("刪除專家", options=expert_delete_options, key="delete_expert_names")
-        if st.button("刪除選取專家", key="delete_experts_btn", use_container_width=True):
-            current = load_experts()
-            current = [x for x in current if display_expert_name(x) not in delete_expert_names]
-            save_experts(current)
-            st.success(f"已刪除 {len(delete_expert_names)} 筆專家。")
-            st.rerun()
-
-    st.markdown("### 專家搜尋名稱預覽")
-    preview_rows = []
-    for e in load_experts():
-        preview_rows.append(
-            {
-                "display_name": display_expert_name(e),
-                "search_names": ", ".join(e.get("search_names", [])),
-                "aliases": ", ".join(e.get("aliases", [])),
-                "category": ", ".join(e.get("category", [])),
-                "affiliation": e.get("affiliation", ""),
-                "region": e.get("region", ""),
-                "enabled": e.get("enabled", True),
-            }
-        )
-    if preview_rows:
-        st.dataframe(pd.DataFrame(preview_rows), use_container_width=True, hide_index=True)
-    else:
-        st.info("目前尚無專家資料。")
 
 
 # =========================================================
