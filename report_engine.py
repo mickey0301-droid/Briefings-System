@@ -318,6 +318,12 @@ def _fetch_rss_items(rss_url, source_name, limit=20):
         )
         r.raise_for_status()
         parsed = _parse_rss(r.text)
+        print(f"[RSS] {source_name}: HTTP {r.status_code}, "
+              f"content-type={r.headers.get('content-type','?')!r}, "
+              f"len={len(r.text)}, items={len(parsed)}, "
+              f"url={rss_url[:120]}")
+        if len(parsed) == 0 and len(r.text) > 0:
+            print(f"[RSS] {source_name} response preview: {r.text[:300]!r}")
     except Exception as e:
         print(f"[Briefings] RSS fetch failed for {source_name}: {e}")
         return []
@@ -380,18 +386,28 @@ def _extract_news_domain(url: str) -> str | None:
 def _build_google_news_rss_for_domain(domain, start_time=None, end_time=None, keywords=None):
     """
     建立 Google News RSS 查詢 URL。
-    若傳入 start_time / end_time，會加上 after:/before: 日期篩選。
-    若傳入 keywords（字串），會以 (keywords) 附加在 site: 後，
-    讓 Google 直接在 RSS 層篩選相關報導，避免抓到大量無關文章。
-    全球媒體（熱度排名邏輯）不傳 keywords，以免遺漏重大國際新聞。
+
+    - 關鍵字直接附在 site: 後，不加括號（括號會導致 Google News RSS 回傳 0 結果）
+    - 時間範圍改用 when:Xh / when:Xd（比 after:/before: 更穩定），
+      精確時間過濾由 _filter_items_by_time_range 在 client 端補做
     """
     query = f"site:{domain}"
     if keywords:
-        query += f" ({keywords})"
-    if start_time:
-        query += f" after:{start_time.strftime('%Y/%m/%d')}"
-    if end_time:
-        query += f" before:{end_time.strftime('%Y/%m/%d')}"
+        query += f" {keywords}"   # 不加括號
+
+    # 用 when: 取代 after:/before:，Google News RSS 對此支援較佳
+    if start_time and end_time:
+        hours = max(1, int((end_time - start_time).total_seconds() / 3600))
+        if hours <= 6:
+            query += " when:6h"
+        elif hours <= 24:
+            query += " when:1d"
+        elif hours <= 72:
+            query += " when:3d"
+        elif hours <= 168:
+            query += " when:7d"
+        # 超過 7 天不加 when:，靠 client 端時間過濾
+
     query_encoded = quote(query)
     return f"https://news.google.com/rss/search?q={query_encoded}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
 
