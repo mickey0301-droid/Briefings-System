@@ -602,9 +602,9 @@ def _render_citations(report_text, source_map, format_options):
 
     text = _strip_ai_link_markers(report_text)
 
-    # 無論任何模式，都把 [Sx] 清掉或換成上標
+    # 無論任何模式，都把 [Sx] 或 [ Sx ] 清掉或換成上標
     if notes_style == "none" and link_mode == "none":
-        text = re.sub(r'\[S\d+\]', '', text)
+        text = re.sub(r'\[\s*S\d+\s*\]', '', text)
         return text
 
     used_codes = []
@@ -618,7 +618,7 @@ def _render_citations(report_text, source_map, format_options):
         idx = used_codes.index(code) + 1
         return _to_superscript(idx)
 
-    text = re.sub(r'\[(S\d+)\]', replace_code, text)
+    text = re.sub(r'\[\s*(S\d+)\s*\]', replace_code, text)
 
     # 清理多餘空白
     text = re.sub(r'[ \t]+', ' ', text)
@@ -1054,6 +1054,45 @@ def generate_report(
 
     source_map = _build_citation_source_map(items, max_sources=12)
 
+    # 建立專家分析資料區塊（僅在有真實 expert_items 時）
+    expert_names = list({
+        item["expert"] for item in expert_items
+        if isinstance(item, dict) and item.get("expert")
+    })
+    has_expert_data = bool(expert_names)
+
+    expert_data_lines = []
+    if has_expert_data:
+        expert_data_lines.append("Expert Analysis Data:")
+        for expert_name in expert_names:
+            this_expert_items = [i for i in expert_items if i.get("expert") == expert_name]
+            expert_data_lines.append(f"\n[{expert_name}]")
+            for i, ei in enumerate(this_expert_items[:5], 1):
+                t = (ei.get("title") or "").strip()
+                s = (ei.get("summary") or "").strip()
+                if t:
+                    expert_data_lines.append(f"  {i}. {t}")
+                if s:
+                    expert_data_lines.append(f"     {s[:300]}")
+    expert_data_block = "\n".join(expert_data_lines)
+
+    expert_section = ""
+    if has_expert_data:
+        expert_section = """
+七、專家研析
+1. 國際情勢解讀
+2. 台美中情勢解讀
+
+八、研析"""
+    else:
+        expert_section = "\n七、研析"
+
+    expert_guidance = ""
+    if has_expert_data:
+        expert_guidance = f"""- 「專家研析」必須引用 Expert Analysis Data 中具名專家（{', '.join(expert_names)}）的實際觀點，並標注是哪位專家的看法。若某專家無明確觀點可引用，請省略該專家。勿憑空虛構專家言論。"""
+    else:
+        expert_guidance = "- 本期無專家資料，請省略「專家研析」章節。"
+
     prompt = f"""
 You are a senior strategic intelligence analyst.
 
@@ -1072,7 +1111,8 @@ Requirements:
 9. You may cite multiple sources together, for example [S1][S3].
 10. Only use source markers that exist in the provided News data.
 11. Keep citations light and readable. Do not attach a citation to every single sentence unless necessary.
-12. When mentioning specific individuals by name, write their name in the format 中文名（English Name）if both are known. If only English name is known, write（English Name）.
+12. Whenever you mention a media outlet, always name it specifically — never use vague terms like "歐洲媒體", "西方媒體", "美國媒體". Write the actual outlet name with both Chinese and English on first mention, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）. For widely recognized outlets where one name is dominant, you may use just that name, e.g. CNN、BBC、紐約時報（New York Times）.
+13. Whenever you mention a person, always include their specific title or role immediately before their name. Never mention a name without a title. Format: 頭銜 中文名（English Name），e.g. 美國總統唐納·川普（Donald Trump）、中央研究院院士王賡武（Wang Gungwu）、國防部長奧斯汀（Lloyd Austin）.
 
 Output structure:
 【戰略情報簡報】
@@ -1111,12 +1151,7 @@ Output structure:
 （六）非洲地區
 1. 區域要聞（僅在有非洲地區相關新聞時撰寫，否則省略）
 2. 台灣與中國相關要聞（僅在有非洲地區涉台涉中新聞時撰寫，否則省略）
-
-七、專家研析
-1. 國際情勢解讀
-2. 台美中情勢解讀
-
-八、研析
+{expert_section}
 
 Writing guidance:
 - 「摘要」請用一小段說明本期最重要判斷。
@@ -1125,7 +1160,7 @@ Writing guidance:
 - 「台灣國安要聞」聚焦軍事、灰帶、資安、國防、國安治理等。
 - 「中國要聞」聚焦中國政治、外交、軍事、經濟、對外作為。
 - 「區域情勢」各區域的子段只在有明確對應新聞時才撰寫，若無相關新聞請直接省略，不要寫「無相關新聞」。
-- 「專家研析」請從戰略分析師視角，分別就國際情勢與台美中三角關係提出深度解讀，可包含趨勢研判與風險評估。
+{expert_guidance}
 - 「研析」請提出跨章節的整體判斷、風險、趨勢、可能後續觀察重點。
 
 Strategic Context:
@@ -1133,6 +1168,7 @@ Strategic Context:
 
 News data:
 {news_data_block}
+{("Expert Analysis Data:" + chr(10) + expert_data_block) if has_expert_data else ""}
 """
 
     client = _get_openai_client()
@@ -1145,7 +1181,7 @@ News data:
     report = response.output_text
 
     # 清除 AI 可能生成的 [DW.com] / [BBC] 等來源標籤（非 [Sx] 格式）
-    report = re.sub(r'\[(?!S\d+\])([A-Za-z][^\]]{0,40})\]', '', report)
+    report = re.sub(r'\[\s*(?!S\d+\s*\])([A-Za-z][^\]]{0,40})\]', '', report)
     report = re.sub(r'[ \t]+', ' ', report)
 
     # 建立 citation source map
