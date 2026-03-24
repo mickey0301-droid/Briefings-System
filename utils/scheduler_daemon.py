@@ -39,27 +39,69 @@ def _tick() -> None:
         now = now_tw()
 
         for schedule in config.get("schedules", []):
+            schedule_name = schedule.get("name", "unnamed")
             try:
                 ok, run_key = should_run(schedule, state=state, now=now)
                 if not ok:
                     continue
 
-                logger.info(f"[Scheduler] 執行排程: {schedule.get('name')} @ {run_key}")
+                logger.info(f"[Scheduler] 執行排程: {schedule_name} @ {run_key}")
+
+                # 標記正在執行
+                state.setdefault("running_now", [])
+                if schedule_name not in state["running_now"]:
+                    state["running_now"].append(schedule_name)
+                state["running_started_at"] = state.get("running_started_at", {})
+                state["running_started_at"][schedule_name] = now.strftime("%Y-%m-%d %H:%M:%S")
+                save_auto_export_state(state)
+
+                started_at = now_tw()
                 result = run_schedule_job(schedule)
+                finished_at = now_tw()
+                duration_sec = int((finished_at - started_at).total_seconds())
+
+                # 清除「正在執行」標記
+                state["running_now"] = [n for n in state.get("running_now", []) if n != schedule_name]
+                if schedule_name in state.get("running_started_at", {}):
+                    del state["running_started_at"][schedule_name]
+
+                # 寫入執行歷史（保留最近 50 筆）
+                history_entry = {
+                    "name": schedule_name,
+                    "started_at": started_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    "finished_at": finished_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    "duration_sec": duration_sec,
+                    "ok": bool(result.get("ok")),
+                    "message": result.get("message", "") or result.get("error", ""),
+                }
+                history = state.setdefault("run_history", [])
+                history.insert(0, history_entry)
+                state["run_history"] = history[:50]
 
                 if result.get("ok"):
-                    # 記錄已執行，避免同一分鐘重複觸發
-                    schedule_name = schedule.get("name", "unnamed")
                     state.setdefault("last_run_keys", {})[schedule_name] = run_key
-                    # 同時更新 loaders 使用的 last_runs（相容兩種格式）
                     state.setdefault("last_runs", {})[schedule_name] = run_key
                     save_auto_export_state(state)
                     logger.info(f"[Scheduler] 完成: {result.get('message', '')}")
                 else:
+                    save_auto_export_state(state)
                     logger.error(f"[Scheduler] 失敗: {result.get('error', '')}")
 
             except Exception as e:
-                logger.error(f"[Scheduler] 排程 {schedule.get('name')} 錯誤: {e}")
+                # 確保即使出錯也清除「正在執行」標記
+                state["running_now"] = [n for n in state.get("running_now", []) if n != schedule_name]
+                history = state.setdefault("run_history", [])
+                history.insert(0, {
+                    "name": schedule_name,
+                    "started_at": now.strftime("%Y-%m-%d %H:%M:%S"),
+                    "finished_at": now_tw().strftime("%Y-%m-%d %H:%M:%S"),
+                    "duration_sec": 0,
+                    "ok": False,
+                    "message": str(e),
+                })
+                state["run_history"] = history[:50]
+                save_auto_export_state(state)
+                logger.error(f"[Scheduler] 排程 {schedule_name} 錯誤: {e}")
 
     except Exception as e:
         logger.error(f"[Scheduler] _tick 整體錯誤: {e}")

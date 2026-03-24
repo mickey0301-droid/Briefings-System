@@ -584,6 +584,9 @@ def load_auto_export_state():
     if not isinstance(data, dict):
         data = {"last_runs": {}}
     data.setdefault("last_runs", {})
+    data.setdefault("running_now", [])
+    data.setdefault("running_started_at", {})
+    data.setdefault("run_history", [])
     return data
 
 

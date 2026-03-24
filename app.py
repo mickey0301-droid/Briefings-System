@@ -1734,6 +1734,41 @@ with tab_automation:
                     st.rerun()
             st.divider()
 
+    # -------------------------
+    # 執行狀態與歷史
+    # -------------------------
+    st.markdown("### 執行狀態")
+
+    _exec_state = load_auto_export_state()
+    _running_now = _exec_state.get("running_now", [])
+    _running_started = _exec_state.get("running_started_at", {})
+
+    if _running_now:
+        for _rn in _running_now:
+            _started = _running_started.get(_rn, "")
+            st.warning(f"⏳ **{_rn}** 正在執行中…（開始時間：{_started}）")
+    else:
+        st.success("✅ 目前沒有排程正在執行")
+
+    st.markdown("### 執行歷史")
+
+    _run_history = _exec_state.get("run_history", [])
+    if not _run_history:
+        st.info("尚無執行紀錄。")
+    else:
+        if st.button("🔄 重新整理", key="refresh_history"):
+            st.rerun()
+        for _h in _run_history:
+            _h_ok = _h.get("ok", False)
+            _h_name = _h.get("name", "")
+            _h_started = _h.get("started_at", "")
+            _h_duration = _h.get("duration_sec", 0)
+            _h_msg = _h.get("message", "")
+            _icon = "✅" if _h_ok else "❌"
+            with st.expander(f"{_icon} {_h_name}　{_h_started}　（{_h_duration} 秒）", expanded=False):
+                if _h_msg:
+                    st.caption(_h_msg)
+
 
 # =========================================================
 # Reports
