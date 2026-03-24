@@ -64,7 +64,6 @@ OUTPUT_DIR = APP_DIR / "outputs"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 st.set_page_config(page_title="公情綜整報告", layout="wide")
-st.title("公情綜整報告")
 
 
 # =========================================================
@@ -446,7 +445,7 @@ if "selected_page" not in st.session_state:
 
 with st.sidebar:
     st.markdown(
-        "<h2 style='margin-bottom:0.2rem;font-size:1.25rem;'>公情綜整報告</h2>"
+        "<h1 style='margin-bottom:0.2rem;font-size:1.6rem;font-weight:700;'>公情綜整報告</h1>"
         "<hr style='margin:0.4rem 0 1rem 0;border-color:#e0e0e0;'>",
         unsafe_allow_html=True,
     )
@@ -463,12 +462,21 @@ with st.sidebar:
 
 selected_page = st.session_state.selected_page
 
+_PAGE_TITLES = {
+    "Briefings": "簡報生成",
+    "Insights":  "研析方向",
+    "Sources":   "來源管理",
+    "Formats":   "格式設定",
+    "Schedule":  "排程",
+    "Reports":   "報告記錄",
+}
+st.title(_PAGE_TITLES.get(selected_page, selected_page))
+
 
 # =========================================================
 # Briefings
 # =========================================================
 if selected_page == "Briefings":
-    st.subheader("手動生成與一鍵輸出")
 
     now = now_tw()
     default_start = now - timedelta(hours=24)
@@ -797,7 +805,6 @@ if selected_page == "Briefings":
 # =========================================================
 elif selected_page == "Insights":
 
-    st.subheader("Insights Editor")
     st.caption("Strategic guidance used by AI when generating reports. These will NOT be cited.")
 
     insights_data = load_insights()
@@ -890,7 +897,6 @@ elif selected_page == "Insights":
 # Sources
 # =========================================================
 elif selected_page == "Sources":
-    st.subheader("Sources 管理")
 
     # 載入關鍵字設定（每次頁面渲染時讀取，儲存後下次 rerun 即生效）
     _cat_kw = load_category_keywords()
@@ -1319,7 +1325,6 @@ elif selected_page == "Sources":
 # Formats
 # =========================================================
 elif selected_page == "Formats":
-    st.subheader("Report Formats")
 
     formats = load_formats()
     if not formats:
@@ -1430,7 +1435,6 @@ elif selected_page == "Schedule":
     from datetime import datetime
     from utils.auto_export import compute_next_runs
 
-    st.subheader("AI Briefings Scheduler")
 
     config = load_auto_export()
     config.setdefault("enabled", True)
@@ -2067,7 +2071,6 @@ elif selected_page == "Schedule":
 # Reports
 # =========================================================
 elif selected_page == "Reports":
-    st.subheader("已儲存的報告")
 
     report_files = sorted(OUTPUT_DIR.glob("*"), key=lambda f: f.stat().st_mtime, reverse=True)
     report_files = [f for f in report_files if f.is_file()]
