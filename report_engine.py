@@ -167,7 +167,7 @@ def _fetch_article_content(url, max_chars=8000):
         r = requests.get(
             url,
             headers={"User-Agent": USER_AGENT},
-            timeout=15,
+            timeout=8,
         )
         r.raise_for_status()
     except Exception as e:
@@ -233,7 +233,7 @@ def _fetch_rss_items(rss_url, source_name, limit=20):
         r = requests.get(
             rss_url,
             headers={"User-Agent": USER_AGENT},
-            timeout=15,
+            timeout=10,
         )
         r.raise_for_status()
         parsed = _parse_rss(r.text)
@@ -241,15 +241,11 @@ def _fetch_rss_items(rss_url, source_name, limit=20):
         print(f"[Briefings] RSS fetch failed for {source_name}: {e}")
         return []
 
-    output = []
-    for item in parsed[:limit]:
+    def _fetch_one(item):
         raw_url = item.get("url", "")
         resolved_url = _resolve_google_news_url(raw_url)
-
-        # 這一步才是真正抓文章正文
         article_content = _fetch_article_content(resolved_url)
-
-        output.append({
+        return {
             "title": item.get("title", "").strip(),
             "url": raw_url,
             "original_url": resolved_url,
@@ -258,7 +254,19 @@ def _fetch_rss_items(rss_url, source_name, limit=20):
             "summary": item.get("summary", ""),
             "content": article_content,
             "source_type": "rss",
-        })
+        }
+
+    # 平行抓取各篇全文，每篇最多等 20 秒，整組最多等 30 秒
+    output = []
+    batch = parsed[:limit]
+    with ThreadPoolExecutor(max_workers=min(5, len(batch) or 1)) as art_ex:
+        futs = {art_ex.submit(_fetch_one, it): it for it in batch}
+        for fut in as_completed(futs, timeout=30):
+            try:
+                output.append(fut.result())
+            except Exception:
+                pass
+
     return output
 
 
@@ -1035,12 +1043,22 @@ def generate_report(
             )
             for subsource_items in cn_results.values():
                 for cn_item in subsource_items:
+                    # CN official scrapers set published=midnight of the target date.
+                    # To ensure items pass _filter_items_by_time_range, clamp published
+                    # to be within [start_time, end_time]. We know these articles are
+                    # relevant because the scraper was explicitly called for this date range.
+                    raw_published = cn_item.get("published")
+                    if isinstance(raw_published, datetime):
+                        clamped = max(raw_published.replace(hour=12, minute=0, second=0), start_time)
+                        clamped = min(clamped, end_time)
+                    else:
+                        clamped = start_time
                     items.append({
                         "title": cn_item.get("title", ""),
                         "url": cn_item.get("link", ""),
                         "original_url": cn_item.get("link", ""),
                         "source": cn_item.get("source_name", ""),
-                        "published": cn_item.get("published"),
+                        "published": clamped,
                         "summary": cn_item.get("summary", ""),
                         "content": cn_item.get("content", ""),
                         "source_region": cn_item.get("region", "中國"),
