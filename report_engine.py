@@ -221,13 +221,23 @@ def _fetch_rss_items(rss_url, source_name, limit=20):
     return output
 
 
-def _build_google_news_rss_for_domain(domain):
-    query = quote(f"site:{domain}")
-    return f"https://news.google.com/rss/search?q={query}&hl=en-US&gl=US&ceid=US:en"
+def _build_google_news_rss_for_domain(domain, start_time=None, end_time=None):
+    """
+    建立 Google News RSS 查詢 URL。
+    若傳入 start_time / end_time，會加上 after:/before: 日期篩選，
+    確保只抓取指定時間範圍內的報導（台灣媒體等 domain 來源尤為重要）。
+    """
+    query = f"site:{domain}"
+    if start_time:
+        query += f" after:{start_time.strftime('%Y/%m/%d')}"
+    if end_time:
+        query += f" before:{end_time.strftime('%Y/%m/%d')}"
+    query_encoded = quote(query)
+    return f"https://news.google.com/rss/search?q={query_encoded}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
 
 
-def _fetch_domain_items(domain, source_name, limit=20):
-    rss_url = _build_google_news_rss_for_domain(domain)
+def _fetch_domain_items(domain, source_name, limit=20, start_time=None, end_time=None):
+    rss_url = _build_google_news_rss_for_domain(domain, start_time=start_time, end_time=end_time)
     items = _fetch_rss_items(rss_url, source_name, limit=limit)
 
     for item in items:
@@ -240,7 +250,13 @@ def _fetch_domain_items(domain, source_name, limit=20):
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_source=20):
+def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_source=20,
+                              start_time=None, end_time=None):
+    """
+    從各來源抓取新聞條目。
+    start_time / end_time 會傳入 domain 類來源（Google News RSS），
+    確保查詢結果已在 Google 端預先依日期篩選，減少漏抓問題。
+    """
 
     normalized_sources = _normalize_selected_sources(selected_sources, all_sources=all_sources)
 
@@ -274,7 +290,10 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
             source_items = _fetch_rss_items(rss_url, name, limit=limit_per_source)
 
         elif domain:
-            source_items = _fetch_domain_items(domain, name, limit=limit_per_source)
+            source_items = _fetch_domain_items(
+                domain, name, limit=limit_per_source,
+                start_time=start_time, end_time=end_time,
+            )
 
         else:
             print(f"[Briefings] Source skipped: {name}")
@@ -928,7 +947,9 @@ def generate_report(
     items = fetch_items_from_sources(
         selected_sources=selected_sources,
         all_sources=sources,
-        limit_per_source=20
+        limit_per_source=20,
+        start_time=start_time,
+        end_time=end_time,
     )
 
     items = _filter_items_by_time_range(items, start_time, end_time)

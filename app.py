@@ -5,6 +5,12 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+# ── 背景排程器（每 60 秒檢查一次到期排程） ──────────────────────────────
+# 必須在其他 import 之前啟動，且使用 st.cache_resource 確保只啟動一次
+from utils.scheduler_daemon import start_background_scheduler
+start_background_scheduler()
+# ─────────────────────────────────────────────────────────────────────────
+
 from utils.loaders import (
     load_sources,
     save_sources,
