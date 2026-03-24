@@ -909,7 +909,7 @@ def _group_items_for_report(items):
     return groups
 
 
-def _format_item_block(label, items):
+def _format_item_block(label, items, item_to_sx=None):
     lines = [f"【{label}】"]
     if not items:
         lines.append("- 無明顯代表性新聞")
@@ -923,7 +923,14 @@ def _format_item_block(label, items):
         url = _safe_text(item.get("original_url") or item.get("url"))
         region = _safe_text(item.get("source_region"))
 
-        lines.append(f"{idx}. 標題: {title}")
+        # 找對應的 Sx 代碼，讓 AI 知道引用哪個
+        sx_code = ""
+        if item_to_sx:
+            key = (url or title).lower().strip()
+            sx_code = item_to_sx.get(key, "")
+        sx_label = f" [{sx_code}]" if sx_code else ""
+
+        lines.append(f"{idx}.{sx_label} 標題: {title}")
         if source:
             lines.append(f"   來源: {source}")
         if region:
@@ -931,7 +938,6 @@ def _format_item_block(label, items):
         if summary:
             lines.append(f"   摘要: {summary}")
 
-        # 新增：把正文節錄也提供給 AI
         if content:
             preview = content[:2000]
             lines.append(f"   內文: {preview}")
@@ -942,18 +948,25 @@ def _format_item_block(label, items):
     return "\n".join(lines)
 
 
-def _build_news_data_block(groups):
-    blocks = []
+def _build_news_data_block(groups, source_map=None):
+    # 建立 url/title → Sx 的反查表，讓每篇新聞旁邊標 [S1] 等代碼
+    item_to_sx = {}
+    if source_map:
+        for sx, info in source_map.items():
+            key = (info.get("url") or info.get("title") or "").lower().strip()
+            if key:
+                item_to_sx[key] = sx
 
-    blocks.append(_format_item_block("國際要聞", groups["國際要聞"]))
-    blocks.append(_format_item_block("台美中要聞", groups["台美中要聞"]))
-    blocks.append(_format_item_block("台灣國安要聞", groups["台灣國安要聞"]))
-    blocks.append(_format_item_block("中國要聞", groups["中國要聞"]))
+    blocks = []
+    blocks.append(_format_item_block("國際要聞", groups["國際要聞"], item_to_sx))
+    blocks.append(_format_item_block("台美中要聞", groups["台美中要聞"], item_to_sx))
+    blocks.append(_format_item_block("台灣國安要聞", groups["台灣國安要聞"], item_to_sx))
+    blocks.append(_format_item_block("中國要聞", groups["中國要聞"], item_to_sx))
 
     for region in REGION_ORDER:
         region_block = groups["區域情勢"][region]
-        blocks.append(_format_item_block(f"{region}｜區域要聞", region_block["區域要聞"]))
-        blocks.append(_format_item_block(f"{region}｜台灣與中國相關要聞", region_block["台灣與中國相關要聞"]))
+        blocks.append(_format_item_block(f"{region}｜區域要聞", region_block["區域要聞"], item_to_sx))
+        blocks.append(_format_item_block(f"{region}｜台灣與中國相關要聞", region_block["台灣與中國相關要聞"], item_to_sx))
 
     return "\n\n".join(blocks)
 
@@ -1048,11 +1061,12 @@ def generate_report(
 
     format_options = format_options or _load_format_options()
 
-    groups = _group_items_for_report(items)
-    news_data_block = _build_news_data_block(groups)
-    language_label = _normalize_language_label(language)
-
+    # 先建 source_map，再傳給 news_data_block，讓每篇新聞旁邊標 [Sx]
     source_map = _build_citation_source_map(items, max_sources=12)
+
+    groups = _group_items_for_report(items)
+    news_data_block = _build_news_data_block(groups, source_map=source_map)
+    language_label = _normalize_language_label(language)
 
     # 建立專家分析資料區塊（僅在有真實 expert_items 時）
     expert_names = list({
@@ -1112,7 +1126,8 @@ Requirements:
 10. Only use source markers that exist in the provided News data.
 11. Keep citations light and readable. Do not attach a citation to every single sentence unless necessary.
 12. Whenever you mention a media outlet, always name it specifically — never use vague terms like "歐洲媒體", "西方媒體", "美國媒體". Write the actual outlet name with both Chinese and English on first mention, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）. For widely recognized outlets where one name is dominant, you may use just that name, e.g. CNN、BBC、紐約時報（New York Times）.
-13. Whenever you mention a person, always include their specific title or role immediately before their name. Never mention a name without a title. Format: 頭銜 中文名（English Name），e.g. 美國總統唐納·川普（Donald Trump）、中央研究院院士王賡武（Wang Gungwu）、國防部長奧斯汀（Lloyd Austin）.
+13. Whenever you mention a person, always include their specific title or role immediately before their name. For the Chinese name, use only the conventionally established form: for Western figures use surname only (e.g., 川普、拜登、奧斯汀、馬克宏、梅洛尼); for Japanese, Korean, or other East Asian figures use the full name in Chinese characters (e.g., 岸田文雄、尹錫悅、習近平、普廷). Always follow with the person's full English name in parentheses on first mention. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄（Fumio Kishida）、韓國總統尹錫悅（Yoon Suk-yeol）、國防部長奧斯汀（Lloyd Austin）.
+14. Whenever you mention a non-media organization or institution for the first time, always include both its Chinese name and English name in parentheses, e.g. 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）.
 
 Output structure:
 【戰略情報簡報】
