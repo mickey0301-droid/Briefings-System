@@ -1438,6 +1438,15 @@ def _generate_multiphase_synthesis(
 
     # ── 1. Group items ──────────────────────────────────────────────────
     news_items = [i for i in items if i.get("source_type") != "expert"]
+
+    # ── 0. Build global source_map FIRST so [Sx] codes persist end-to-end ──
+    source_map = _build_citation_source_map(news_items, max_sources=30)
+    item_to_sx: dict[str, str] = {}
+    for sx, info in source_map.items():
+        key = (info.get("url") or info.get("title") or "").lower().strip()
+        if key:
+            item_to_sx[key] = sx
+
     all_groups: dict[str, list] = {}
     for item in news_items:
         key = _get_item_source_group(item)
@@ -1451,28 +1460,19 @@ def _generate_multiphase_synthesis(
 
     # ── 2. Generate sub-reports ─────────────────────────────────────────
     sub_reports: list[tuple[str, str]] = []
-    eligible = [(k, v) for k, v in selected_groups.items() if len(v) >= 2]
+    eligible = [(k, v) for k, v in selected_groups.items() if len(v) >= 1]
     total_g = len(eligible)
 
     for done, (group_key, group_items) in enumerate(eligible, 1):
         group_name_zh = _MULTIPHASE_GROUP_ZH.get(group_key, group_key)
         _cb("stage", f"📝 子報告 {done}/{total_g}：{group_name_zh}（{len(group_items)} 篇）…")
 
-        news_lines = []
-        for idx, item in enumerate(group_items[:50], 1):
-            title   = (item.get("title") or "").strip()
-            source  = (item.get("source") or "").strip()
-            summary = (item.get("summary") or item.get("content") or "").strip()[:700]
-            if title:
-                news_lines.append(f"{idx}. [{source}] {title}")
-                if summary:
-                    news_lines.append(f"   {summary}")
-                news_lines.append("")
+        # Build structured news block WITH [Sx] codes so citations survive synthesis
+        news_block = _format_item_block(group_name_zh, group_items[:50], item_to_sx)
 
         sub_prompt = (
-            f"以下是來自【{group_name_zh}】的新聞條目，"
-            f"請根據這些內容撰寫分析子報告：\n\n"
-            + "\n".join(news_lines)
+            f"以下是來自【{group_name_zh}】的新聞條目（每條已標注引用代碼 [S1][S2]... 請在報告中保留這些代碼）：\n\n"
+            + news_block
         )
 
         try:
@@ -1541,9 +1541,10 @@ Requirements:
 3. Do NOT write source names in brackets such as [DW.com], [Reuters.com], [BBC].
 4. Synthesize information across sub-reports into broader strategic analysis.
 5. Identify cross-regional patterns, escalating trends, and strategic implications.
-6. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
-7. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English name in parentheses. Format: [Title][Chinese name]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄（Fumio Kishida）、韓國總統尹錫悅（Yoon Suk-yeol）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
-8. MANDATORY — Organizations and institutions: On first mention, always provide both Chinese and English names. Format: Chinese name（English Name）. Examples: 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）、美國在台協會（American Institute in Taiwan, AIT）. This rule has NO exceptions.
+6. CRITICAL — Citation codes [S1][S2][S3]... are embedded in the sub-reports. You MUST preserve every [Sx] code exactly as it appears — do NOT renumber, merge, drop, or invent any [Sx] marker. When you incorporate a fact from a sub-report that has a citation code, carry that exact code into the synthesis text. These codes are the only link to the source bibliography and must NOT be lost.
+7. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
+8. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English name in parentheses. Format: [Title][Chinese name]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄（Fumio Kishida）、韓國總統尹錫悅（Yoon Suk-yeol）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
+9. MANDATORY — Organizations and institutions: On first mention, always provide both Chinese and English names. Format: Chinese name（English Name）. Examples: 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）、美國在台協會（American Institute in Taiwan, AIT）. This rule has NO exceptions.
 
 Output structure:
 【戰略情報簡報】
@@ -1617,8 +1618,7 @@ Sub-reports from regional analyst teams:
     report = re.sub(r'\[\s*(?!S\d+\s*\])([A-Za-z][^\]]{0,40})\]', '', report)
     report = re.sub(r'[ \t]+', ' ', report)
 
-    # Build citation source map from all items and render citations
-    source_map = _build_citation_source_map(items, max_sources=12)
+    # Use the global source_map built at the start (preserves [Sx] codes end-to-end)
     report = _render_citations(report, source_map, format_options)
 
     return report, items
