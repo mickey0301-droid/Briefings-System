@@ -557,6 +557,9 @@ def load_auto_export():
         if "enabled" not in data:
             data["enabled"] = True
 
+        if "drive_folders" not in data:
+            data["drive_folders"] = []
+
         return data
 
     except:
