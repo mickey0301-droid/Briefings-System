@@ -513,18 +513,23 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
                 item["source_type"] = "gnews"
             return fetched
 
-        # 其他來源：site:{domain} 查詢（不加關鍵字），client 端過濾
+        # 其他來源：若 url 是真正的 RSS feed（以 http 開頭），直接抓；
+        # 否則以 site:{domain} 向 Google News RSS 查詢。
         url_field = src.get("url", "")
-        domain = (src.get("domain") or src.get("site")
-                  or _extract_news_domain(url_field) or url_field)
-        if not domain:
-            return []
-        domain = domain.lower().replace("www.", "")
+        if url_field.startswith("http"):
+            # 直接抓 RSS feed
+            rss_url = url_field
+        else:
+            domain = (src.get("domain") or src.get("site")
+                      or _extract_news_domain(url_field) or url_field)
+            if not domain:
+                return []
+            domain = domain.lower().replace("www.", "")
+            q = f"site:{domain}"
+            if when_str:
+                q += f" {when_str}"
+            rss_url = f"https://news.google.com/rss/search?q={quote(q)}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
 
-        q = f"site:{domain}"
-        if when_str:
-            q += f" {when_str}"
-        rss_url = f"https://news.google.com/rss/search?q={quote(q)}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
         fetched = _fetch_rss_items(rss_url, src_name, limit=limit_per_source)
 
         # Client 端關鍵字過濾
