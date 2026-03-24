@@ -143,6 +143,7 @@ def _call_generate_report(
     language,
     insights_text,
     status_callback=None,
+    multiphase_groups=None,
 ):
     fn = getattr(report_engine, "generate_report", None)
     if fn is None:
@@ -165,6 +166,7 @@ def _call_generate_report(
         "insights_text": insights_text,
         "insights": insights_text,
         "status_callback": status_callback,
+        "multiphase_groups": multiphase_groups,
     }
 
     for name in sig.parameters:
@@ -619,6 +621,31 @@ if selected_page == "Briefings":
                 help="先在 Schedule 頁面的「Google Drive 資料夾」區塊新增資料夾，之後可在此選擇。",
             )
 
+    # ── 報告模式 ────────────────────────────────────────────────────────
+    _rmode_col1, _rmode_col2 = st.columns([1, 2])
+    with _rmode_col1:
+        report_mode_brief = st.radio(
+            "報告模式",
+            options=["single", "multi_phase"],
+            format_func=lambda x: "單份報告" if x == "single" else "綜合報告（多段生成）",
+            horizontal=True,
+            key="briefings_report_mode",
+        )
+    with _rmode_col2:
+        if report_mode_brief == "multi_phase":
+            _gmap = {k: report_engine.MULTIPHASE_GROUP_OPTIONS and report_engine._MULTIPHASE_GROUP_ZH.get(k, k)
+                     for k in report_engine.MULTIPHASE_GROUP_OPTIONS}
+            multiphase_groups_brief = st.multiselect(
+                "包含來源群組（空白 = 全部）",
+                options=list(_gmap.keys()),
+                format_func=lambda x: _gmap.get(x, x),
+                default=[],
+                key="briefings_multiphase_groups",
+            )
+        else:
+            multiphase_groups_brief = None
+            st.caption("單份報告：所有來源一次性生成。")
+
     extra_insights = st.text_area(
         "本次補充 insights",
         value="",
@@ -732,6 +759,9 @@ if selected_page == "Briefings":
                     language=language,
                     insights_text=combined_insights,
                     status_callback=_on_fetch_status,
+                    multiphase_groups=(
+                        multiphase_groups_brief if report_mode_brief == "multi_phase" else None
+                    ),
                 )
 
                 fetch_log_placeholder.empty()
@@ -1975,6 +2005,28 @@ elif selected_page == "Schedule":
                 with _sfc2:
                     _sf_time = st.time_input("生效開始時間", value=_sf_dt.time().replace(second=0, microsecond=0), key=f"start_from_time_{selected_idx}", step=300)
                 s["start_from"] = f"{_sf_date.isoformat()} {_sf_time.strftime('%H:%M')}"
+
+        st.markdown("#### 報告模式")
+        s["report_mode"] = st.radio(
+            "報告模式",
+            options=["single", "multi_phase"],
+            format_func=lambda x: "單份報告" if x == "single" else "綜合報告（多段生成）",
+            index=["single", "multi_phase"].index(s.get("report_mode", "single")),
+            horizontal=True,
+            key=f"report_mode_{selected_idx}",
+        )
+        if s["report_mode"] == "multi_phase":
+            _gmap_s = {k: report_engine._MULTIPHASE_GROUP_ZH.get(k, k)
+                       for k in report_engine.MULTIPHASE_GROUP_OPTIONS}
+            s["multiphase_groups"] = st.multiselect(
+                "包含來源群組（空白 = 全部）",
+                options=list(_gmap_s.keys()),
+                format_func=lambda x: _gmap_s.get(x, x),
+                default=s.get("multiphase_groups") or [],
+                key=f"multiphase_groups_{selected_idx}",
+            )
+        else:
+            s["multiphase_groups"] = []
 
         st.markdown("#### 來源與專家篩選")
 

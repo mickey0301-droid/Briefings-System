@@ -1327,6 +1327,265 @@ def _build_sources_block(items, limit=30):
     return "\n".join(lines)
 
 
+# =====================================================
+# Multi-phase report constants & helpers
+# =====================================================
+
+# Maps source group keys → Chinese display names
+_MULTIPHASE_GROUP_ZH = {
+    "自訂台灣媒體":                "台灣媒體",
+    "自訂國際媒體":                "國際媒體",
+    "Asia-Pacific":               "亞太地區媒體",
+    "Europe":                     "歐洲媒體",
+    "West Asia":                  "亞西暨中東媒體",
+    "Africa":                     "非洲媒體",
+    "North America":              "北美媒體",
+    "Latin America and Caribbean":"拉丁美洲媒體",
+    "Latin America":              "拉丁美洲媒體",
+    "中共官媒":                   "中共官媒",
+}
+
+# Ordered list for UI display
+MULTIPHASE_GROUP_OPTIONS = [
+    "自訂台灣媒體",
+    "自訂國際媒體",
+    "Asia-Pacific",
+    "Europe",
+    "West Asia",
+    "Africa",
+    "North America",
+    "Latin America",
+    "中共官媒",
+]
+
+
+def _get_item_source_group(item: dict) -> str:
+    """Return the source-group key for a single item."""
+    if item.get("source_type") == "cn_official":
+        return "中共官媒"
+    cats = item.get("source_category") or []
+    if "中共官媒" in cats:
+        return "中共官媒"
+    if "自訂台灣媒體" in cats:
+        return "自訂台灣媒體"
+    if "自訂國際媒體" in cats:
+        return "自訂國際媒體"
+    if "全球媒體" in cats:
+        continent = next((c for c in cats if c != "全球媒體"), None)
+        if continent:
+            # Normalise variants
+            if "Latin" in continent:
+                return "Latin America"
+            if continent in ("Middle East", "West Asia"):
+                return "West Asia"
+            return continent
+    return "其他"
+
+
+def _generate_multiphase_synthesis(
+    items,
+    expert_items,
+    insights_block,
+    language,
+    format_options,
+    multiphase_groups,
+    status_callback=None,
+):
+    """
+    Multi-phase report generation:
+      1. Group items by source group
+      2. Generate a focused sub-report (~600-900 words) for each group
+      3. Synthesise all sub-reports into one final strategic briefing
+    """
+    from utils.ai_briefing import generate_sub_briefing
+
+    def _cb(event, detail=None, *args):
+        if status_callback:
+            try:
+                status_callback(event, detail, *args)
+            except Exception:
+                pass
+
+    language_label = _normalize_language_label(language)
+    format_options = format_options or _load_format_options()
+
+    # ── 1. Group items ──────────────────────────────────────────────────
+    news_items = [i for i in items if i.get("source_type") != "expert"]
+    all_groups: dict[str, list] = {}
+    for item in news_items:
+        key = _get_item_source_group(item)
+        all_groups.setdefault(key, []).append(item)
+
+    # If caller specified groups, filter; empty list = all groups
+    if multiphase_groups:
+        selected_groups = {k: v for k, v in all_groups.items() if k in multiphase_groups}
+    else:
+        selected_groups = all_groups
+
+    # ── 2. Generate sub-reports ─────────────────────────────────────────
+    sub_reports: list[tuple[str, str]] = []
+    eligible = [(k, v) for k, v in selected_groups.items() if len(v) >= 2]
+    total_g = len(eligible)
+
+    for done, (group_key, group_items) in enumerate(eligible, 1):
+        group_name_zh = _MULTIPHASE_GROUP_ZH.get(group_key, group_key)
+        _cb("stage", f"📝 子報告 {done}/{total_g}：{group_name_zh}（{len(group_items)} 篇）…")
+
+        news_lines = []
+        for idx, item in enumerate(group_items[:50], 1):
+            title   = (item.get("title") or "").strip()
+            source  = (item.get("source") or "").strip()
+            summary = (item.get("summary") or item.get("content") or "").strip()[:700]
+            if title:
+                news_lines.append(f"{idx}. [{source}] {title}")
+                if summary:
+                    news_lines.append(f"   {summary}")
+                news_lines.append("")
+
+        sub_prompt = (
+            f"以下是來自【{group_name_zh}】的新聞條目，"
+            f"請根據這些內容撰寫分析子報告：\n\n"
+            + "\n".join(news_lines)
+        )
+
+        try:
+            sub_text = generate_sub_briefing(
+                sub_prompt, group_name=group_name_zh, language=language_label
+            )
+            sub_reports.append((group_name_zh, sub_text))
+            _cb("stage", f"✅ 子報告完成 {done}/{total_g}：{group_name_zh}")
+        except Exception as e:
+            print(f"[Multiphase] Sub-report failed for {group_name_zh}: {e}")
+
+    if not sub_reports:
+        return "No news items found.", []
+
+    # ── 3. Build expert blocks (same as generate_report) ────────────────
+    expert_names = list({
+        it["expert"] for it in expert_items
+        if isinstance(it, dict) and it.get("expert")
+    })
+    has_expert_data = bool(expert_names)
+    expert_data_lines = []
+    if has_expert_data:
+        expert_data_lines.append("Expert Analysis Data:")
+        for en in expert_names:
+            this_items = [it for it in expert_items if it.get("expert") == en]
+            expert_data_lines.append(f"\n[{en}]")
+            for i, ei in enumerate(this_items[:5], 1):
+                t = (ei.get("title") or "").strip()
+                s = (ei.get("summary") or "").strip()
+                if t:
+                    expert_data_lines.append(f"  {i}. {t}")
+                if s:
+                    expert_data_lines.append(f"     {s[:300]}")
+    expert_data_block = "\n".join(expert_data_lines)
+
+    expert_section = "\n七、研析"
+    expert_guidance = "- 本期無專家資料，請省略「專家研析」章節。"
+    if has_expert_data:
+        expert_section = (
+            "\n七、專家研析\n1. 國際情勢解讀\n2. 台美中情勢解讀\n\n八、研析"
+        )
+        expert_guidance = (
+            f"- 「專家研析」必須引用 Expert Analysis Data 中具名專家"
+            f"（{', '.join(expert_names)}）的實際觀點，並標注是哪位專家的看法。"
+            "若某專家無明確觀點可引用，請省略該專家。勿憑空虛構專家言論。"
+        )
+
+    sub_reports_block = "\n\n".join(
+        f"═══ {name} ═══\n{text}" for name, text in sub_reports
+    )
+
+    _cb("stage", f"🤖 AI 綜整 {len(sub_reports)} 份子報告，生成最終簡報…")
+
+    # ── 4. Synthesis prompt ─────────────────────────────────────────────
+    synthesis_prompt = f"""
+You are a senior strategic intelligence analyst.
+
+Write a polished strategic intelligence briefing in {language_label}.
+The output must read like a real analytical report, not like bullet-point news notes.
+
+You have received sub-reports from {len(sub_reports)} regional analyst teams.
+Use ONLY the information in these sub-reports as your source material.
+
+Requirements:
+1. Write in formal report style with coherent paragraphs.
+2. Do NOT place URLs anywhere in the body text.
+3. Do NOT write source names in brackets such as [DW.com], [Reuters.com], [BBC].
+4. Synthesize information across sub-reports into broader strategic analysis.
+5. Identify cross-regional patterns, escalating trends, and strategic implications.
+6. Whenever you mention a media outlet, always name it specifically — never use vague terms like "歐洲媒體", "西方媒體", "美國媒體". Write the actual outlet name with both Chinese and English on first mention, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）.
+7. Whenever you mention a person, always include their specific title or role immediately before their name. Use conventionally established Chinese name forms. Follow with the person's full English name in parentheses on first mention. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄（Fumio Kishida）.
+8. Whenever you mention a non-media organization for the first time, include both its Chinese and English names in parentheses, e.g. 北大西洋公約組織（NATO）、歐盟委員會（European Commission）.
+
+Output structure:
+【戰略情報簡報】
+
+一、摘要
+
+二、國際要聞
+
+三、台美中要聞
+
+四、台灣國安要聞
+
+五、中國要聞
+
+六、區域情勢
+（一）亞太地區
+1. 區域要聞（僅在有亞太地區相關新聞時撰寫，否則省略）
+2. 台灣與中國相關要聞（僅在有亞太地區涉台涉中新聞時撰寫，否則省略）
+
+（二）亞西地區
+1. 區域要聞（僅在有亞西地區相關新聞時撰寫，否則省略）
+2. 台灣與中國相關要聞（僅在有亞西地區涉台涉中新聞時撰寫，否則省略）
+
+（三）北美地區
+1. 區域要聞（僅在有北美地區相關新聞時撰寫，否則省略）
+2. 台灣與中國相關要聞（僅在有北美地區涉台涉中新聞時撰寫，否則省略）
+
+（四）拉丁美洲及加勒比海
+1. 區域要聞（僅在有拉丁美洲相關新聞時撰寫，否則省略）
+2. 台灣與中國相關要聞（僅在有拉丁美洲涉台涉中新聞時撰寫，否則省略）
+
+（五）歐洲地區
+1. 區域要聞（僅在有歐洲地區相關新聞時撰寫，否則省略）
+2. 台灣與中國相關要聞（僅在有歐洲地區涉台涉中新聞時撰寫，否則省略）
+
+（六）非洲地區
+1. 區域要聞（僅在有非洲地區相關新聞時撰寫，否則省略）
+2. 台灣與中國相關要聞（僅在有非洲地區涉台涉中新聞時撰寫，否則省略）
+{expert_section}
+
+Writing guidance:
+- 「摘要」請用一小段說明本期最重要判斷。
+- 「國際要聞」聚焦全球戰略層次的重要發展。
+- 「台美中要聞」聚焦台灣、美國、中國三角互動及其戰略意涵。
+- 「台灣國安要聞」聚焦軍事、灰帶、資安、國防、國安治理等。
+- 「中國要聞」聚焦中國政治、外交、軍事、經濟、對外作為。
+- 「區域情勢」各區域的子段只在有明確對應新聞時才撰寫，若無相關新聞請直接省略，不要寫「無相關新聞」。
+{expert_guidance}
+- 「研析」請提出跨章節的整體判斷、風險、趨勢、可能後續觀察重點。
+
+Strategic Context:
+{insights_block or "None"}
+
+Sub-reports from regional analyst teams:
+{sub_reports_block}
+{("Expert Analysis Data:\n" + expert_data_block) if has_expert_data else ""}
+"""
+
+    client = _get_openai_client()
+    response = client.responses.create(model="gpt-4.1-mini", input=synthesis_prompt)
+    report = response.output_text
+
+    report = re.sub(r'\[\s*(?!S\d+\s*\])([A-Za-z][^\]]{0,40})\]', '', report)
+    report = re.sub(r'[ \t]+', ' ', report)
+
+    return report, items
+
+
 def generate_report(
     start_time,
     end_time,
@@ -1337,6 +1596,7 @@ def generate_report(
     format_options=None,
     topic=None,
     status_callback=None,
+    multiphase_groups=None,
 ):
     """
     status_callback(event, detail, *args) 是可選的 UI 回呼，格式：
@@ -1501,6 +1761,18 @@ def generate_report(
         return "No news items found.", []
 
     format_options = format_options or _load_format_options()
+
+    # ── 多段生成模式分支 ─────────────────────────────────────────────────
+    if multiphase_groups is not None:
+        return _generate_multiphase_synthesis(
+            items=items,
+            expert_items=expert_items,
+            insights_block=insights_block,
+            language=language,
+            format_options=format_options,
+            multiphase_groups=multiphase_groups,
+            status_callback=status_callback,
+        )
 
     # 先建 source_map，再傳給 news_data_block，讓每篇新聞旁邊標 [Sx]
     source_map = _build_citation_source_map(items, max_sources=12)

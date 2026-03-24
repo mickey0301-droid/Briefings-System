@@ -80,6 +80,8 @@ def default_schedule():
         "output_formats": ["docx"],
         "output_targets": ["local"],
         "google_drive_folder_id": "",
+        "report_mode": "single",
+        "multiphase_groups": [],
     }
 
 
@@ -620,6 +622,12 @@ def try_generate_report_via_report_engine(schedule, context):
     fn = report_engine.generate_report
     sig = inspect.signature(fn)
 
+    # multiphase_groups: None = single mode, list = multi-phase (empty list = all groups)
+    _report_mode = schedule.get("report_mode", "single")
+    _multiphase_groups = (
+        schedule.get("multiphase_groups") or []
+    ) if _report_mode == "multi_phase" else None
+
     arg_candidates = {
         "schedule": schedule,
         "config": schedule,
@@ -643,6 +651,7 @@ def try_generate_report_via_report_engine(schedule, context):
         "insights": context["insights_text"],
         "start_time": context["start_time"],
         "end_time": context["end_time"],
+        "multiphase_groups": _multiphase_groups,
     }
 
     kwargs = {}
