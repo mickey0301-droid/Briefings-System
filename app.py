@@ -1,9 +1,16 @@
 import inspect
 from datetime import datetime, timedelta, time
 from pathlib import Path
+import pytz
 
 import pandas as pd
 import streamlit as st
+
+TW_TZ = pytz.timezone("Asia/Taipei")
+
+def now_tw() -> datetime:
+    """回傳台灣時間（naive datetime，去除 tzinfo 以便與現有程式碼相容）"""
+    return datetime.now(TW_TZ).replace(tzinfo=None)
 
 # ── 背景排程器（每 60 秒檢查一次到期排程） ──────────────────────────────
 # 必須在其他 import 之前啟動，且使用 st.cache_resource 確保只啟動一次
@@ -61,7 +68,7 @@ st.caption("本機版 AI 情報簡報系統")
 # Helpers
 # =========================================================
 def _now_str():
-    return datetime.now().strftime("%Y%m%d_%H%M%S")
+    return now_tw().strftime("%Y%m%d_%H%M%S")
 
 
 def _clean_batch_df(df: pd.DataFrame):
@@ -311,7 +318,7 @@ def _parse_hhmm(text: str):
 
 
 def _next_daily_runs(daily_times, count=5):
-    now = datetime.now()
+    now = now_tw()
     candidates = []
     base_date = now.date()
 
@@ -331,7 +338,7 @@ def _next_daily_runs(daily_times, count=5):
 
 
 def _next_interval_runs(interval_hours, window_start, window_end, count=5):
-    now = datetime.now()
+    now = now_tw()
     interval_hours = max(1, int(interval_hours))
     candidates = []
 
@@ -430,7 +437,7 @@ tab_briefings, tab_insights, tab_sources, tab_formats, tab_automation, tab_repor
 with tab_briefings:
     st.subheader("手動生成與一鍵輸出")
 
-    now = datetime.now()
+    now = now_tw()
     default_start = now - timedelta(hours=24)
     default_end = now
 
@@ -1557,7 +1564,7 @@ with tab_automation:
             if mode == "once":
                 s["once_datetime"] = st.text_input(
                     "指定時間（YYYY-MM-DD HH:MM）",
-                    value=s.get("once_datetime", datetime.now().strftime("%Y-%m-%d %H:%M")),
+                    value=s.get("once_datetime", now_tw().strftime("%Y-%m-%d %H:%M")),
                     key=f"once_{selected_idx}",
                 )
 
@@ -1707,19 +1714,25 @@ with tab_automation:
     # -------------------------
     st.markdown("### Next Runs Preview")
 
-    preview_rows = []
-    for s in config.get("schedules", []):
-        runs = compute_next_runs(s, 5)
-        preview_rows.append({
-            "name": s.get("name", ""),
-            "mode": s.get("schedule_mode", ""),
-            "next_5_runs": "\n".join([dt.strftime("%Y-%m-%d %H:%M") for dt in runs]) if runs else "-",
-        })
-
-    if preview_rows:
-        st.dataframe(pd.DataFrame(preview_rows), use_container_width=True)
-    else:
+    preview_schedules = config.get("schedules", [])
+    if not preview_schedules:
         st.info("目前沒有排程可預覽。")
+    else:
+        for _pi, _ps in enumerate(preview_schedules):
+            _runs = compute_next_runs(_ps, 5)
+            _runs_str = "、".join([dt.strftime("%m/%d %H:%M") for dt in _runs]) if _runs else "—"
+            _mode = _ps.get("schedule_mode", "")
+            _pname = _ps.get("name", f"排程 {_pi+1}")
+
+            _pc1, _pc2 = st.columns([5, 1])
+            with _pc1:
+                st.markdown(f"**{_pname}**　`{_mode}`")
+                st.caption(f"接下來：{_runs_str}")
+            with _pc2:
+                if st.button("✏️ 編輯", key=f"preview_edit_{_pi}", use_container_width=True):
+                    st.session_state.automation_selected_index = _pi
+                    st.rerun()
+            st.divider()
 
 
 # =========================================================

@@ -12,8 +12,14 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
+import pytz
 
 import streamlit as st
+
+TW_TZ = pytz.timezone("Asia/Taipei")
+
+def now_tw() -> datetime:
+    return datetime.now(TW_TZ).replace(tzinfo=None)
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +36,7 @@ def _tick() -> None:
             return
 
         state = load_auto_export_state()
-        now = datetime.now()
+        now = now_tw()
 
         for schedule in config.get("schedules", []):
             try:
