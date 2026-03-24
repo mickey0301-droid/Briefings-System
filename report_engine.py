@@ -227,11 +227,16 @@ def _parse_rss(xml_text):
         pub_date = (item.findtext("pubDate") or "").strip()
         description = (item.findtext("description") or "").strip()
 
+        # Google News RSS 的 <source url="https://cna.com.tw">中央社</source>
+        src_elem = item.find("source")
+        source_publisher_url = src_elem.get("url", "") if src_elem is not None else ""
+
         items.append({
             "title": title,
             "url": link,
             "published": pub_date,
             "summary": description,
+            "source_publisher_url": source_publisher_url,
         })
     return items
 
@@ -427,112 +432,152 @@ def _fetch_domain_items(domain, source_name, limit=20, start_time=None, end_time
 
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections import defaultdict
+
+
+def _domains_match(a: str, b: str) -> bool:
+    """比對兩個 domain 是否屬於同一個網站（忽略 www. 前綴）。"""
+    a = (a or "").lower().replace("www.", "")
+    b = (b or "").lower().replace("www.", "")
+    return bool(a and b and (a == b or a.endswith("." + b) or b.endswith("." + a)))
+
+
+def _build_gnews_keyword_url(keywords: str, when_str: str = "") -> str:
+    """
+    建立 Google News RSS 純關鍵字查詢 URL（不加 site:）。
+    Google News RSS 對 site: operator 支援極差，改由 source_publisher_url 在 client 端過濾。
+    """
+    query = keywords
+    if when_str:
+        query += f" {when_str}"
+    return f"https://news.google.com/rss/search?q={quote(query)}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
+
 
 def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_source=20,
                               start_time=None, end_time=None, status_callback=None):
     """
-    從各來源抓取新聞條目。
-    start_time / end_time 會傳入 domain 類來源（Google News RSS），
-    確保查詢結果已在 Google 端預先依日期篩選，減少漏抓問題。
-    status_callback(msg: str) 若提供，會在每個來源完成時被呼叫。
+    抓取流程：
+    1. 按類別分組，每個類別用關鍵字向 Google News RSS 查詢（不加 site:）
+       → Google News RSS 的 site: operator 幾乎無效，改為純關鍵字搜尋
+    2. 根據每筆結果的 <source url="..."> 比對是否屬於使用者設定的來源 domain
+    3. 符合 domain 的文章才保留，並附上來源 metadata
+    cn_official 不走此流程，由 generate_report() 的專屬爬蟲處理。
     """
 
     normalized_sources = _normalize_selected_sources(selected_sources, all_sources=all_sources)
-    total = len(normalized_sources)
-    all_items = []
-
-    # 每次抓取時動態載入關鍵字設定，讓使用者在 UI 修改後立即生效
     category_keywords = load_category_keywords()
 
-    def fetch_single(src):
-        """
-        所有來源統一走 Google News RSS 搜尋：
-          site:{domain} ({keywords}) after:{date} before:{date}
+    # 計算時間範圍對應的 when: 參數
+    when_str = ""
+    if start_time and end_time:
+        hours = max(1, int((end_time - start_time).total_seconds() / 3600))
+        if hours <= 6:
+            when_str = "when:6h"
+        elif hours <= 24:
+            when_str = "when:1d"
+        elif hours <= 72:
+            when_str = "when:3d"
+        elif hours <= 168:
+            when_str = "when:7d"
 
-        - 自訂專家：關鍵字 = "專家名稱" AND (類別關鍵字)
-        - 其他類別：關鍵字 = 類別關鍵字（由使用者在 Sources 頁面設定）
-        - cn_official：由 generate_report() 中的專屬爬蟲處理，此處略過
-        """
-        name = src.get("name", "Unknown Source")
-
-        # cn_official 不走 Google News
+    # 按類別分組（略過 cn_official）
+    cat_sources: dict = defaultdict(list)
+    for src in normalized_sources:
         if src.get("type") == "cn_official":
-            return name, []
-
-        # 從 url 欄位萃取 Google News 可用的 domain
-        # _extract_news_domain 會自動去除 feeds./rss. 等 feed 服務前綴
-        url = src.get("url", "")
-        domain = src.get("domain") or src.get("site") or _extract_news_domain(url)
-
-        if not domain:
-            # feedburner 等第三方 feed 服務無法取得原始 domain，改直接抓 RSS
-            if url and src.get("type") == "rss":
-                print(f"[Briefings] {name}: 無法取得 domain（可能是第三方 feed），改直接抓 RSS")
-                items_fallback = _fetch_rss_items(url, name, limit=limit_per_source)
-                return name, items_fallback
-            print(f"[Briefings] Source skipped (no domain): {name}")
-            return name, []
-
-        # 決定關鍵字
+            continue
         cats = src.get("category", []) or []
         if isinstance(cats, str):
             cats = [cats]
-
-        domain_keywords = None
         for cat in cats:
-            cat_kw = category_keywords.get(cat, "")
-            if cat == "自訂專家":
-                # 專家名稱本身為主關鍵字，搭配類別關鍵字
-                expert_name = name.strip()
-                if expert_name and cat_kw:
-                    domain_keywords = f'"{expert_name}" AND ({cat_kw})'
-                elif expert_name:
-                    domain_keywords = f'"{expert_name}"'
-                else:
-                    domain_keywords = cat_kw or None
-                break
-            elif cat_kw:
-                domain_keywords = cat_kw
-                break
+            cat_sources[cat].append(src)
 
-        source_items = _fetch_domain_items(
-            domain, name, limit=limit_per_source,
-            start_time=start_time, end_time=end_time,
-            keywords=domain_keywords,
-        )
+    # 每個類別對應的 domain 集合（含 www. 變體）
+    cat_domains: dict = {}
+    for cat, srcs in cat_sources.items():
+        domains = {}  # domain → src
+        for s in srcs:
+            url = s.get("url", "")
+            d = s.get("domain") or s.get("site") or _extract_news_domain(url) or ""
+            if d:
+                d_clean = d.lower().replace("www.", "")
+                domains[d_clean] = s
+        cat_domains[cat] = domains
 
-        enriched_items = []
-        for item in source_items:
-            enriched = dict(item)
-            enriched["source_region"] = src.get("region", "")
-            enriched["source_category"] = src.get("category", []) or []
-            enriched["source_description"] = src.get("description", "")
-            enriched["source_type"] = src.get("type", enriched.get("source_type", "rss"))
-            enriched_items.append(enriched)
-
-        return name, enriched_items
-
+    all_items = []
+    total = len(cat_sources)
     completed = 0
-    with ThreadPoolExecutor(max_workers=10) as executor:
 
-        futures = {executor.submit(fetch_single, src): src for src in normalized_sources}
+    def fetch_category(cat_info):
+        cat, srcs = cat_info
 
+        # 自訂專家：每個專家各查一次（名字 + 類別關鍵字）
+        if cat == "自訂專家":
+            items_out = []
+            base_kw = category_keywords.get(cat, "")
+            for src in srcs:
+                expert_name = src.get("name", "").strip()
+                if not expert_name:
+                    continue
+                kw = f'"{expert_name}"'
+                if base_kw:
+                    kw += f" {base_kw}"
+                rss_url = _build_gnews_keyword_url(kw, when_str)
+                fetched = _fetch_rss_items(rss_url, expert_name, limit=limit_per_source)
+                for item in fetched:
+                    item["source"] = expert_name
+                    item["source_category"] = [cat]
+                    item["source_region"] = src.get("region", "")
+                    item["source_type"] = "gnews"
+                items_out.extend(fetched)
+            return cat, items_out
+
+        # 其他類別：一次查詢，client 端過濾 domain
+        kw = category_keywords.get(cat, "")
+        if not kw:
+            return cat, []
+
+        rss_url = _build_gnews_keyword_url(kw, when_str)
+        fetched = _fetch_rss_items(rss_url, cat, limit=100)
+
+        domains_map = cat_domains.get(cat, {})
+        items_out = []
+        for item in fetched:
+            pub_url = item.get("source_publisher_url", "")
+            pub_domain = (pub_url.replace("https://", "").replace("http://", "")
+                          .split("/")[0].lower().replace("www.", ""))
+            matched_src = domains_map.get(pub_domain)
+            if matched_src is None:
+                # fuzzy: check if any configured domain ends/starts with pub_domain
+                for cd, s in domains_map.items():
+                    if _domains_match(pub_domain, cd):
+                        matched_src = s
+                        break
+            if matched_src:
+                item["source"] = matched_src.get("name", cat)
+                item["source_category"] = [cat]
+                item["source_region"] = matched_src.get("region", "")
+                item["source_type"] = "gnews"
+                items_out.append(item)
+
+        return cat, items_out
+
+    with ThreadPoolExecutor(max_workers=6) as executor:
+        futures = {executor.submit(fetch_category, item): item
+                   for item in cat_sources.items()}
         for future in as_completed(futures):
             try:
-                name, items = future.result()
+                cat, items = future.result()
                 all_items.extend(items)
                 completed += 1
-                if status_callback and items:
-                    status_callback(
-                        f"rss",
-                        f"{name}：{len(items)} 篇",
-                        completed, total, len(all_items),
-                    )
-                elif status_callback:
-                    status_callback("rss_progress", None, completed, total, len(all_items))
+                if status_callback:
+                    if items:
+                        status_callback("rss", f"{cat}：{len(items)} 篇",
+                                        completed, total, len(all_items))
+                    else:
+                        status_callback("rss_progress", None, completed, total, len(all_items))
             except Exception as e:
                 completed += 1
-                print("Fetch error:", e)
+                print(f"[Briefings] fetch_category error: {e}")
 
     return all_items
 
