@@ -1054,41 +1054,33 @@ elif selected_page == "Sources":
             if st.button("🔬 測試抓取", key="test_tw_fetch", use_container_width=True):
                 st.session_state["show_tw_test"] = True
         if st.session_state.get("show_tw_test"):
-            with st.spinner("測試抓取中..."):
-                import requests as _req
-                import xml.etree.ElementTree as _ET
-                from urllib.parse import quote as _q
+            with st.spinner("測試抓取中（走正式 pipeline）..."):
+                import report_engine as _re
                 _now = datetime.now()
-                _diag = []
-                for _src in tw_sources[:3]:
-                    _url = _src.get("url", "")
-                    _rss = _src.get("rss") or _src.get("rss_url") or (_url if _url.startswith("http") else None)
-                    if not _rss:
-                        _dom = _url.lower().replace("www.", "")
-                        _q_str = f"(台灣 OR 中國 OR 中共) site:{_dom} when:1d"
-                        _rss = f"https://news.google.com/rss/search?q={_q(_q_str, safe=':/')}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
-                    try:
-                        _r = _req.get(_rss, headers={"User-Agent": "Mozilla/5.0"}, timeout=12)
-                        _ct = _r.headers.get("content-type", "?")
-                        _preview = _r.text[:200].replace("\n", " ")
-                        try:
-                            _root = _ET.fromstring(_r.text)
-                            _n = len(_root.findall(".//item"))
-                        except:
-                            _n = -1
-                        _diag.append((_src["name"], _rss, _r.status_code, _ct, _n, _preview, None))
-                    except Exception as _e:
-                        _diag.append((_src["name"], _rss, None, None, 0, "", str(_e)))
-            st.markdown("**診斷結果（前 3 個來源）：**")
-            for _name, _rss_url, _status, _ct, _n, _preview, _err in _diag:
-                if _err:
-                    st.error(f"**{_name}** → ❌ 錯誤：{_err}")
-                else:
-                    _icon = "✅" if _n > 0 else "⚠️"
-                    st.markdown(f"**{_name}** {_icon} HTTP {_status} | `{_ct}` | **{_n} 篇**")
-                st.code(_rss_url, language=None)
-                if _preview:
-                    st.caption(f"回應預覽：{_preview[:150]}")
+                _start = _now - timedelta(hours=24)
+                _diag = [_re.debug_fetch_source(_src, start_time=_start, end_time=_now)
+                         for _src in tw_sources[:3]]
+            st.markdown("**診斷結果（與正式報告走完全相同路徑）：**")
+            for _d in _diag:
+                _icon = "✅" if _d["items_parsed"] > 0 else ("❌" if _d["error"] else "⚠️")
+                st.markdown(
+                    f"{_icon} **{_d['name']}** &nbsp;·&nbsp; "
+                    f"type=`{_d['src_type']}` &nbsp;·&nbsp; "
+                    f"HTTP `{_d['http_status']}` &nbsp;·&nbsp; "
+                    f"**{_d['items_parsed']} 篇**"
+                )
+                if _d["error"]:
+                    st.error(_d["error"])
+                with st.expander("詳細", expanded=_d["items_parsed"] == 0):
+                    st.write(f"**原始 url：** `{_d['original_url']}`")
+                    st.write(f"**抽出 domain：** `{_d['domain_extracted']}`")
+                    st.write(f"**content-type：** `{_d['content_type']}`")
+                    st.write(f"**回應長度：** {_d['response_len']} 字元")
+                    st.code(_d["rss_url"], language=None)
+                    if _d["response_preview"]:
+                        st.caption(f"回應前 300 字：{_d['response_preview'][:300]}")
+                    for _it in _d["items"][:3]:
+                        st.markdown(f"- {_it.get('title','')[:80]}　`{_it.get('published','')[:20]}`")
             st.session_state["show_tw_test"] = False
 
     # ── 自訂國際媒體 ──────────────────────────────────────────────────────────

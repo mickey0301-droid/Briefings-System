@@ -589,6 +589,76 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
 
     return all_items
 
+
+def debug_fetch_source(src: dict, start_time=None, end_time=None) -> dict:
+    """
+    對單一來源執行完整診斷：走與正式 pipeline 完全相同的路徑，
+    回傳包含 HTTP status、content-type、rss_url、parsed items 等詳細資訊的 dict。
+    供 Sources 頁面的「測試抓取」按鈕使用。
+    """
+    category_keywords = load_category_keywords()
+
+    src_type  = src.get("type", "rss")
+    url_field = src.get("url", "")
+    cats      = src.get("category", []) or []
+    if isinstance(cats, str):
+        cats = [cats]
+    cat = cats[0] if cats else ""
+
+    # ── 決定 rss_url（與 fetch_single 完全相同邏輯） ──
+    rss_url = None
+    domain_used = None
+
+    if src_type == "rss":
+        rss_url = (
+            src.get("rss") or src.get("rss_url")
+            or src.get("feed") or src.get("feed_url")
+        )
+        if not rss_url and url_field.startswith("http"):
+            rss_url = url_field
+
+    if not rss_url:
+        domain_used = (src.get("domain") or src.get("site")
+                       or _extract_news_domain(url_field) or url_field)
+        if domain_used:
+            domain_used = domain_used.lower().replace("www.", "")
+        cat_kw = category_keywords.get(cat, "")
+        rss_url = _build_google_news_rss_for_domain(
+            domain_used or "", start_time=start_time, end_time=end_time, keywords=cat_kw
+        )
+
+    # ── 發出 HTTP 請求，收集診斷資訊 ──
+    result = {
+        "name": src.get("name", "?"),
+        "src_type": src_type,
+        "original_url": url_field,
+        "domain_extracted": domain_used,
+        "rss_url": rss_url,
+        "http_status": None,
+        "content_type": None,
+        "response_len": 0,
+        "response_preview": "",
+        "items_parsed": 0,
+        "items": [],
+        "error": None,
+    }
+
+    try:
+        r = requests.get(rss_url, headers={"User-Agent": USER_AGENT}, timeout=12)
+        result["http_status"]    = r.status_code
+        result["content_type"]   = r.headers.get("content-type", "?")
+        result["response_len"]   = len(r.text)
+        result["response_preview"] = r.text[:300].replace("\n", " ")
+
+        parsed = _parse_rss(r.text)
+        result["items_parsed"] = len(parsed)
+        result["items"] = parsed[:5]
+    except Exception as e:
+        result["error"] = str(e)
+
+    return result
+
+
 from email.utils import parsedate_to_datetime
 
 def _parse_published_datetime(value):
