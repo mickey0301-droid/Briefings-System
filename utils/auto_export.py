@@ -4,6 +4,15 @@ from copy import deepcopy
 from pathlib import Path
 from datetime import datetime, timedelta
 
+try:
+    import pytz
+    _TW_TZ = pytz.timezone("Asia/Taipei")
+    def _now_tw():
+        return datetime.now(_TW_TZ).replace(tzinfo=None)
+except Exception:
+    def _now_tw():
+        return datetime.now()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = BASE_DIR / "config"
 OUTPUT_DIR = BASE_DIR / "output"
@@ -450,18 +459,37 @@ def filter_items_by_schedule(items, selected_categories, selected_names):
 # =========================================================
 # 匯出工具
 # =========================================================
-def export_text_to_docx(text, output_path: Path, title="Briefing Report"):
+def export_text_to_docx(text, output_path: Path, title="公情綜整簡報",
+                        start_time=None, end_time=None):
     try:
         from docx import Document
+        from docx.shared import Pt
+        from docx.enum.text import WD_ALIGN_PARAGRAPH
     except Exception as e:
         raise RuntimeError(f"python-docx 未安裝或不可用：{e}")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     doc = Document()
-    doc.add_heading(title, level=1)
+
+    # 標題
+    heading = doc.add_heading(title, level=1)
+    heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    # 時間區間（若有提供）
+    if start_time and end_time:
+        fmt = "%Y-%m-%d %H:%M"
+        time_range = f"{start_time.strftime(fmt)} ～ {end_time.strftime(fmt)}"
+        p = doc.add_paragraph(time_range)
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        for run in p.runs:
+            run.font.size = Pt(10)
+
+    doc.add_paragraph("")  # 空行隔開
+
     for para in text.split("\n"):
         doc.add_paragraph(para)
+
     doc.save(str(output_path))
     return str(output_path)
 
@@ -633,7 +661,7 @@ def run_schedule_job(schedule):
             schedule.get("selected_expert_names", []),
         )
 
-        end_time = datetime.now()
+        end_time = _now_tw()
         start_time = end_time - timedelta(hours=int(schedule.get("coverage_hours", 24)))
 
         context = {
@@ -660,7 +688,12 @@ def run_schedule_job(schedule):
 
         if "docx" in schedule.get("output_formats", []):
             docx_path = OUTPUT_DIR / f"{base_name}.docx"
-            files.append(export_text_to_docx(report_text, docx_path, title=schedule["name"]))
+            files.append(export_text_to_docx(
+                report_text, docx_path,
+                title="公情綜整簡報",
+                start_time=start_time,
+                end_time=end_time,
+            ))
             dr, de = upload_to_google_drive_if_needed(str(docx_path), schedule)
             if dr:
                 drive_results.append(dr.get("webViewLink", "已上傳"))
