@@ -1362,8 +1362,8 @@ with tab_automation:
     def _new_schedule():
         return {
             "name": f"Briefing {len(config['schedules']) + 1}",
-            "schedule_mode": "daily",
-            "once_datetime": "",
+            "schedule_mode": "once",
+            "once_datetime": now_tw().strftime("%Y-%m-%d %H:%M"),
             "hourly_interval_hours": 4,
             "daily_times": ["09:00"],
             "weekly_days": [0],
@@ -1415,8 +1415,8 @@ with tab_automation:
     if not table_rows:
         table_rows = [{
             "name": "",
-            "schedule_mode": "daily",
-            "time_or_interval": "",
+            "schedule_mode": "once",
+            "time_or_interval": now_tw().strftime("%Y-%m-%d %H:%M"),
             "language": "繁體中文",
             "profile": "default",
             "format_name": "default",
