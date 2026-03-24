@@ -71,7 +71,8 @@ Requirements:
 
 3. CRITICAL — Citation preservation: The input news items carry citation codes such as [S1], [S2], [S3] etc. Whenever you state a fact drawn from a specific item, append its citation code immediately after the relevant sentence, e.g. "...報導指出。[S3]". NEVER omit, renumber, alter, or invent [Sx] codes. These codes are the sole link to the source bibliography.
 4. Do NOT place raw URLs anywhere in the body text.
-5. MANDATORY — People: full official title + conventionally established Chinese name（English full name）on first mention. E.g. 美國總統川普（Donald Trump）、日本首相岸田文雄（Fumio Kishida）.
+5. MANDATORY — People: full official title + Chinese name on first mention, followed by English/romanised name in parentheses. For Japanese, Korean, and Vietnamese names, add romanised form in square brackets after Chinese characters: e.g. 日本首相岸田文雄[Kishida Fumio]（Fumio Kishida）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）、越南總書記阮富仲[Nguyễn Phú Trọng]（Nguyễn Phú Trọng）. Western figures: surname only, e.g. 美國總統川普（Donald Trump）.
+5a. MANDATORY — Expert names in 七、專家研析: render expert/analyst names in bold (**Name**) with full title and affiliation on first mention.
 6. MANDATORY — Media outlets: never use vague collective terms like "西方媒體"、"外媒". Use the specific outlet name with Chinese and English on first mention, e.g. 路透社（Reuters）、德國之聲（Deutsche Welle）.
 7. MANDATORY — Organizations: Chinese name（English Name）on first mention, e.g. 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）.
 8. Begin directly with 一、國際要聞. Do not write a preamble or title.

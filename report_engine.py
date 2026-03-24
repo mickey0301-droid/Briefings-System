@@ -123,6 +123,103 @@ def _rank_by_coverage(items: list, top_n: int = 30) -> list:
 
     return result
 
+
+def _select_diverse_topics(
+    items: list,
+    n_topics: int = 4,
+    articles_per_topic: int = 2,
+) -> list:
+    """
+    在一個章節的文章池中，找出被最多來源報導的前 n_topics 個不同議題，
+    每個議題取 articles_per_topic 篇代表文章。
+
+    目的：避免某章節全部文章都在講同一件事，確保每章涵蓋 3-4 個獨立議題。
+
+    做法與 _rank_by_coverage 相似——用標題關鍵字（≥3 字元、排除停用詞）建立
+    議題群組，按群組大小（即有多少文章報導該議題）降序排列，依序取代表文章，
+    直到達到 n_topics 個議題或已無更多文章為止。
+    """
+    from collections import defaultdict
+
+    _STOP = {
+        "the","a","an","in","on","at","to","for","of","and","or",
+        "is","are","was","were","be","been","has","have","had",
+        "it","its","this","that","with","as","by","from","about",
+        "after","before","over","says","say","said","will","would",
+        "could","his","her","their","our","we","he","she","they",
+        "not","no","new","more","one","two","three","also","than",
+    }
+
+    def _key(title: str) -> frozenset:
+        words = re.findall(r"[a-zA-Z\u4e00-\u9fff]{3,}", title.lower())
+        return frozenset(w for w in words if w not in _STOP)
+
+    # ── 1. 用標題關鍵字把文章分群 ──────────────────────────────────────────
+    clusters: dict = defaultdict(list)
+    singletons: list = []  # 標題無法解析的文章，最後補位用
+
+    for item in items:
+        k = _key(item.get("title", ""))
+        if k:
+            clusters[k].append(item)
+        else:
+            singletons.append(item)
+
+    # ── 2. 先嘗試合併「高度重疊」的小群（共用 ≥ 2/3 的關鍵字） ────────────
+    merged: list[list] = []
+    used: set = set()
+    sorted_keys = sorted(clusters.keys(), key=lambda k: len(clusters[k]), reverse=True)
+
+    for ki in sorted_keys:
+        if id(ki) in used:
+            continue
+        group = list(clusters[ki])
+        used.add(id(ki))
+        for kj in sorted_keys:
+            if id(kj) in used:
+                continue
+            # 重疊度：共同詞 / 較小集合大小
+            if ki and kj:
+                overlap = len(ki & kj) / max(len(ki), len(kj), 1)
+                if overlap >= 0.5:
+                    group.extend(clusters[kj])
+                    used.add(id(kj))
+        merged.append(group)
+
+    # 按群組大小排序（大群 = 被多來源報導）
+    merged.sort(key=len, reverse=True)
+
+    # ── 3. 從前 n_topics 個議題各取 articles_per_topic 篇 ─────────────────
+    result: list = []
+    seen_urls: set = set()
+
+    for cluster in merged[:n_topics]:
+        count = 0
+        for item in cluster:
+            if count >= articles_per_topic:
+                break
+            url = (item.get("original_url") or item.get("url") or "").lower().strip()
+            title = (item.get("title") or "").lower().strip()
+            key = url or title
+            if key and key not in seen_urls:
+                seen_urls.add(key)
+                result.append(item)
+                count += 1
+
+    # ── 4. 若結果不足 n_topics，用 singletons 補位 ─────────────────────────
+    for item in singletons:
+        if len(result) >= n_topics * articles_per_topic:
+            break
+        url = (item.get("original_url") or item.get("url") or "").lower().strip()
+        title = (item.get("title") or "").lower().strip()
+        key = url or title
+        if key and key not in seen_urls:
+            seen_urls.add(key)
+            result.append(item)
+
+    return result
+
+
 import requests
 import xml.etree.ElementTree as ET
 from urllib.parse import quote
@@ -1262,17 +1359,20 @@ def _group_items_for_report(items):
         else:
             groups["區域情勢"][region]["區域要聞"].append(item)
 
-    groups["國際要聞"] = _dedupe_items(groups["國際要聞"], limit=12)
-    groups["台美中要聞"] = _dedupe_items(groups["台美中要聞"], limit=8)
-    groups["台灣國安要聞"] = _dedupe_items(groups["台灣國安要聞"], limit=8)
-    groups["中國要聞"] = _dedupe_items(groups["中國要聞"], limit=8)
+    # 各章節：選出被最多來源報導的前 4 個不同議題，每議題取 2 篇
+    # → 每章最多 8 篇，但涵蓋至少 3-4 個獨立話題
+    groups["國際要聞"]   = _select_diverse_topics(groups["國際要聞"],   n_topics=4, articles_per_topic=2)
+    groups["台美中要聞"] = _select_diverse_topics(groups["台美中要聞"], n_topics=4, articles_per_topic=2)
+    groups["台灣國安要聞"] = _select_diverse_topics(groups["台灣國安要聞"], n_topics=4, articles_per_topic=2)
+    groups["中國要聞"]   = _select_diverse_topics(groups["中國要聞"],   n_topics=4, articles_per_topic=2)
 
     for region in REGION_ORDER:
-        groups["區域情勢"][region]["區域要聞"] = _dedupe_items(
-            groups["區域情勢"][region]["區域要聞"], limit=6
+        # 區域情勢：各子節選 3 個議題，每議題 1 篇（資料較少，保持精簡）
+        groups["區域情勢"][region]["區域要聞"] = _select_diverse_topics(
+            groups["區域情勢"][region]["區域要聞"], n_topics=3, articles_per_topic=1
         )
-        groups["區域情勢"][region]["台灣與中國相關要聞"] = _dedupe_items(
-            groups["區域情勢"][region]["台灣與中國相關要聞"], limit=6
+        groups["區域情勢"][region]["台灣與中國相關要聞"] = _select_diverse_topics(
+            groups["區域情勢"][region]["台灣與中國相關要聞"], n_topics=3, articles_per_topic=1
         )
 
     return groups
@@ -1467,8 +1567,11 @@ def _generate_multiphase_synthesis(
         group_name_zh = _MULTIPHASE_GROUP_ZH.get(group_key, group_key)
         _cb("stage", f"📝 子報告 {done}/{total_g}：{group_name_zh}（{len(group_items)} 篇）…")
 
+        # 在群組內選出最多來源報導的 4 個不同議題（每議題取 2 篇），
+        # 確保子報告涵蓋多元話題而非集中於同一事件
+        diverse_items = _select_diverse_topics(group_items, n_topics=4, articles_per_topic=2)
         # Build structured news block WITH [Sx] codes so citations survive synthesis
-        news_block = _format_item_block(group_name_zh, group_items[:50], item_to_sx)
+        news_block = _format_item_block(group_name_zh, diverse_items, item_to_sx)
 
         sub_prompt = (
             f"以下是來自【{group_name_zh}】的新聞條目（每條已標注引用代碼 [S1][S2]... 請在報告中保留這些代碼）：\n\n"
@@ -1543,7 +1646,8 @@ Requirements:
 5. Identify cross-regional patterns, escalating trends, and strategic implications.
 6. CRITICAL — Citation codes [S1][S2][S3]... are embedded in the sub-reports. You MUST preserve every [Sx] code exactly as it appears — do NOT renumber, merge, drop, or invent any [Sx] marker. When you incorporate a fact from a sub-report that has a citation code, carry that exact code into the synthesis text. These codes are the only link to the source bibliography and must NOT be lost.
 7. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
-8. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English name in parentheses. Format: [Title][Chinese name]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄（Fumio Kishida）、韓國總統尹錫悅（Yoon Suk-yeol）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
+8. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name in Chinese characters (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English/romanised name in parentheses. ADDITIONAL RULE for Japanese, Korean, and Vietnamese names: after the Chinese characters, add the romanised form in square brackets, e.g. 岸田文雄[Kishida Fumio]、尹錫悅[Yoon Suk-yeol]、阮富仲[Nguyễn Phú Trọng]. Format: [Title][Chinese name][Romanised]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄[Kishida Fumio]（Fumio Kishida）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）、越南國家主席阮富仲[Nguyễn Phú Trọng]（Nguyễn Phú Trọng）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
+9a. MANDATORY — Expert names: whenever an expert or analyst is cited in 七、專家研析, render their name in bold (**Name**) and include their full title and affiliation on first mention. E.g. **美國智庫戰略與國際研究中心（CSIS）資深研究員王大維（David Wang）**。
 9. MANDATORY — Organizations and institutions: On first mention, always provide both Chinese and English names. Format: Chinese name（English Name）. Examples: 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）、美國在台協會（American Institute in Taiwan, AIT）. This rule has NO exceptions.
 
 Output structure:
@@ -1871,7 +1975,8 @@ Requirements:
 10. Only use source markers that exist in the provided News data.
 11. Keep citations light and readable. Do not attach a citation to every single sentence unless necessary.
 12. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
-13. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English name in parentheses. Format: [Title][Chinese name]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄（Fumio Kishida）、韓國總統尹錫悅（Yoon Suk-yeol）、美國國防部長奧斯汀（Lloyd Austin）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
+13. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name in Chinese characters (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English/romanised name in parentheses. ADDITIONAL RULE for Japanese, Korean, and Vietnamese names: after the Chinese characters, add the romanised form in square brackets, e.g. 岸田文雄[Kishida Fumio]、尹錫悅[Yoon Suk-yeol]、阮富仲[Nguyễn Phú Trọng]. Format: [Title][Chinese name][Romanised]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄[Kishida Fumio]（Fumio Kishida）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）、越南國家主席阮富仲[Nguyễn Phú Trọng]（Nguyễn Phú Trọng）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
+13a. MANDATORY — Expert names: whenever an expert or analyst is cited in 七、專家研析, render their name in bold (**Name**) and include their full title and affiliation on first mention. E.g. **美國智庫戰略與國際研究中心（CSIS）資深研究員王大維（David Wang）**。
 14. MANDATORY — Organizations and institutions: On first mention, always provide both Chinese and English names. Format: Chinese name（English Name）. Examples: 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）、美國在台協會（American Institute in Taiwan, AIT）、中華民國國防部（Ministry of National Defense, ROC）. This rule has NO exceptions.
 
 Output structure:
