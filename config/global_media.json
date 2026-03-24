@@ -8,7 +8,8 @@
     "type": "報紙",
     "domain": "theaustralian.com.au",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.theaustralian.com.au/feed"
   },
   {
     "name": "The Australian Financial Review",
@@ -19,7 +20,8 @@
     "type": "報紙",
     "domain": "afr.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.afr.com/rss"
   },
   {
     "name": "Sydney Morning Herald",
@@ -30,7 +32,11 @@
     "type": "報紙",
     "domain": "smh.com.au",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.smh.com.au/rss/feed.xml",
+    "rss_extra": [
+      "https://www.smh.com.au/rss/world.xml"
+    ]
   },
   {
     "name": "The Age",
@@ -41,7 +47,8 @@
     "type": "報紙",
     "domain": "theage.com.au",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.theage.com.au/rss/feed.xml"
   },
   {
     "name": "The West Australian",
@@ -52,7 +59,8 @@
     "type": "報紙",
     "domain": "thewest.com.au",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://thewest.com.au/rss"
   },
   {
     "name": "ABC (Australian Broadcasting Corporation)",
@@ -63,7 +71,11 @@
     "type": "電視/廣播",
     "domain": "abc.net.au",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.abc.net.au/news/feed/45910/rss.xml",
+    "rss_extra": [
+      "https://www.abc.net.au/news/feed/51120/rss.xml"
+    ]
   },
   {
     "name": "SBS",
@@ -74,7 +86,8 @@
     "type": "電視/廣播",
     "domain": "sbs.com.au",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://news.sbs.co.kr/news/RSS.do"
   },
   {
     "name": "Seven Network",
@@ -85,7 +98,8 @@
     "type": "電視",
     "domain": "7news.com.au",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://7news.com.au/news.rss"
   },
   {
     "name": "Nine Network",
@@ -96,7 +110,8 @@
     "type": "電視",
     "domain": "9now.com.au",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.9news.com.au/feed"
   },
   {
     "name": "Network Ten",
@@ -107,7 +122,8 @@
     "type": "電視",
     "domain": "10play.com.au",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://10daily.com.au/feed"
   },
   {
     "name": "The Daily Star",
@@ -118,7 +134,11 @@
     "type": "報紙",
     "domain": "thedailystar.net",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thedailystar.net/rss.xml",
+    "rss_extra": [
+      "https://www.thedailystar.net/news/world/rss.xml"
+    ]
   },
   {
     "name": "New Age",
@@ -129,7 +149,8 @@
     "type": "報紙",
     "domain": "newagebd.net",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.newagebd.net/rss.xml"
   },
   {
     "name": "Daily Sun",
@@ -140,7 +161,8 @@
     "type": "報紙",
     "domain": "daily-sun.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.daily-sun.com/rss"
   },
   {
     "name": "Prothom Alo",
@@ -151,7 +173,8 @@
     "type": "報紙",
     "domain": "prothomalo.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.prothomalo.com/feed"
   },
   {
     "name": "Bangladesh Television (BTV)",
@@ -195,7 +218,8 @@
     "type": "報紙",
     "domain": "kuenselonline.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://kuenselonline.com/feed/"
   },
   {
     "name": "The Bhutanese",
@@ -206,7 +230,8 @@
     "type": "報紙",
     "domain": "thebhutanese.bt",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://thebhutanese.bt/feed/"
   },
   {
     "name": "Borneo Bulletin",
@@ -217,7 +242,8 @@
     "type": "報紙",
     "domain": "borneobulletin.com.bn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://borneobulletin.com.bn/feed/"
   },
   {
     "name": "Media Permata",
@@ -250,7 +276,8 @@
     "type": "報紙",
     "domain": "khmertimeskh.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.khmertimeskh.com/feed/"
   },
   {
     "name": "The Phnom Penh Post",
@@ -261,7 +288,8 @@
     "type": "報紙",
     "domain": "phnompenhpost.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.phnompenhpost.com/rss.xml"
   },
   {
     "name": "Cambodia Daily",
@@ -272,7 +300,8 @@
     "type": "報紙",
     "domain": "english.cambodiadaily.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://english.cambodiadaily.com/feed/"
   },
   {
     "name": "Cook Islands News",
@@ -283,7 +312,8 @@
     "type": "報紙",
     "domain": "cookislandsnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.cookislandsnews.com/feed/"
   },
   {
     "name": "Korean Central News Agency (KCNA)",
@@ -294,7 +324,8 @@
     "type": "通訊社",
     "domain": "kcna.kp",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://kcna.kp/rss/"
   },
   {
     "name": "Rodong Sinmun",
@@ -349,7 +380,8 @@
     "type": "報紙",
     "domain": "fijitimes.com.fj",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.fijitimes.com.fj/feed/"
   },
   {
     "name": "Fiji Sun",
@@ -360,7 +392,8 @@
     "type": "報紙",
     "domain": "fijisun.com.fj",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://fijisun.com.fj/feed/"
   },
   {
     "name": "Fiji Broadcasting Corporation (FBC)",
@@ -371,7 +404,8 @@
     "type": "電視/廣播",
     "domain": "fbcnews.com.fj",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.fbcnews.com.fj/feed/"
   },
   {
     "name": "Fiji TV",
@@ -393,7 +427,12 @@
     "type": "報紙",
     "domain": "timesofindia.indiatimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+    "rss_extra": [
+      "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
+      "https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms"
+    ]
   },
   {
     "name": "The Hindu",
@@ -404,7 +443,11 @@
     "type": "報紙",
     "domain": "thehindu.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thehindu.com/feeder/default.rss",
+    "rss_extra": [
+      "https://www.thehindu.com/news/international/feeder/default.rss"
+    ]
   },
   {
     "name": "Hindustan Times",
@@ -415,7 +458,11 @@
     "type": "報紙",
     "domain": "hindustantimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml",
+    "rss_extra": [
+      "https://www.hindustantimes.com/feeds/rss/world-news/rssfeed.xml"
+    ]
   },
   {
     "name": "Indian Express",
@@ -426,7 +473,11 @@
     "type": "報紙",
     "domain": "indianexpress.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://indianexpress.com/feed/",
+    "rss_extra": [
+      "https://indianexpress.com/section/world/feed/"
+    ]
   },
   {
     "name": "NDTV",
@@ -437,7 +488,11 @@
     "type": "電視",
     "domain": "ndtv.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.feedburner.com/ndtvnews-top-stories",
+    "rss_extra": [
+      "https://www.ndtv.com/rss/feeds"
+    ]
   },
   {
     "name": "Antara News Agency",
@@ -448,7 +503,8 @@
     "type": "通訊社",
     "domain": "en.antaranews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://en.antaranews.com/rss/latest"
   },
   {
     "name": "TVRI",
@@ -470,7 +526,8 @@
     "type": "電視",
     "domain": "metrotvnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://metrotvnews.com/feed"
   },
   {
     "name": "The Jakarta Post",
@@ -481,7 +538,11 @@
     "type": "報紙",
     "domain": "thejakartapost.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thejakartapost.com/feed",
+    "rss_extra": [
+      "https://www.thejakartapost.com/news/feeds.rss"
+    ]
   },
   {
     "name": "Yomiuri Shimbun",
@@ -492,7 +553,8 @@
     "type": "報紙",
     "domain": "yomiuri.co.jp",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.yomiuri.co.jp/rss/"
   },
   {
     "name": "Asahi Shimbun",
@@ -503,7 +565,8 @@
     "type": "報紙",
     "domain": "asahi.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.asahi.com/rss/asahi/newsheadlines.rdf"
   },
   {
     "name": "Mainichi Shimbun",
@@ -514,7 +577,8 @@
     "type": "報紙",
     "domain": "mainichi.jp",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://mainichi.jp/rss/etc/english.rss"
   },
   {
     "name": "Nikkei",
@@ -525,7 +589,8 @@
     "type": "報紙",
     "domain": "nikkei.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nikkei.com/rss/"
   },
   {
     "name": "Sankei Shimbun",
@@ -536,7 +601,8 @@
     "type": "報紙",
     "domain": "sankei.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.sankei.com/rss/all.xml"
   },
   {
     "name": "NHK",
@@ -547,7 +613,11 @@
     "type": "電視/廣播",
     "domain": "nhk.or.jp",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www3.nhk.or.jp/rss/news/cat0.xml",
+    "rss_extra": [
+      "https://www3.nhk.or.jp/nhkworld/en/news/feeds/"
+    ]
   },
   {
     "name": "TBS Television",
@@ -558,7 +628,8 @@
     "type": "電視",
     "domain": "tbs.co.jp",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://news.tbs.co.jp/rss/news3572380_rss.xml"
   },
   {
     "name": "Nippon TV (NTV)",
@@ -569,7 +640,8 @@
     "type": "電視",
     "domain": "ntv.co.jp",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.news24.jp/rss/news.xml"
   },
   {
     "name": "Fuji TV",
@@ -580,7 +652,8 @@
     "type": "電視",
     "domain": "fujitv.co.jp",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.fnn.jp/rss/"
   },
   {
     "name": "TV Asahi",
@@ -591,7 +664,8 @@
     "type": "電視",
     "domain": "tv-asahi.co.jp",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://news.tv-asahi.co.jp/rss/"
   },
   {
     "name": "TV Tokyo",
@@ -613,7 +687,8 @@
     "type": "網路媒體",
     "domain": "islandsbusiness.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://islandsbusiness.com/feed/"
   },
   {
     "name": "Pasaxon (People's Daily)",
@@ -635,7 +710,8 @@
     "type": "報紙",
     "domain": "vientianetimes.org.la",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.vientianetimes.org.la/feed"
   },
   {
     "name": "Sin Chew Daily",
@@ -646,7 +722,8 @@
     "type": "報紙",
     "domain": "sinchew.com.my",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.sinchew.com.my/feed/"
   },
   {
     "name": "China Press",
@@ -657,7 +734,8 @@
     "type": "報紙",
     "domain": "chinapress.com.my",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.chinapress.com.my/feed/"
   },
   {
     "name": "Nanyang Siang Pau",
@@ -668,7 +746,8 @@
     "type": "報紙",
     "domain": "nanyang.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nanyang.com/rss"
   },
   {
     "name": "The Star",
@@ -679,7 +758,12 @@
     "type": "報紙",
     "domain": "thestar.com.my",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thestar.com.my/rss/News/Nation",
+    "rss_extra": [
+      "https://www.thestar.com.my/rss/News/World",
+      "https://www.thestar.com.my/rss/Business"
+    ]
   },
   {
     "name": "New Straits Times",
@@ -690,7 +774,8 @@
     "type": "報紙",
     "domain": "nst.com.my",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nst.com.my/rss"
   },
   {
     "name": "Bernama",
@@ -701,7 +786,8 @@
     "type": "通訊社",
     "domain": "bernama.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.bernama.com/en/rss/index.php"
   },
   {
     "name": "Astro",
@@ -734,7 +820,8 @@
     "type": "報紙",
     "domain": "marshallislandsjournal.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://marshallislandsjournal.com/feed/"
   },
   {
     "name": "The Kaselehlie Press",
@@ -745,7 +832,8 @@
     "type": "報紙",
     "domain": "kaselehlie.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.kaselehlie.com/feed/"
   },
   {
     "name": "Global New Light of Myanmar",
@@ -756,7 +844,8 @@
     "type": "報紙",
     "domain": "gnlm.com.mm",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.gnlm.com.mm/feed/"
   },
   {
     "name": "Eleven Daily",
@@ -767,7 +856,8 @@
     "type": "報紙",
     "domain": "elevenmyanmar.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.elevenmyanmar.com/rss.xml"
   },
   {
     "name": "Myanmar Radio and Television (MRTV)",
@@ -789,7 +879,11 @@
     "type": "網路媒體",
     "domain": "irrawaddy.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.irrawaddy.com/feed",
+    "rss_extra": [
+      "https://www.irrawaddy.com/news/burma/feed"
+    ]
   },
   {
     "name": "Democratic Voice of Burma (DVB)",
@@ -800,7 +894,8 @@
     "type": "網路媒體",
     "domain": "dvb.no",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://english.dvb.no/feed/"
   },
   {
     "name": "Mizzima",
@@ -811,7 +906,8 @@
     "type": "網路媒體",
     "domain": "mizzima.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://mizzima.com/rss.xml"
   },
   {
     "name": "The Kathmandu Post",
@@ -822,7 +918,8 @@
     "type": "報紙",
     "domain": "kathmandupost.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://kathmandupost.com/rss"
   },
   {
     "name": "The Rising Nepal",
@@ -833,7 +930,8 @@
     "type": "報紙",
     "domain": "risingnepaldaily.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://risingnepaldaily.com/feed/"
   },
   {
     "name": "Nepal Television Corporation (NTV)",
@@ -855,7 +953,8 @@
     "type": "電視",
     "domain": "tvnz.co.nz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.tvnz.co.nz/content/tvnz/rss.rss"
   },
   {
     "name": "New Zealand Herald",
@@ -866,7 +965,11 @@
     "type": "報紙",
     "domain": "nzherald.co.nz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nzherald.co.nz/arc/outboundfeeds/rss/section/nz-news/",
+    "rss_extra": [
+      "https://www.nzherald.co.nz/arc/outboundfeeds/rss/section/world/"
+    ]
   },
   {
     "name": "The Post (Wellington)",
@@ -877,7 +980,8 @@
     "type": "報紙",
     "domain": "thepost.co.nz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thepost.co.nz/rss/feed.xml"
   },
   {
     "name": "Radio New Zealand (RNZ)",
@@ -888,7 +992,12 @@
     "type": "廣播",
     "domain": "rnz.co.nz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rnz.co.nz/rss/news.xml",
+    "rss_extra": [
+      "https://www.rnz.co.nz/rss/national.xml",
+      "https://www.rnz.co.nz/rss/world.xml"
+    ]
   },
   {
     "name": "The Niue Star",
@@ -910,7 +1019,8 @@
     "type": "報紙",
     "domain": "islandtimes.org",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://islandtimes.org/feed/"
   },
   {
     "name": "The National",
@@ -921,7 +1031,11 @@
     "type": "報紙",
     "domain": "thenational.com.pg",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thenationalnews.com/feed",
+    "rss_extra": [
+      "https://www.thenationalnews.com/world/feed"
+    ]
   },
   {
     "name": "Post Courier",
@@ -932,7 +1046,8 @@
     "type": "報紙",
     "domain": "postcourier.com.pg",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.postcourier.com.pg/feed/"
   },
   {
     "name": "NBC (National Broadcasting Corporation)",
@@ -954,7 +1069,8 @@
     "type": "報紙",
     "domain": "manilatimes.net",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.manilatimes.net/feed"
   },
   {
     "name": "Manila Bulletin",
@@ -965,7 +1081,8 @@
     "type": "報紙",
     "domain": "mb.com.ph",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://mb.com.ph/feed/"
   },
   {
     "name": "Philippine Daily Inquirer",
@@ -976,7 +1093,11 @@
     "type": "報紙",
     "domain": "newsinfo.inquirer.net",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://newsinfo.inquirer.net/feed",
+    "rss_extra": [
+      "https://opinion.inquirer.net/feed"
+    ]
   },
   {
     "name": "The Philippine Star",
@@ -987,7 +1108,8 @@
     "type": "報紙",
     "domain": "philstar.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.philstar.com/rss/headlines"
   },
   {
     "name": "BusinessWorld",
@@ -998,7 +1120,8 @@
     "type": "報紙",
     "domain": "bworldonline.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.bworldonline.com/feed/"
   },
   {
     "name": "Yonhap News Agency",
@@ -1009,7 +1132,12 @@
     "type": "通訊社",
     "domain": "en.yna.co.kr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://en.yna.co.kr/RSS/news.xml",
+    "rss_extra": [
+      "https://en.yna.co.kr/RSS/politics.xml",
+      "https://en.yna.co.kr/RSS/economy.xml"
+    ]
   },
   {
     "name": "Chosun Ilbo",
@@ -1020,7 +1148,8 @@
     "type": "報紙",
     "domain": "chosun.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.chosun.com/arc/outboundfeeds/rss/"
   },
   {
     "name": "Dong-A Ilbo",
@@ -1031,7 +1160,8 @@
     "type": "報紙",
     "domain": "donga.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.donga.com/news/rss"
   },
   {
     "name": "JoongAng Ilbo",
@@ -1042,7 +1172,8 @@
     "type": "報紙",
     "domain": "joongang.co.kr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.joongang.co.kr/feed/rss"
   },
   {
     "name": "Korea Times",
@@ -1053,7 +1184,8 @@
     "type": "報紙",
     "domain": "koreatimes.co.kr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.koreatimes.co.kr/www/rss/rss.xml"
   },
   {
     "name": "Korea Herald",
@@ -1064,7 +1196,8 @@
     "type": "報紙",
     "domain": "koreaherald.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.koreaherald.com/rss_3_00.xml"
   },
   {
     "name": "KBS",
@@ -1075,7 +1208,8 @@
     "type": "電視/廣播",
     "domain": "kbs.co.kr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://world.kbs.co.kr/service/rss_feed.htm?lang=e"
   },
   {
     "name": "MBC",
@@ -1097,7 +1231,8 @@
     "type": "電視",
     "domain": "sbs.co.kr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://news.sbs.co.kr/news/RSS.do"
   },
   {
     "name": "YTN",
@@ -1108,7 +1243,8 @@
     "type": "電視",
     "domain": "ytn.co.kr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.ytn.co.kr/feed/rss"
   },
   {
     "name": "JTBC",
@@ -1119,7 +1255,8 @@
     "type": "電視",
     "domain": "jtbc.co.kr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://news.jtbc.co.kr/rss/NewsRSS.aspx"
   },
   {
     "name": "Arirang TV",
@@ -1130,7 +1267,8 @@
     "type": "電視",
     "domain": "arirang.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.arirang.com/rss/News.rss"
   },
   {
     "name": "Samoa Observer",
@@ -1141,7 +1279,8 @@
     "type": "報紙",
     "domain": "samoaobserver.ws",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.samoaobserver.ws/feed/"
   },
   {
     "name": "The Straits Times",
@@ -1152,7 +1291,11 @@
     "type": "報紙",
     "domain": "straitstimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.straitstimes.com/news/singapore/rss.xml",
+    "rss_extra": [
+      "https://www.straitstimes.com/news/world/rss.xml"
+    ]
   },
   {
     "name": "Lianhe Zaobao",
@@ -1163,7 +1306,8 @@
     "type": "報紙",
     "domain": "zaobao.com.sg",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.zaobao.com.sg/rss/realtime"
   },
   {
     "name": "Channel NewsAsia (CNA)",
@@ -1174,7 +1318,11 @@
     "type": "電視",
     "domain": "channelnewsasia.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml",
+    "rss_extra": [
+      "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml&category=10416"
+    ]
   },
   {
     "name": "SIBC",
@@ -1196,7 +1344,8 @@
     "type": "報紙",
     "domain": "solomonstarnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.solomonstarnews.com/feed/"
   },
   {
     "name": "Sri Lanka Broadcasting Corporation (SLBC)",
@@ -1218,7 +1367,8 @@
     "type": "報紙",
     "domain": "dailymirror.lk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.dailymirror.lk/rss"
   },
   {
     "name": "Bangkok Post",
@@ -1229,7 +1379,12 @@
     "type": "報紙",
     "domain": "bangkokpost.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.bangkokpost.com/rss/data/topstories.xml",
+    "rss_extra": [
+      "https://www.bangkokpost.com/rss/data/world.xml",
+      "https://www.bangkokpost.com/rss/data/business.xml"
+    ]
   },
   {
     "name": "Thairath",
@@ -1240,7 +1395,8 @@
     "type": "報紙",
     "domain": "thairath.co.th",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thairath.co.th/rss/news.xml"
   },
   {
     "name": "Matichon",
@@ -1251,7 +1407,8 @@
     "type": "報紙",
     "domain": "matichon.co.th",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.matichon.co.th/feed"
   },
   {
     "name": "Khaosod English",
@@ -1262,7 +1419,8 @@
     "type": "報紙",
     "domain": "khaosodenglish.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.khaosodenglish.com/feed/"
   },
   {
     "name": "Thai PBS",
@@ -1273,7 +1431,8 @@
     "type": "電視",
     "domain": "thaipbs.or.th",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thaipbs.or.th/news/rss"
   },
   {
     "name": "MCOT",
@@ -1284,7 +1443,8 @@
     "type": "電視/廣播",
     "domain": "mcot.net",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.mcot.net/feed"
   },
   {
     "name": "Tonga Broadcasting Commission",
@@ -1306,7 +1466,8 @@
     "type": "網路媒體",
     "domain": "matangitonga.to",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://matangitonga.to/rss.xml"
   },
   {
     "name": "Daily Post (Vanuatu)",
@@ -1317,7 +1478,8 @@
     "type": "報紙",
     "domain": "dailypost.vu",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.dailypost.vu/feed"
   },
   {
     "name": "VBTC",
@@ -1339,7 +1501,8 @@
     "type": "電視",
     "domain": "vtv.vn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://vtv.vn/rss"
   },
   {
     "name": "Nhan Dan",
@@ -1350,7 +1513,8 @@
     "type": "報紙",
     "domain": "en.nhandan.vn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://en.nhandan.vn/rss"
   },
   {
     "name": "VnExpress",
@@ -1361,7 +1525,11 @@
     "type": "網路媒體",
     "domain": "vnexpress.net",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://vnexpress.net/rss/tin-moi-nhat.rss",
+    "rss_extra": [
+      "https://e.vnexpress.net/rss/news.rss"
+    ]
   },
   {
     "name": "Vietnam News",
@@ -1372,7 +1540,8 @@
     "type": "報紙",
     "domain": "vietnamnews.vn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://vietnamnews.vn/rss"
   },
   {
     "name": "National Television Afghanistan (TOLOnews)",
@@ -1383,7 +1552,8 @@
     "type": "電視",
     "domain": "tolonews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://tolonews.com/rss"
   },
   {
     "name": "Bakhtar News Agency",
@@ -1416,7 +1586,8 @@
     "type": "報紙",
     "domain": "asbarez.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://asbarez.com/feed/"
   },
   {
     "name": "Echo",
@@ -1427,7 +1598,8 @@
     "type": "報紙",
     "domain": "echo.az",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.echo.az/rss.xml"
   },
   {
     "name": "Azadliq",
@@ -1438,7 +1610,8 @@
     "type": "報紙",
     "domain": "azadliq.info",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://azadliq.info/feed/"
   },
   {
     "name": "Gulf Daily News",
@@ -1449,7 +1622,8 @@
     "type": "報紙",
     "domain": "gdnonline.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.gdnonline.com/feed.php"
   },
   {
     "name": "The Daily Tribune",
@@ -1460,7 +1634,8 @@
     "type": "報紙",
     "domain": "dt.bh",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.dt.bh/feed/"
   },
   {
     "name": "Belarus National State TV",
@@ -1482,7 +1657,8 @@
     "type": "通訊社",
     "domain": "eng.belta.by",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://eng.belta.by/rss/"
   },
   {
     "name": "Georgia Today",
@@ -1493,7 +1669,8 @@
     "type": "報紙",
     "domain": "georgiatoday.ge",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://georgiatoday.ge/feed/"
   },
   {
     "name": "Interpressnews",
@@ -1504,7 +1681,8 @@
     "type": "通訊社",
     "domain": "interpressnews.ge",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.interpressnews.ge/ka/rss.xml"
   },
   {
     "name": "Tehran Times",
@@ -1515,7 +1693,8 @@
     "type": "報紙",
     "domain": "tehrantimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.tehrantimes.com/rss"
   },
   {
     "name": "Iran Daily",
@@ -1526,7 +1705,8 @@
     "type": "報紙",
     "domain": "iran-daily.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.iran-daily.com/rss"
   },
   {
     "name": "IRNA (Islamic Republic News Agency)",
@@ -1537,7 +1717,8 @@
     "type": "通訊社",
     "domain": "en.irna.ir",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://en.irna.ir/rss"
   },
   {
     "name": "Al-Sabah",
@@ -1548,7 +1729,8 @@
     "type": "報紙",
     "domain": "alsabaah.iq",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://alsabaah.iq/rss.php"
   },
   {
     "name": "Al-Mada",
@@ -1570,7 +1752,8 @@
     "type": "報紙",
     "domain": "ynet.co.il",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.ynet.co.il/Integration/StoryRss2.xml"
   },
   {
     "name": "The Jerusalem Post",
@@ -1581,7 +1764,12 @@
     "type": "報紙",
     "domain": "jpost.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.jpost.com/rss/rssfeedsfrontpage.aspx",
+    "rss_extra": [
+      "https://www.jpost.com/rss/rssfeedsisrael.aspx",
+      "https://www.jpost.com/rss/rssfeedsmiddleeast.aspx"
+    ]
   },
   {
     "name": "Haaretz",
@@ -1592,7 +1780,8 @@
     "type": "報紙",
     "domain": "haaretz.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.haaretz.com/cmlink/1.628765"
   },
   {
     "name": "Israel Hayom",
@@ -1603,7 +1792,8 @@
     "type": "報紙",
     "domain": "israelhayom.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.israelhayom.com/feed/"
   },
   {
     "name": "The Jordan Times",
@@ -1614,7 +1804,8 @@
     "type": "報紙",
     "domain": "jordantimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.jordantimes.com/rss.xml"
   },
   {
     "name": "Al Rai",
@@ -1647,7 +1838,8 @@
     "type": "通訊社",
     "domain": "inform.kz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.inform.kz/en/rss"
   },
   {
     "name": "Khabar TV",
@@ -1669,7 +1861,8 @@
     "type": "報紙",
     "domain": "kuwaittimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.kuwaittimes.com/feed/"
   },
   {
     "name": "Arab Times",
@@ -1680,7 +1873,8 @@
     "type": "報紙",
     "domain": "arabtimesonline.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.arabtimesonline.com/feed/"
   },
   {
     "name": "Kabar (Kyrgyz National News Agency)",
@@ -1691,7 +1885,8 @@
     "type": "通訊社",
     "domain": "kabar.kg",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://kabar.kg/eng/rss/"
   },
   {
     "name": "The Daily Star Lebanon",
@@ -1713,7 +1908,8 @@
     "type": "報紙",
     "domain": "lorientlejour.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.lorientlejour.com/rss"
   },
   {
     "name": "National News Agency Lebanon",
@@ -1746,7 +1942,8 @@
     "type": "電視",
     "domain": "protv.md",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://protv.md/rss"
   },
   {
     "name": "Montsame (Mongolian News Agency)",
@@ -1757,7 +1954,8 @@
     "type": "通訊社",
     "domain": "montsame.mn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://montsame.mn/en/rss"
   },
   {
     "name": "UB Post",
@@ -1768,7 +1966,8 @@
     "type": "報紙",
     "domain": "theubposts.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://theubposts.com/feed/"
   },
   {
     "name": "MNB (Mongolian National Broadcaster)",
@@ -1790,7 +1989,8 @@
     "type": "通訊社",
     "domain": "omannews.gov.om",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://omannews.gov.om/rss"
   },
   {
     "name": "Oman Daily Observer",
@@ -1801,7 +2001,8 @@
     "type": "報紙",
     "domain": "omanobserver.om",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.omanobserver.om/rss"
   },
   {
     "name": "Times of Oman",
@@ -1812,7 +2013,8 @@
     "type": "報紙",
     "domain": "timesofoman.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://timesofoman.com/rss"
   },
   {
     "name": "Dawn",
@@ -1823,7 +2025,12 @@
     "type": "報紙",
     "domain": "dawn.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.dawn.com/feeds/home",
+    "rss_extra": [
+      "https://www.dawn.com/feeds/world-news",
+      "https://www.dawn.com/feeds/pakistan"
+    ]
   },
   {
     "name": "The News International",
@@ -1834,7 +2041,8 @@
     "type": "報紙",
     "domain": "thenews.com.pk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thenews.com.pk/rss/1/1"
   },
   {
     "name": "Pakistan Television Corporation (PTV)",
@@ -1856,7 +2064,11 @@
     "type": "電視",
     "domain": "aljazeera.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.aljazeera.com/xml/rss/all.xml",
+    "rss_extra": [
+      "https://www.aljazeera.com/xml/rss/AJEnglish.xml"
+    ]
   },
   {
     "name": "Qatar News Agency (QNA)",
@@ -1878,7 +2090,8 @@
     "type": "報紙",
     "domain": "thepeninsulaqatar.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://thepeninsulaqatar.com/feed/"
   },
   {
     "name": "TASS (ITAR-TASS)",
@@ -1889,7 +2102,8 @@
     "type": "通訊社",
     "domain": "tass.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://tass.com/rss/v2.xml"
   },
   {
     "name": "Interfax",
@@ -1900,7 +2114,8 @@
     "type": "通訊社",
     "domain": "interfax.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.interfax.com/newsinf.asp?type=rss"
   },
   {
     "name": "RT (Russia Today)",
@@ -1911,7 +2126,8 @@
     "type": "電視",
     "domain": "rt.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rt.com/rss/news/"
   },
   {
     "name": "Channel One Russia",
@@ -1933,7 +2149,8 @@
     "type": "報紙",
     "domain": "moscowtimes.ru",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.moscowtimes.ru/rss/"
   },
   {
     "name": "Kommersant",
@@ -1944,7 +2161,8 @@
     "type": "報紙",
     "domain": "kommersant.ru",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.kommersant.ru/RSS/main.xml"
   },
   {
     "name": "Saudi Press Agency (SPA)",
@@ -1955,7 +2173,8 @@
     "type": "通訊社",
     "domain": "spa.gov.sa",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.spa.gov.sa/rss"
   },
   {
     "name": "Arab News",
@@ -1966,7 +2185,11 @@
     "type": "報紙",
     "domain": "arabnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.arabnews.com/rss.xml",
+    "rss_extra": [
+      "https://www.arabnews.com/taxonomy/term/2/feed"
+    ]
   },
   {
     "name": "Saudi Gazette",
@@ -1977,7 +2200,8 @@
     "type": "報紙",
     "domain": "saudigazette.com.sa",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.saudigazette.com.sa/rss"
   },
   {
     "name": "Asharq Al-Awsat",
@@ -1988,7 +2212,8 @@
     "type": "報紙",
     "domain": "english.aawsat.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://english.aawsat.com/rss.xml"
   },
   {
     "name": "Syria TV",
@@ -2010,7 +2235,8 @@
     "type": "通訊社",
     "domain": "sana.sy",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://sana.sy/en/?feed=rss2"
   },
   {
     "name": "Khovar (Tajik State News Agency)",
@@ -2032,7 +2258,8 @@
     "type": "網路媒體",
     "domain": "asiaplustj.info",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://asiaplustj.info/en/rss"
   },
   {
     "name": "Anadolu Agency",
@@ -2043,7 +2270,11 @@
     "type": "通訊社",
     "domain": "aa.com.tr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.aa.com.tr/en/rss/default?cat=breaking-news",
+    "rss_extra": [
+      "https://www.aa.com.tr/en/rss/default?cat=world"
+    ]
   },
   {
     "name": "Hurriyet Daily News",
@@ -2054,7 +2285,8 @@
     "type": "報紙",
     "domain": "hurriyetdailynews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.hurriyetdailynews.com/rss"
   },
   {
     "name": "Daily Sabah",
@@ -2065,7 +2297,11 @@
     "type": "報紙",
     "domain": "dailysabah.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.dailysabah.com/feeds/rss",
+    "rss_extra": [
+      "https://www.dailysabah.com/turkey/feed"
+    ]
   },
   {
     "name": "Milliyet",
@@ -2076,7 +2312,8 @@
     "type": "報紙",
     "domain": "milliyet.com.tr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.milliyet.com.tr/rss/"
   },
   {
     "name": "TRT World",
@@ -2087,7 +2324,8 @@
     "type": "電視",
     "domain": "trtworld.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.trtworld.com/rss"
   },
   {
     "name": "WAM (Emirates News Agency)",
@@ -2098,7 +2336,8 @@
     "type": "通訊社",
     "domain": "wam.ae",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://wam.ae/en/feed"
   },
   {
     "name": "Gulf News",
@@ -2109,7 +2348,11 @@
     "type": "報紙",
     "domain": "gulfnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://gulfnews.com/cmlink/rss-home",
+    "rss_extra": [
+      "https://gulfnews.com/cmlink/rss-world"
+    ]
   },
   {
     "name": "The National",
@@ -2120,7 +2363,11 @@
     "type": "報紙",
     "domain": "thenationalnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thenationalnews.com/feed",
+    "rss_extra": [
+      "https://www.thenationalnews.com/world/feed"
+    ]
   },
   {
     "name": "Khaleej Times",
@@ -2131,7 +2378,8 @@
     "type": "報紙",
     "domain": "khaleejtimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.khaleejtimes.com/rss"
   },
   {
     "name": "UzA (Uzbekistan National News Agency)",
@@ -2142,7 +2390,8 @@
     "type": "通訊社",
     "domain": "uza.uz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://uza.uz/en/rss"
   },
   {
     "name": "Uzbekistan National TV",
@@ -2164,7 +2413,8 @@
     "type": "報紙",
     "domain": "yementimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.yementimes.com/rss"
   },
   {
     "name": "Al-Ayyam",
@@ -2186,7 +2436,11 @@
     "type": "報紙",
     "domain": "theglobeandmail.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.theglobeandmail.com/arc/outboundfeeds/rss/",
+    "rss_extra": [
+      "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/canada/"
+    ]
   },
   {
     "name": "National Post",
@@ -2197,7 +2451,11 @@
     "type": "報紙",
     "domain": "nationalpost.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://nationalpost.com/feed/",
+    "rss_extra": [
+      "https://nationalpost.com/category/news/feed/"
+    ]
   },
   {
     "name": "Toronto Star",
@@ -2208,7 +2466,11 @@
     "type": "報紙",
     "domain": "thestar.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thestar.com/content/thestar/feed.RSSManagerServlet.articles.topstories.rss",
+    "rss_extra": [
+      "https://www.thestar.com/content/thestar/feed.RSSManagerServlet.articles.world.rss"
+    ]
   },
   {
     "name": "CBC (Canadian Broadcasting Corporation)",
@@ -2219,7 +2481,12 @@
     "type": "電視/廣播",
     "domain": "cbc.ca",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.cbc.ca/cmlink/rss-topstories",
+    "rss_extra": [
+      "https://www.cbc.ca/cmlink/rss-canada",
+      "https://www.cbc.ca/cmlink/rss-world"
+    ]
   },
   {
     "name": "CTV News",
@@ -2230,7 +2497,8 @@
     "type": "電視",
     "domain": "ctvnews.ca",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.ctvnews.ca/rss/ctvnews-ca-top-stories-public-rss-1.822009"
   },
   {
     "name": "The New York Times",
@@ -2241,7 +2509,13 @@
     "type": "報紙",
     "domain": "nytimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+    "rss_extra": [
+      "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+      "https://rss.nytimes.com/services/xml/rss/nyt/US.xml",
+      "https://rss.nytimes.com/services/xml/rss/nyt/Business.xml"
+    ]
   },
   {
     "name": "The Wall Street Journal",
@@ -2252,7 +2526,12 @@
     "type": "報紙",
     "domain": "wsj.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.a.dj.com/rss/RSSWorldNews.xml",
+    "rss_extra": [
+      "https://feeds.a.dj.com/rss/RSSMarketsMain.xml",
+      "https://feeds.a.dj.com/rss/RSSWSJD.xml"
+    ]
   },
   {
     "name": "USA Today",
@@ -2263,7 +2542,11 @@
     "type": "報紙",
     "domain": "usatoday.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://rssfeeds.usatoday.com/usatoday-NewsTopStories",
+    "rss_extra": [
+      "https://rssfeeds.usatoday.com/usatoday-WorldNews"
+    ]
   },
   {
     "name": "The Washington Post",
@@ -2274,7 +2557,12 @@
     "type": "報紙",
     "domain": "washingtonpost.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.washingtonpost.com/rss/national",
+    "rss_extra": [
+      "https://feeds.washingtonpost.com/rss/world",
+      "https://feeds.washingtonpost.com/rss/business"
+    ]
   },
   {
     "name": "Los Angeles Times",
@@ -2285,7 +2573,11 @@
     "type": "報紙",
     "domain": "latimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.latimes.com/world-nation/rss2.0.xml",
+    "rss_extra": [
+      "https://www.latimes.com/california/rss2.0.xml"
+    ]
   },
   {
     "name": "CNN",
@@ -2296,7 +2588,12 @@
     "type": "電視",
     "domain": "cnn.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "http://rss.cnn.com/rss/edition.rss",
+    "rss_extra": [
+      "http://rss.cnn.com/rss/edition_world.rss",
+      "http://rss.cnn.com/rss/edition_us.rss"
+    ]
   },
   {
     "name": "Fox News",
@@ -2307,7 +2604,11 @@
     "type": "電視",
     "domain": "foxnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://moxie.foxnews.com/google-publisher/latest.xml",
+    "rss_extra": [
+      "https://moxie.foxnews.com/google-publisher/world.xml"
+    ]
   },
   {
     "name": "NBC News",
@@ -2318,7 +2619,8 @@
     "type": "電視",
     "domain": "nbcnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.nbcnews.com/nbcnews/public/news"
   },
   {
     "name": "AP (Associated Press)",
@@ -2329,7 +2631,12 @@
     "type": "通訊社",
     "domain": "apnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.apnews.com/apf-topnews",
+    "rss_extra": [
+      "https://feeds.apnews.com/apf-intlnews",
+      "https://feeds.apnews.com/apf-business"
+    ]
   },
   {
     "name": "Bloomberg",
@@ -2340,7 +2647,11 @@
     "type": "網路媒體",
     "domain": "bloomberg.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.bloomberg.com/markets/news.rss",
+    "rss_extra": [
+      "https://feeds.bloomberg.com/technology/news.rss"
+    ]
   },
   {
     "name": "Clarin",
@@ -2351,7 +2662,8 @@
     "type": "報紙",
     "domain": "clarin.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.clarin.com/rss/lo-ultimo/"
   },
   {
     "name": "La Nación",
@@ -2362,7 +2674,8 @@
     "type": "報紙",
     "domain": "lanacion.com.ar",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.lanacion.com.ar/arc/outboundfeeds/rss/"
   },
   {
     "name": "Infobae",
@@ -2373,7 +2686,8 @@
     "type": "網路媒體",
     "domain": "infobae.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.infobae.com/feeds/rss/"
   },
   {
     "name": "Folha de São Paulo",
@@ -2384,7 +2698,8 @@
     "type": "報紙",
     "domain": "folha.uol.com.br",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.folha.uol.com.br/folha/rss091.xml"
   },
   {
     "name": "O Estado de São Paulo",
@@ -2395,7 +2710,8 @@
     "type": "報紙",
     "domain": "estadao.com.br",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.estadao.com.br/rss/ultimas.xml"
   },
   {
     "name": "O Globo",
@@ -2406,7 +2722,8 @@
     "type": "報紙",
     "domain": "oglobo.globo.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://oglobo.globo.com/rss.xml"
   },
   {
     "name": "TV Globo",
@@ -2417,7 +2734,8 @@
     "type": "電視",
     "domain": "g1.globo.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://g1.globo.com/rss/g1/"
   },
   {
     "name": "El Mercurio",
@@ -2428,7 +2746,8 @@
     "type": "報紙",
     "domain": "emol.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.emol.com/rss/"
   },
   {
     "name": "La Tercera",
@@ -2439,7 +2758,8 @@
     "type": "報紙",
     "domain": "latercera.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.latercera.com/feed/"
   },
   {
     "name": "CNN Chile",
@@ -2450,7 +2770,8 @@
     "type": "電視",
     "domain": "cnnchile.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.cnnchile.com/feed/"
   },
   {
     "name": "El Tiempo",
@@ -2461,7 +2782,8 @@
     "type": "報紙",
     "domain": "eltiempo.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.eltiempo.com/rss/"
   },
   {
     "name": "El Espectador",
@@ -2472,7 +2794,8 @@
     "type": "報紙",
     "domain": "elespectador.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.elespectador.com/rss/"
   },
   {
     "name": "Caracol Radio",
@@ -2483,7 +2806,8 @@
     "type": "廣播",
     "domain": "caracol.com.co",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://caracol.com.co/feed/"
   },
   {
     "name": "La Nación (Costa Rica)",
@@ -2494,7 +2818,8 @@
     "type": "報紙",
     "domain": "nacion.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nacion.com/feed/"
   },
   {
     "name": "Prensa Latina",
@@ -2505,7 +2830,8 @@
     "type": "通訊社",
     "domain": "prensa-latina.cu",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.prensa-latina.cu/rss/index.php"
   },
   {
     "name": "Granma",
@@ -2516,7 +2842,8 @@
     "type": "報紙",
     "domain": "granma.cu",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.granma.cu/feed.rss"
   },
   {
     "name": "El Universo",
@@ -2527,7 +2854,8 @@
     "type": "報紙",
     "domain": "eluniverso.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.eluniverso.com/rss/"
   },
   {
     "name": "Teleamazonas",
@@ -2538,7 +2866,8 @@
     "type": "電視",
     "domain": "teleamazonas.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.teleamazonas.com/feed/"
   },
   {
     "name": "La Prensa Gráfica",
@@ -2549,7 +2878,8 @@
     "type": "報紙",
     "domain": "laprensagrafica.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.laprensagrafica.com/feed/"
   },
   {
     "name": "El Diario de Hoy",
@@ -2560,7 +2890,8 @@
     "type": "報紙",
     "domain": "elsalvador.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.elsalvador.com/feed/"
   },
   {
     "name": "Prensa Libre",
@@ -2571,7 +2902,8 @@
     "type": "報紙",
     "domain": "prensalibre.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.prensalibre.com/feed/"
   },
   {
     "name": "Le Nouvelliste",
@@ -2593,7 +2925,8 @@
     "type": "報紙",
     "domain": "laprensa.hn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.laprensa.hn/feed/"
   },
   {
     "name": "El Heraldo",
@@ -2604,7 +2937,8 @@
     "type": "報紙",
     "domain": "elheraldo.hn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.elheraldo.hn/feed/"
   },
   {
     "name": "Reforma",
@@ -2626,7 +2960,8 @@
     "type": "報紙",
     "domain": "eluniversal.com.mx",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.eluniversal.com.mx/rss.xml"
   },
   {
     "name": "Televisa",
@@ -2637,7 +2972,8 @@
     "type": "電視",
     "domain": "televisa.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://noticieros.televisa.com/rss/"
   },
   {
     "name": "Proceso",
@@ -2648,7 +2984,8 @@
     "type": "報紙",
     "domain": "proceso.com.mx",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.proceso.com.mx/feed/"
   },
   {
     "name": "La Prensa (Nicaragua)",
@@ -2659,7 +2996,8 @@
     "type": "報紙",
     "domain": "laprensa.com.ni",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.laprensa.com.ni/feed/"
   },
   {
     "name": "La Prensa (Panama)",
@@ -2670,7 +3008,8 @@
     "type": "報紙",
     "domain": "prensa.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.prensa.com/feed/"
   },
   {
     "name": "ABC Color",
@@ -2681,7 +3020,8 @@
     "type": "報紙",
     "domain": "abc.com.py",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.abc.com.py/arc/outboundfeeds/rss/"
   },
   {
     "name": "El Comercio (Peru)",
@@ -2692,7 +3032,8 @@
     "type": "報紙",
     "domain": "elcomercio.pe",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://elcomercio.pe/arc/outboundfeeds/rss/"
   },
   {
     "name": "La República (Peru)",
@@ -2703,7 +3044,8 @@
     "type": "報紙",
     "domain": "larepublica.pe",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://larepublica.pe/feed/"
   },
   {
     "name": "Trinidad and Tobago Express",
@@ -2714,7 +3056,8 @@
     "type": "報紙",
     "domain": "trinidadexpress.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.trinidadexpress.com/feed/"
   },
   {
     "name": "CCN TV6",
@@ -2736,7 +3079,8 @@
     "type": "報紙",
     "domain": "elpais.com.uy",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.elpais.com.uy/rss"
   },
   {
     "name": "El Nacional",
@@ -2747,7 +3091,8 @@
     "type": "報紙",
     "domain": "elnacional.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.elnacional.com/feed/"
   },
   {
     "name": "Venezolana de Televisión (VTV)",
@@ -2769,7 +3114,8 @@
     "type": "報紙",
     "domain": "antiguaobserver.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://antiguaobserver.com/feed/"
   },
   {
     "name": "Nassau Guardian",
@@ -2780,7 +3126,8 @@
     "type": "報紙",
     "domain": "thenassauguardian.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thenassauguardian.com/feed/"
   },
   {
     "name": "The Tribune (Bahamas)",
@@ -2791,7 +3138,8 @@
     "type": "報紙",
     "domain": "tribune242.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.tribune242.com/feed/"
   },
   {
     "name": "Nation News Barbados",
@@ -2802,7 +3150,8 @@
     "type": "報紙",
     "domain": "nationnews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nationnews.com/feed/"
   },
   {
     "name": "Amandala",
@@ -2813,7 +3162,8 @@
     "type": "報紙",
     "domain": "amandala.com.bz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://amandala.com.bz/news/feed/"
   },
   {
     "name": "Listín Diario",
@@ -2824,7 +3174,8 @@
     "type": "報紙",
     "domain": "listindiario.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://listindiario.com/feed"
   },
   {
     "name": "Stabroek News",
@@ -2835,7 +3186,8 @@
     "type": "報紙",
     "domain": "stabroeknews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.stabroeknews.com/feed/"
   },
   {
     "name": "Kaieteur News",
@@ -2846,7 +3198,8 @@
     "type": "報紙",
     "domain": "kaieteurnewsonline.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.kaieteurnewsonline.com/feed/"
   },
   {
     "name": "Jamaica Gleaner",
@@ -2857,7 +3210,8 @@
     "type": "報紙",
     "domain": "jamaica-gleaner.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://jamaica-gleaner.com/feed/"
   },
   {
     "name": "La Razón (Bolivia)",
@@ -2879,7 +3233,8 @@
     "type": "網路媒體",
     "domain": "nowgrenada.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nowgrenada.com/feed/"
   },
   {
     "name": "The Searchlight",
@@ -2890,7 +3245,8 @@
     "type": "報紙",
     "domain": "searchlight.vc",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.searchlight.vc/feed/"
   },
   {
     "name": "De Ware Tijd",
@@ -2912,7 +3268,8 @@
     "type": "網路媒體",
     "domain": "albaniandailynews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.albaniandailynews.com/feed/"
   },
   {
     "name": "RTSH (Albanian Radio-Television)",
@@ -2934,7 +3291,8 @@
     "type": "報紙",
     "domain": "diariandorra.ad",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.diariandorra.ad/feed/"
   },
   {
     "name": "Die Presse",
@@ -2945,7 +3303,8 @@
     "type": "報紙",
     "domain": "diepresse.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.diepresse.com/rss/home"
   },
   {
     "name": "Der Standard",
@@ -2956,7 +3315,8 @@
     "type": "報紙",
     "domain": "derstandard.at",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.derstandard.at/rss"
   },
   {
     "name": "ORF",
@@ -2967,7 +3327,8 @@
     "type": "電視/廣播",
     "domain": "orf.at",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://rss.orf.at/news.xml"
   },
   {
     "name": "RTBF",
@@ -2978,7 +3339,8 @@
     "type": "電視/廣播",
     "domain": "rtbf.be",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rtbf.be/feed/"
   },
   {
     "name": "VRT (Vlaamse Radio- en Televisieomroeporganisatie)",
@@ -2989,7 +3351,8 @@
     "type": "電視/廣播",
     "domain": "vrt.be",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.vrt.be/vrtnieuws/nl.rss.xml"
   },
   {
     "name": "De Standaard",
@@ -3000,7 +3363,8 @@
     "type": "報紙",
     "domain": "standaard.be",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.standaard.be/rss/section/GENERAL"
   },
   {
     "name": "Klix.ba",
@@ -3011,7 +3375,8 @@
     "type": "網路媒體",
     "domain": "klix.ba",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.klix.ba/rss"
   },
   {
     "name": "N1 Bosnia",
@@ -3022,7 +3387,8 @@
     "type": "電視",
     "domain": "n1info.ba",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://n1info.ba/feed/"
   },
   {
     "name": "Bulgarian National Television (BNT)",
@@ -3044,7 +3410,8 @@
     "type": "通訊社",
     "domain": "bta.bg",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.bta.bg/en/rss.xml"
   },
   {
     "name": "HTV (Croatian Radiotelevision)",
@@ -3055,7 +3422,8 @@
     "type": "電視/廣播",
     "domain": "hrt.hr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.hrt.hr/rss/vijesti/"
   },
   {
     "name": "HINA (Croatian News Agency)",
@@ -3066,7 +3434,8 @@
     "type": "通訊社",
     "domain": "hina.hr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.hina.hr/rss"
   },
   {
     "name": "Cyprus Mail",
@@ -3077,7 +3446,8 @@
     "type": "報紙",
     "domain": "cyprus-mail.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://cyprus-mail.com/feed/"
   },
   {
     "name": "Sigma TV",
@@ -3099,7 +3469,8 @@
     "type": "電視",
     "domain": "ceskatelevize.cz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://ct24.ceskatelevize.cz/rss"
   },
   {
     "name": "TV Nova",
@@ -3110,7 +3481,8 @@
     "type": "電視",
     "domain": "nova.cz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://tv.nova.cz/rss"
   },
   {
     "name": "MF Dnes",
@@ -3121,7 +3493,8 @@
     "type": "報紙",
     "domain": "idnes.cz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.idnes.cz/zpravy/archiv/rss.aspx?c=2009_01"
   },
   {
     "name": "DR (Danish Broadcasting Corporation)",
@@ -3132,7 +3505,8 @@
     "type": "電視/廣播",
     "domain": "dr.dk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.dr.dk/nyheder/service/feeds/alle"
   },
   {
     "name": "Jyllands-Posten",
@@ -3143,7 +3517,8 @@
     "type": "報紙",
     "domain": "jyllands-posten.dk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://jyllands-posten.dk/feed/"
   },
   {
     "name": "Politiken",
@@ -3154,7 +3529,8 @@
     "type": "報紙",
     "domain": "politiken.dk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://politiken.dk/rss/"
   },
   {
     "name": "ERR (Estonian Public Broadcasting)",
@@ -3165,7 +3541,8 @@
     "type": "電視/廣播",
     "domain": "err.ee",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.err.ee/rss"
   },
   {
     "name": "YLE (Finnish Broadcasting Company)",
@@ -3176,7 +3553,11 @@
     "type": "電視/廣播",
     "domain": "yle.fi",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.yle.fi/uutiset/v1/majorHeadlines/YLE_UUTISET.rss",
+    "rss_extra": [
+      "https://feeds.yle.fi/uutiset/v1/majorHeadlines/YLE_NOVOSTI.rss"
+    ]
   },
   {
     "name": "Helsingin Sanomat",
@@ -3187,7 +3568,8 @@
     "type": "報紙",
     "domain": "hs.fi",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.hs.fi/rss/tuoreimmat.xml"
   },
   {
     "name": "Le Monde",
@@ -3198,7 +3580,11 @@
     "type": "報紙",
     "domain": "lemonde.fr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.lemonde.fr/rss/une.xml",
+    "rss_extra": [
+      "https://www.lemonde.fr/international/rss_full.xml"
+    ]
   },
   {
     "name": "Le Figaro",
@@ -3209,7 +3595,8 @@
     "type": "報紙",
     "domain": "lefigaro.fr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.lefigaro.fr/rss/figaro_actualites.xml"
   },
   {
     "name": "France 24",
@@ -3220,7 +3607,11 @@
     "type": "電視",
     "domain": "france24.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.france24.com/en/rss",
+    "rss_extra": [
+      "https://www.france24.com/fr/rss"
+    ]
   },
   {
     "name": "AFP (Agence France-Presse)",
@@ -3231,7 +3622,8 @@
     "type": "通訊社",
     "domain": "afp.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.afp.com/en/latest-news/feed"
   },
   {
     "name": "Der Spiegel",
@@ -3242,7 +3634,8 @@
     "type": "報紙",
     "domain": "spiegel.de",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.spiegel.de/international/index.rss"
   },
   {
     "name": "Frankfurter Allgemeine Zeitung (FAZ)",
@@ -3253,7 +3646,8 @@
     "type": "報紙",
     "domain": "faz.net",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.faz.net/rss/aktuell/"
   },
   {
     "name": "Süddeutsche Zeitung",
@@ -3264,7 +3658,8 @@
     "type": "報紙",
     "domain": "sueddeutsche.de",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://rss.sueddeutsche.de/rss/TopThemen"
   },
   {
     "name": "Die Welt",
@@ -3275,7 +3670,8 @@
     "type": "報紙",
     "domain": "welt.de",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.welt.de/feeds/latest.rss"
   },
   {
     "name": "ARD (Das Erste)",
@@ -3286,7 +3682,8 @@
     "type": "電視/廣播",
     "domain": "ard.de",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.tagesschau.de/xml/rss2/"
   },
   {
     "name": "ZDF",
@@ -3297,7 +3694,8 @@
     "type": "電視",
     "domain": "zdf.de",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.zdf.de/rss/zdf/nachrichten"
   },
   {
     "name": "Deutsche Welle (DW)",
@@ -3308,7 +3706,11 @@
     "type": "電視/廣播",
     "domain": "dw.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://rss.dw.com/rdf/rss-en-all",
+    "rss_extra": [
+      "https://rss.dw.com/rdf/rss-zh-all"
+    ]
   },
   {
     "name": "ERT (Hellenic Broadcasting Corporation)",
@@ -3319,7 +3721,8 @@
     "type": "電視/廣播",
     "domain": "ert.gr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.ert.gr/feed/"
   },
   {
     "name": "Kathimerini",
@@ -3330,7 +3733,11 @@
     "type": "報紙",
     "domain": "ekathimerini.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.ekathimerini.com/feed/",
+    "rss_extra": [
+      "https://www.kathimerini.gr/feed/"
+    ]
   },
   {
     "name": "Skai TV",
@@ -3341,7 +3748,8 @@
     "type": "電視",
     "domain": "skai.gr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.skai.gr/feed/"
   },
   {
     "name": "L'Osservatore Romano",
@@ -3363,7 +3771,8 @@
     "type": "網路媒體",
     "domain": "vaticannews.va",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.vaticannews.va/en.rss.xml"
   },
   {
     "name": "HVG",
@@ -3374,7 +3783,8 @@
     "type": "報紙",
     "domain": "hvg.hu",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://hvg.hu/rss/friss"
   },
   {
     "name": "Telex.hu",
@@ -3385,7 +3795,8 @@
     "type": "網路媒體",
     "domain": "telex.hu",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://telex.hu/rss"
   },
   {
     "name": "RÚV (Icelandic National Broadcasting Service)",
@@ -3396,7 +3807,8 @@
     "type": "電視/廣播",
     "domain": "ruv.is",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.ruv.is/feed/rss"
   },
   {
     "name": "Morgunbladid",
@@ -3407,7 +3819,8 @@
     "type": "報紙",
     "domain": "mbl.is",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.mbl.is/feeds/og/"
   },
   {
     "name": "RTÉ (Raidió Teilifís Éireann)",
@@ -3418,7 +3831,8 @@
     "type": "電視/廣播",
     "domain": "rte.ie",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rte.ie/news/rss/news-headlines.xml"
   },
   {
     "name": "The Irish Times",
@@ -3429,7 +3843,11 @@
     "type": "報紙",
     "domain": "irishtimes.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.irishtimes.com/cmlink/news-1.1319192",
+    "rss_extra": [
+      "https://www.irishtimes.com/cmlink/world-1.1319194"
+    ]
   },
   {
     "name": "Irish Independent",
@@ -3440,7 +3858,8 @@
     "type": "報紙",
     "domain": "independent.ie",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.independent.ie/feed/"
   },
   {
     "name": "Corriere della Sera",
@@ -3451,7 +3870,8 @@
     "type": "報紙",
     "domain": "corriere.it",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://xml2.corriereobjects.it/rss/homepage.xml"
   },
   {
     "name": "La Repubblica",
@@ -3462,7 +3882,8 @@
     "type": "報紙",
     "domain": "repubblica.it",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.repubblica.it/rss/homepage/rss2.0.xml"
   },
   {
     "name": "RAI",
@@ -3473,7 +3894,8 @@
     "type": "電視/廣播",
     "domain": "rai.it",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rainews.it/rss.html"
   },
   {
     "name": "ANSA",
@@ -3484,7 +3906,8 @@
     "type": "通訊社",
     "domain": "ansa.it",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.ansa.it/sito/notizie/topnews/topnews_rss.xml"
   },
   {
     "name": "RTK (Radio Television of Kosovo)",
@@ -3506,7 +3929,8 @@
     "type": "電視/廣播",
     "domain": "lsm.lv",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.lsm.lv/rss/"
   },
   {
     "name": "LETA (Latvian News Agency)",
@@ -3528,7 +3952,8 @@
     "type": "報紙",
     "domain": "volksblatt.li",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.volksblatt.li/feed/"
   },
   {
     "name": "LRT (Lithuanian National Radio and Television)",
@@ -3539,7 +3964,8 @@
     "type": "電視/廣播",
     "domain": "lrt.lt",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.lrt.lt/rss/news"
   },
   {
     "name": "Delfi Lithuania",
@@ -3550,7 +3976,8 @@
     "type": "網路媒體",
     "domain": "delfi.lt",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.delfi.lt/rss/feeds/news.xml"
   },
   {
     "name": "Luxemburger Wort",
@@ -3561,7 +3988,8 @@
     "type": "報紙",
     "domain": "wort.lu",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.wort.lu/fr/rss/"
   },
   {
     "name": "Luxembourg Times",
@@ -3572,7 +4000,8 @@
     "type": "報紙",
     "domain": "luxtimes.lu",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.luxtimes.lu/rss"
   },
   {
     "name": "Times of Malta",
@@ -3583,7 +4012,8 @@
     "type": "報紙",
     "domain": "timesofmalta.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://timesofmalta.com/feed/rss"
   },
   {
     "name": "Monaco Info",
@@ -3616,7 +4046,8 @@
     "type": "報紙",
     "domain": "vijesti.me",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.vijesti.me/rss"
   },
   {
     "name": "De Telegraaf",
@@ -3627,7 +4058,8 @@
     "type": "報紙",
     "domain": "telegraaf.nl",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.telegraaf.nl/rss"
   },
   {
     "name": "NOS (Dutch Public Broadcasting)",
@@ -3638,7 +4070,8 @@
     "type": "電視/廣播",
     "domain": "nos.nl",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.nos.nl/nosnieuwsalgemeen"
   },
   {
     "name": "MRT (Macedonian Radio-Television)",
@@ -3649,7 +4082,8 @@
     "type": "電視/廣播",
     "domain": "mrt.com.mk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://mrt.com.mk/feed/"
   },
   {
     "name": "NRK (Norwegian Broadcasting Corporation)",
@@ -3660,7 +4094,11 @@
     "type": "電視/廣播",
     "domain": "nrk.no",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nrk.no/toppsaker.rss",
+    "rss_extra": [
+      "https://www.nrk.no/rss/"
+    ]
   },
   {
     "name": "Aftenposten",
@@ -3671,7 +4109,8 @@
     "type": "報紙",
     "domain": "aftenposten.no",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.aftenposten.no/rss/"
   },
   {
     "name": "Gazeta Wyborcza",
@@ -3682,7 +4121,8 @@
     "type": "報紙",
     "domain": "wyborcza.pl",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://wyborcza.pl/feeds.rss"
   },
   {
     "name": "TVN24",
@@ -3693,7 +4133,8 @@
     "type": "電視",
     "domain": "tvn24.pl",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://tvn24.pl/najnowsze.xml"
   },
   {
     "name": "TVP (Polish Television)",
@@ -3704,7 +4145,8 @@
     "type": "電視",
     "domain": "tvp.pl",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://wiadomosci.tvp.pl/rss"
   },
   {
     "name": "RTP (Rádio e Televisão de Portugal)",
@@ -3715,7 +4157,8 @@
     "type": "電視/廣播",
     "domain": "rtp.pt",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rtp.pt/noticias/rss/"
   },
   {
     "name": "Público",
@@ -3726,7 +4169,8 @@
     "type": "報紙",
     "domain": "publico.pt",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.publico.pt/api/rss"
   },
   {
     "name": "Correio da Manhã",
@@ -3737,7 +4181,8 @@
     "type": "報紙",
     "domain": "cmjornal.pt",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.cmjornal.pt/rss"
   },
   {
     "name": "TVR (Romanian Television)",
@@ -3759,7 +4204,8 @@
     "type": "通訊社",
     "domain": "agerpres.ro",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.agerpres.ro/feed"
   },
   {
     "name": "RTS (Radio Television of Serbia)",
@@ -3770,7 +4216,8 @@
     "type": "電視/廣播",
     "domain": "rts.rs",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rts.rs/rss.xml"
   },
   {
     "name": "Politika",
@@ -3781,7 +4228,8 @@
     "type": "報紙",
     "domain": "politika.rs",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.politika.rs/rss/politika.xml"
   },
   {
     "name": "RTVS (Radio and Television of Slovakia)",
@@ -3803,7 +4251,8 @@
     "type": "報紙",
     "domain": "spectator.sme.sk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://spectator.sme.sk/rss/rss.html"
   },
   {
     "name": "RTV Slovenia",
@@ -3814,7 +4263,8 @@
     "type": "電視/廣播",
     "domain": "rtvslo.si",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rtvslo.si/feeds/news.rss"
   },
   {
     "name": "STA (Slovenian Press Agency)",
@@ -3825,7 +4275,8 @@
     "type": "通訊社",
     "domain": "sta.si",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://english.sta.si/feed"
   },
   {
     "name": "El País",
@@ -3836,7 +4287,11 @@
     "type": "報紙",
     "domain": "elpais.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada",
+    "rss_extra": [
+      "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/internacional/portada"
+    ]
   },
   {
     "name": "El Mundo",
@@ -3847,7 +4302,8 @@
     "type": "報紙",
     "domain": "elmundo.es",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.elmundo.es/rss/portada.xml"
   },
   {
     "name": "TVE (Television Española)",
@@ -3858,7 +4314,8 @@
     "type": "電視",
     "domain": "rtve.es",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rtve.es/api/news.rss"
   },
   {
     "name": "La Vanguardia",
@@ -3869,7 +4326,8 @@
     "type": "報紙",
     "domain": "lavanguardia.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.lavanguardia.com/rss/home.xml"
   },
   {
     "name": "SVT (Swedish Television)",
@@ -3880,7 +4338,8 @@
     "type": "電視",
     "domain": "svt.se",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.svt.se/nyheter/rss.xml"
   },
   {
     "name": "Dagens Nyheter",
@@ -3891,7 +4350,8 @@
     "type": "報紙",
     "domain": "dn.se",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.dn.se/rss/"
   },
   {
     "name": "Svenska Dagbladet",
@@ -3902,7 +4362,8 @@
     "type": "報紙",
     "domain": "svd.se",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.svd.se/?service=rss"
   },
   {
     "name": "Neue Zürcher Zeitung (NZZ)",
@@ -3913,7 +4374,8 @@
     "type": "報紙",
     "domain": "nzz.ch",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nzz.ch/nachrichten.rss"
   },
   {
     "name": "SRF (Swiss Radio and Television)",
@@ -3924,7 +4386,8 @@
     "type": "電視/廣播",
     "domain": "srf.ch",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.srf.ch/news/bnf/rss/1646"
   },
   {
     "name": "Le Temps",
@@ -3935,7 +4398,8 @@
     "type": "報紙",
     "domain": "letemps.ch",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.letemps.ch/rss"
   },
   {
     "name": "Ukrinform",
@@ -3946,7 +4410,11 @@
     "type": "通訊社",
     "domain": "ukrinform.net",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.ukrinform.net/rss/block-lastnews",
+    "rss_extra": [
+      "https://www.ukrinform.net/rss/block-worldnews"
+    ]
   },
   {
     "name": "Kyiv Post",
@@ -3957,7 +4425,8 @@
     "type": "報紙",
     "domain": "kyivpost.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.kyivpost.com/rss"
   },
   {
     "name": "1+1 TV",
@@ -3968,7 +4437,8 @@
     "type": "電視",
     "domain": "1plus1.ua",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://1plus1.ua/rss"
   },
   {
     "name": "BBC",
@@ -3979,7 +4449,14 @@
     "type": "電視/廣播",
     "domain": "bbc.co.uk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.bbci.co.uk/news/rss.xml",
+    "rss_extra": [
+      "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "https://feeds.bbci.co.uk/news/business/rss.xml",
+      "https://feeds.bbci.co.uk/news/technology/rss.xml",
+      "https://feeds.bbci.co.uk/news/chinese/simp/rss.xml"
+    ]
   },
   {
     "name": "Financial Times",
@@ -3990,7 +4467,11 @@
     "type": "報紙",
     "domain": "ft.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.ft.com/rss/home/uk",
+    "rss_extra": [
+      "https://www.ft.com/rss/home/world"
+    ]
   },
   {
     "name": "The Times",
@@ -4001,7 +4482,8 @@
     "type": "報紙",
     "domain": "thetimes.co.uk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thetimes.co.uk/edition/news/world"
   },
   {
     "name": "The Guardian",
@@ -4012,7 +4494,12 @@
     "type": "報紙",
     "domain": "theguardian.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.theguardian.com/world/rss",
+    "rss_extra": [
+      "https://www.theguardian.com/uk/rss",
+      "https://www.theguardian.com/business/rss"
+    ]
   },
   {
     "name": "The Daily Telegraph",
@@ -4023,7 +4510,11 @@
     "type": "報紙",
     "domain": "telegraph.co.uk",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.telegraph.co.uk/rss.xml",
+    "rss_extra": [
+      "https://www.telegraph.co.uk/news/rss.xml"
+    ]
   },
   {
     "name": "Reuters",
@@ -4034,7 +4525,12 @@
     "type": "通訊社",
     "domain": "reuters.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.reuters.com/reuters/topNews",
+    "rss_extra": [
+      "https://feeds.reuters.com/reuters/worldNews",
+      "https://feeds.reuters.com/reuters/businessNews"
+    ]
   },
   {
     "name": "Sky News",
@@ -4045,7 +4541,8 @@
     "type": "電視",
     "domain": "news.sky.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.skynews.com/feeds/rss/home.xml"
   },
   {
     "name": "ENTV (Enterprise Nationale de Television)",
@@ -4067,7 +4564,8 @@
     "type": "報紙",
     "domain": "elkhabar.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.elkhabar.com/press/feed/"
   },
   {
     "name": "Jornal de Angola",
@@ -4100,7 +4598,8 @@
     "type": "報紙",
     "domain": "mmegi.bw",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.mmegi.bw/feed/"
   },
   {
     "name": "Botswana TV (BTV)",
@@ -4122,7 +4621,8 @@
     "type": "報紙",
     "domain": "sidwaya.info",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.sidwaya.info/feed/"
   },
   {
     "name": "RTNB (Radio Television Nationale du Burundi)",
@@ -4155,7 +4655,8 @@
     "type": "報紙",
     "domain": "cameroon-tribune.cm",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.cameroon-tribune.cm/feed/"
   },
   {
     "name": "A Semana",
@@ -4177,7 +4678,8 @@
     "type": "報紙",
     "domain": "alwatwan.net",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://alwatwan.net/feed/"
   },
   {
     "name": "RTD (Radio-Télévision de Djibouti)",
@@ -4199,7 +4701,11 @@
     "type": "廣播",
     "domain": "rfi.fr",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.rfi.fr/fr/rss",
+    "rss_extra": [
+      "https://www.rfi.fr/en/rss"
+    ]
   },
   {
     "name": "Le Potentiel",
@@ -4221,7 +4727,8 @@
     "type": "報紙",
     "domain": "english.ahram.org.eg",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://english.ahram.org.eg/RSSFeeds/1.aspx"
   },
   {
     "name": "MENA (Middle East News Agency)",
@@ -4243,7 +4750,8 @@
     "type": "報紙",
     "domain": "almasryalyoum.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.almasryalyoum.com/rss/rssfeeds/1.xml"
   },
   {
     "name": "Eri-TV",
@@ -4276,7 +4784,8 @@
     "type": "報紙",
     "domain": "thereporterethiopia.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thereporterethiopia.com/feed/"
   },
   {
     "name": "Gabon 24",
@@ -4287,7 +4796,8 @@
     "type": "電視",
     "domain": "gabon24.info",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.gabon24.info/feed/"
   },
   {
     "name": "The Daily Observer (Gambia)",
@@ -4298,7 +4808,8 @@
     "type": "報紙",
     "domain": "observer.gm",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.observer.gm/feed/"
   },
   {
     "name": "GBC (Ghana Broadcasting Corporation)",
@@ -4309,7 +4820,8 @@
     "type": "電視/廣播",
     "domain": "gbcghana.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://gbcghana.com/feed/"
   },
   {
     "name": "Daily Graphic",
@@ -4320,7 +4832,8 @@
     "type": "報紙",
     "domain": "graphic.com.gh",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.graphic.com.gh/feed/"
   },
   {
     "name": "RTG (Radio Télévision Guinéenne)",
@@ -4342,7 +4855,8 @@
     "type": "報紙",
     "domain": "nation.africa",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://nation.africa/feed"
   },
   {
     "name": "The Standard (Kenya)",
@@ -4353,7 +4867,8 @@
     "type": "報紙",
     "domain": "standardmedia.co.ke",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.standardmedia.co.ke/rss/latest-news"
   },
   {
     "name": "KBC (Kenya Broadcasting Corporation)",
@@ -4364,7 +4879,8 @@
     "type": "電視/廣播",
     "domain": "kbc.co.ke",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.kbc.co.ke/feed/"
   },
   {
     "name": "Citizen TV Kenya",
@@ -4375,7 +4891,8 @@
     "type": "電視",
     "domain": "citizentv.co.ke",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.citizentv.co.ke/feed/"
   },
   {
     "name": "Public Eye",
@@ -4386,7 +4903,8 @@
     "type": "報紙",
     "domain": "publiceyenews.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.publiceyenews.com/feed/"
   },
   {
     "name": "FrontPage Africa",
@@ -4397,7 +4915,8 @@
     "type": "報紙",
     "domain": "frontpageafricaonline.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://frontpageafricaonline.com/feed/"
   },
   {
     "name": "Libya TV",
@@ -4430,7 +4949,8 @@
     "type": "報紙",
     "domain": "mwnation.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://mwnation.com/feed/"
   },
   {
     "name": "MBC (Malawi Broadcasting Corporation)",
@@ -4463,7 +4983,8 @@
     "type": "報紙",
     "domain": "lexpress.mu",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://lexpress.mu/feed"
   },
   {
     "name": "MBC (Mauritius Broadcasting Corporation)",
@@ -4496,7 +5017,8 @@
     "type": "報紙",
     "domain": "lematin.ma",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://lematin.ma/feed/"
   },
   {
     "name": "TVM (Televisao de Mocambique)",
@@ -4518,7 +5040,8 @@
     "type": "報紙",
     "domain": "namibian.com.na",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.namibian.com.na/feed/"
   },
   {
     "name": "NBC (Namibia Broadcasting Corporation)",
@@ -4540,7 +5063,8 @@
     "type": "電視",
     "domain": "channelstv.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.channelstv.com/feed/"
   },
   {
     "name": "The Punch",
@@ -4551,7 +5075,8 @@
     "type": "報紙",
     "domain": "punchng.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://punchng.com/feed/"
   },
   {
     "name": "Vanguard (Nigeria)",
@@ -4562,7 +5087,8 @@
     "type": "報紙",
     "domain": "vanguardngr.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.vanguardngr.com/feed/"
   },
   {
     "name": "NAN (News Agency of Nigeria)",
@@ -4573,7 +5099,8 @@
     "type": "通訊社",
     "domain": "nannews.ng",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://nannews.ng/feed/"
   },
   {
     "name": "The New Times Rwanda",
@@ -4584,7 +5111,8 @@
     "type": "報紙",
     "domain": "newtimes.co.rw",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.newtimes.co.rw/feed"
   },
   {
     "name": "Rwanda Broadcasting Agency (RBA)",
@@ -4617,7 +5145,8 @@
     "type": "報紙",
     "domain": "lesoleil.sn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.lesoleil.sn/feed/"
   },
   {
     "name": "Seychelles Nation",
@@ -4628,7 +5157,8 @@
     "type": "報紙",
     "domain": "nation.sc",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.nation.sc/feed"
   },
   {
     "name": "SBC (Seychelles Broadcasting Corporation)",
@@ -4650,7 +5180,8 @@
     "type": "網路媒體",
     "domain": "goobjoog.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://goobjoog.com/english/feed/"
   },
   {
     "name": "SABC (South African Broadcasting Corporation)",
@@ -4661,7 +5192,8 @@
     "type": "電視/廣播",
     "domain": "sabc.co.za",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.sabcnews.com/sabcnews/feed/"
   },
   {
     "name": "News24",
@@ -4672,7 +5204,8 @@
     "type": "網路媒體",
     "domain": "news24.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://feeds.news24.com/articles/news24/TopStories/rss"
   },
   {
     "name": "Mail and Guardian",
@@ -4683,7 +5216,8 @@
     "type": "報紙",
     "domain": "mg.co.za",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://mg.co.za/feed/"
   },
   {
     "name": "Business Day (South Africa)",
@@ -4694,7 +5228,8 @@
     "type": "報紙",
     "domain": "businesslive.co.za",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.businesslive.co.za/feed/"
   },
   {
     "name": "Eye Radio",
@@ -4705,7 +5240,8 @@
     "type": "廣播",
     "domain": "eyeradio.org",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://eyeradio.org/feed/"
   },
   {
     "name": "Sudan Tribune",
@@ -4716,7 +5252,8 @@
     "type": "網路媒體",
     "domain": "sudantribune.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://sudantribune.com/feed/"
   },
   {
     "name": "Times of Eswatini",
@@ -4727,7 +5264,8 @@
     "type": "報紙",
     "domain": "times.co.sz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.times.co.sz/feed/"
   },
   {
     "name": "The Citizen (Tanzania)",
@@ -4738,7 +5276,8 @@
     "type": "報紙",
     "domain": "thecitizen.co.tz",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.thecitizen.co.tz/feed/"
   },
   {
     "name": "TBC (Tanzania Broadcasting Corporation)",
@@ -4771,7 +5310,8 @@
     "type": "通訊社",
     "domain": "tap.info.tn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.tap.info.tn/fr/portal-accueil/feed"
   },
   {
     "name": "La Presse de Tunisie",
@@ -4782,7 +5322,8 @@
     "type": "報紙",
     "domain": "lapresse.tn",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://lapresse.tn/feed/"
   },
   {
     "name": "New Vision (Uganda)",
@@ -4793,7 +5334,8 @@
     "type": "報紙",
     "domain": "newvision.co.ug",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.newvision.co.ug/rss"
   },
   {
     "name": "Daily Monitor (Uganda)",
@@ -4804,7 +5346,8 @@
     "type": "報紙",
     "domain": "monitor.co.ug",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.monitor.co.ug/feed"
   },
   {
     "name": "Zambia Daily Mail",
@@ -4815,7 +5358,8 @@
     "type": "報紙",
     "domain": "daily-mail.co.zm",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.daily-mail.co.zm/feed/"
   },
   {
     "name": "ZNBC (Zambia National Broadcasting Corporation)",
@@ -4848,7 +5392,8 @@
     "type": "報紙",
     "domain": "herald.co.zw",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.herald.co.zw/feed/"
   },
   {
     "name": "Zimbabwe Independent",
@@ -4859,7 +5404,8 @@
     "type": "報紙",
     "domain": "theindependent.co.zw",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.theindependent.co.zw/feed/"
   },
   {
     "name": "RTI (Radiodiffusion-Télévision Ivoirienne)",
@@ -4881,7 +5427,8 @@
     "type": "報紙",
     "domain": "fratmat.info",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://www.fratmat.info/feed/"
   },
   {
     "name": "TVS (Televisão de São Tomé e Príncipe)",
@@ -4903,7 +5450,8 @@
     "type": "報紙",
     "domain": "awoko.org",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://awoko.org/feed/"
   },
   {
     "name": "Le Sahel (Niger)",
@@ -4947,6 +5495,7 @@
     "type": "網路媒體",
     "domain": "somalilandstandard.com",
     "priority": 2,
-    "enabled": true
+    "enabled": true,
+    "rss": "https://somalilandstandard.com/feed/"
   }
 ]
