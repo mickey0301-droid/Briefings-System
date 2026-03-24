@@ -327,12 +327,15 @@ def compute_next_runs(schedule, count=5, now=None):
             return [dt]
         return []
 
-    # 非 once 模式：若設了 start_from，從該日期開始算（不早於 now）
+    # 非 once 模式：若設了 start_from，從該日期時間開始算（不早於 now）
     start_from_str = s.get("start_from", "")
     effective_now = now
     if start_from_str:
         try:
-            sf = datetime.strptime(start_from_str[:10], "%Y-%m-%d")
+            if len(start_from_str) >= 16:
+                sf = datetime.strptime(start_from_str[:16], "%Y-%m-%d %H:%M")
+            else:
+                sf = datetime.strptime(start_from_str[:10], "%Y-%m-%d")
             if sf > now:
                 effective_now = sf
         except Exception:
@@ -380,12 +383,15 @@ def get_due_run_key(schedule, now=None):
             return dt.strftime("%Y-%m-%d %H:%M")
         return None
 
-    # 非 once 模式：若設了 start_from，今天日期必須 >= 該日期才執行
+    # 非 once 模式：若設了 start_from，現在必須 >= 該日期時間才執行
     start_from_str = s.get("start_from", "")
     if start_from_str:
         try:
-            start_from_date = datetime.strptime(start_from_str[:10], "%Y-%m-%d").date()
-            if now.date() < start_from_date:
+            if len(start_from_str) >= 16:
+                start_from_dt = datetime.strptime(start_from_str[:16], "%Y-%m-%d %H:%M")
+            else:
+                start_from_dt = datetime.strptime(start_from_str[:10], "%Y-%m-%d")
+            if now < start_from_dt:
                 return None
         except Exception:
             pass
