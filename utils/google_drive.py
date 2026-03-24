@@ -1,9 +1,7 @@
 import os
-import pickle
 
 try:
-    from google_auth_oauthlib.flow import InstalledAppFlow
-    from google.auth.transport.requests import Request
+    from google.oauth2 import service_account
     from googleapiclient.discovery import build
     from googleapiclient.http import MediaFileUpload
     DRIVE_AVAILABLE = True
@@ -18,27 +16,14 @@ def get_drive_service():
     if not DRIVE_AVAILABLE:
         return None
 
-    creds = None
-
     try:
-        if os.path.exists("token.pickle"):
-            with open("token.pickle", "rb") as token:
-                creds = pickle.load(token)
-
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                if not os.path.exists("credentials.json"):
-                    return None
-                flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-                creds = flow.run_local_server(port=0)
-
-            with open("token.pickle", "wb") as token:
-                pickle.dump(creds, token)
-
+        # 嘗試從 Streamlit secrets 讀取（Streamlit Cloud 環境）
+        import streamlit as st
+        creds_info = dict(st.secrets["gcp_service_account"])
+        creds = service_account.Credentials.from_service_account_info(
+            creds_info, scopes=SCOPES
+        )
         return build("drive", "v3", credentials=creds)
-
     except Exception:
         return None
 

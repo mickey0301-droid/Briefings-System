@@ -278,6 +278,10 @@ def _try_upload_to_drive(file_path: str, folder_id: str = ""):
             else:
                 continue
 
+            if "file_name" in sig.parameters:
+                import os
+                kwargs["file_name"] = os.path.basename(file_path)
+
             if "folder_id" in sig.parameters:
                 kwargs["folder_id"] = folder_id
 
