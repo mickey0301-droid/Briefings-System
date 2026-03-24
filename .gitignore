@@ -15,3 +15,8 @@ service_account.json
 *.log
 .DS_Store
 Claude/
+
+# 使用者本地設定（不隨 git pull 被覆蓋）
+config/auto_export_user.json
+config/auto_export_state.json
+config/insights_user.json

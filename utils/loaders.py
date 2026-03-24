@@ -440,13 +440,18 @@ def save_experts(experts):
     write_json(EXPERTS_PATH, normalized)
 
 
-def load_insights(path="config/insights.json"):
+_INSIGHTS_USER_PATH = "config/insights_user.json"
+_INSIGHTS_DEFAULT_PATH = "config/insights.json"
+
+
+def load_insights(path=None):
+    # 優先讀取使用者本地版本（不被 git pull 覆蓋）
+    if path is None:
+        path = _INSIGHTS_USER_PATH if os.path.exists(_INSIGHTS_USER_PATH) else _INSIGHTS_DEFAULT_PATH
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
 
     if not os.path.exists(path):
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump([], f, ensure_ascii=False, indent=2)
         return []
 
     try:
@@ -474,7 +479,10 @@ def load_insights(path="config/insights.json"):
         return []
 
 
-def save_insights(insights, path="config/insights.json"):
+def save_insights(insights, path=None):
+    # 始終寫到 _user 版本，不動 git 追蹤的預設檔
+    if path is None:
+        path = _INSIGHTS_USER_PATH
     os.makedirs(os.path.dirname(path), exist_ok=True)
 
     cleaned = []
@@ -531,6 +539,7 @@ def save_formats(formats):
 
 
 AUTO_EXPORT_PATH = "config/auto_export.json"
+AUTO_EXPORT_USER_PATH = "config/auto_export_user.json"
 
 
 def load_auto_export():
@@ -538,16 +547,20 @@ def load_auto_export():
     import json
     import os
 
-    if not os.path.exists(AUTO_EXPORT_PATH):
+    # 優先讀取使用者本地版本（不被 git pull 覆蓋）
+    path = AUTO_EXPORT_USER_PATH if os.path.exists(AUTO_EXPORT_USER_PATH) else AUTO_EXPORT_PATH
+
+    if not os.path.exists(path):
 
         return {
             "enabled": True,
-            "schedules": []
+            "schedules": [],
+            "drive_folders": [],
         }
 
     try:
 
-        with open(AUTO_EXPORT_PATH, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
 
             data = json.load(f)
 
@@ -566,7 +579,8 @@ def load_auto_export():
 
         return {
             "enabled": True,
-            "schedules": []
+            "schedules": [],
+            "drive_folders": [],
         }
 
 
@@ -577,7 +591,8 @@ def save_auto_export(config):
 
     os.makedirs("config", exist_ok=True)
 
-    with open(AUTO_EXPORT_PATH, "w", encoding="utf-8") as f:
+    # 始終寫到 _user 版本，不動 git 追蹤的預設檔
+    with open(AUTO_EXPORT_USER_PATH, "w", encoding="utf-8") as f:
 
         json.dump(config, f, ensure_ascii=False, indent=2)
 
