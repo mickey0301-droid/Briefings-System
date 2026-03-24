@@ -62,6 +62,99 @@ _KEYWORDS_TW_CN = [
 # 全球媒體類別名稱（用來判斷是否走「熱度排名」邏輯）
 _GLOBAL_MEDIA_CATEGORIES = {"全球媒體"}
 
+# ── 全球媒體兩階段抓取：各語言台灣／美國／中國關鍵字 ──────────────────────────
+# Phase 1：以語言對應關鍵字搜尋 Google News，只收有關鍵字的文章
+_LANG_TW_KEYWORDS = {
+    "zh":    "台灣 OR 美國 OR 中國 OR 台海 OR 解放軍 OR 中共 OR 習近平",
+    "zh-TW": "台灣 OR 美國 OR 中國 OR 台海 OR 解放軍 OR 中共 OR 習近平",
+    "zh-CN": "台湾 OR 美国 OR 中国 OR 台海 OR 解放军 OR 中共 OR 习近平",
+    "en":    "Taiwan OR China OR \"United States\" OR PLA OR CCP OR \"Xi Jinping\" OR \"Indo-Pacific\"",
+    "ja":    "台湾 OR 中国 OR アメリカ OR 解放軍 OR 習近平 OR 米中 OR 台湾海峡",
+    "ko":    "대만 OR 중국 OR 미국 OR 인민해방군 OR 시진핑 OR 대만해협",
+    "es":    "Taiwán OR China OR \"Estados Unidos\" OR \"Xi Jinping\" OR \"estrecho de Taiwán\"",
+    "de":    "Taiwan OR China OR USA OR \"Xi Jinping\" OR Volksbefreiungsarmee OR Taiwanstraße",
+    "fr":    "Taïwan OR Chine OR \"États-Unis\" OR \"Xi Jinping\" OR \"détroit de Taïwan\"",
+    "ru":    "Тайвань OR Китай OR США OR НОАК OR \"Си Цзиньпин\" OR \"Тайваньский пролив\"",
+    "it":    "Taiwan OR Cina OR \"Stati Uniti\" OR \"Xi Jinping\" OR \"stretto di Taiwan\"",
+    "pt":    "Taiwan OR China OR \"Estados Unidos\" OR \"Xi Jinping\" OR \"Estreito de Taiwan\"",
+    "ar":    "تايوان OR الصين OR \"الولايات المتحدة\" OR \"شي جين بينغ\" OR \"مضيق تايوان\"",
+    "he":    "טייוואן OR סין OR \"ארצות הברית\" OR \"שי ג'ינפינג\" OR \"מיצר טייוואן\"",
+    "cs":    "Tchaj-wan OR Čína OR \"Spojené státy\" OR \"Si Ťin-pching\" OR \"Tchajwanský průliv\"",
+    "nl":    "Taiwan OR China OR \"Verenigde Staten\" OR \"Xi Jinping\" OR \"Straat van Taiwan\"",
+    "id":    "Taiwan OR China OR \"Amerika Serikat\" OR \"Xi Jinping\" OR \"Selat Taiwan\"",
+    "ms":    "Taiwan OR China OR \"Amerika Syarikat\" OR \"Xi Jinping\" OR \"Selat Taiwan\"",
+    "pl":    "Tajwan OR Chiny OR \"Stany Zjednoczone\" OR \"Xi Jinping\" OR \"Cieśnina Tajwańska\"",
+    "ro":    "Taiwan OR China OR \"Statele Unite\" OR \"Xi Jinping\" OR \"Strâmtoarea Taiwan\"",
+    "sv":    "Taiwan OR Kina OR USA OR \"Xi Jinping\" OR Taiwansundet",
+    "uk":    "Тайвань OR Китай OR США OR НВАК OR \"Сі Цзіньпін\" OR \"Тайванська протока\"",
+    "tl":    "Taiwan OR China OR \"Estados Unidos\" OR \"Xi Jinping\" OR \"Strait ng Taiwan\"",
+    "tr":    "Tayvan OR Çin OR \"Amerika Birleşik Devletleri\" OR \"Xi Jinping\" OR \"Tayvan Boğazı\"",
+    "vi":    "\"Đài Loan\" OR \"Trung Quốc\" OR \"Hoa Kỳ\" OR PLA OR \"Tập Cận Bình\" OR \"eo biển Đài Loan\"",
+    "th":    "ไต้หวัน OR จีน OR สหรัฐอเมริกา OR PLA OR สีจิ้นผิง OR ช่องแคบไต้หวัน",
+    "hi":    "ताइवान OR चीन OR \"संयुक्त राज्य\" OR PLA OR \"शी जिनपिंग\" OR \"ताइवान जलडमरूमध्य\"",
+    "sw":    "Taiwan OR China OR Marekani OR PLA OR \"Xi Jinping\" OR \"Mlango-Bahari wa Taiwan\"",
+}
+
+# Google News RSS 語言參數（hl=UI 語言, gl=地區, ceid=地區:語言）
+_LANG_NEWS_PARAMS = {
+    "zh":    {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+    "zh-TW": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+    "zh-CN": {"hl": "zh-CN", "gl": "CN", "ceid": "CN:zh-Hans"},
+    "en":    {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    "ja":    {"hl": "ja",    "gl": "JP", "ceid": "JP:ja"},
+    "ko":    {"hl": "ko",    "gl": "KR", "ceid": "KR:ko"},
+    "es":    {"hl": "es",    "gl": "ES", "ceid": "ES:es"},
+    "de":    {"hl": "de",    "gl": "DE", "ceid": "DE:de"},
+    "fr":    {"hl": "fr",    "gl": "FR", "ceid": "FR:fr"},
+    "ru":    {"hl": "ru",    "gl": "RU", "ceid": "RU:ru"},
+    "it":    {"hl": "it",    "gl": "IT", "ceid": "IT:it"},
+    "pt":    {"hl": "pt-BR", "gl": "BR", "ceid": "BR:pt-419"},
+    "ar":    {"hl": "ar",    "gl": "SA", "ceid": "SA:ar"},
+    "he":    {"hl": "iw",    "gl": "IL", "ceid": "IL:iw"},
+    "cs":    {"hl": "cs",    "gl": "CZ", "ceid": "CZ:cs"},
+    "nl":    {"hl": "nl",    "gl": "NL", "ceid": "NL:nl"},
+    "id":    {"hl": "id",    "gl": "ID", "ceid": "ID:id"},
+    "ms":    {"hl": "ms",    "gl": "MY", "ceid": "MY:ms"},
+    "pl":    {"hl": "pl",    "gl": "PL", "ceid": "PL:pl"},
+    "ro":    {"hl": "ro",    "gl": "RO", "ceid": "RO:ro"},
+    "sv":    {"hl": "sv",    "gl": "SE", "ceid": "SE:sv"},
+    "uk":    {"hl": "uk",    "gl": "UA", "ceid": "UA:uk"},
+    "tl":    {"hl": "tl",    "gl": "PH", "ceid": "PH:tl"},
+    "tr":    {"hl": "tr",    "gl": "TR", "ceid": "TR:tr"},
+    "vi":    {"hl": "vi",    "gl": "VN", "ceid": "VN:vi"},
+    "th":    {"hl": "th",    "gl": "TH", "ceid": "TH:th"},
+    "hi":    {"hl": "hi",    "gl": "IN", "ceid": "IN:hi"},
+    "sw":    {"hl": "sw",    "gl": "KE", "ceid": "KE:sw"},
+}
+
+# 標題後顯示語言標籤（非中文、非英文才標）
+_LANG_DISPLAY_LABEL = {
+    "ja": "[日文]",
+    "ko": "[韓文]",
+    "es": "[西班牙文]",
+    "de": "[德文]",
+    "fr": "[法文]",
+    "ru": "[俄文]",
+    "it": "[義大利文]",
+    "pt": "[葡萄牙文]",
+    "ar": "[阿拉伯文]",
+    "he": "[希伯來文]",
+    "cs": "[捷克文]",
+    "nl": "[荷蘭文]",
+    "id": "[印尼文]",
+    "ms": "[馬來文]",
+    "pl": "[波蘭文]",
+    "ro": "[羅馬尼亞文]",
+    "sv": "[瑞典文]",
+    "uk": "[烏克蘭文]",
+    "tl": "[他加祿文]",
+    "tr": "[土耳其文]",
+    "vi": "[越南文]",
+    "th": "[泰文]",
+    "hi": "[印地文]",
+    "sw": "[斯瓦希里文]",
+}
+
 # 各來源類別對應的 Google News RSS 查詢關鍵字
 # 實際值由 load_category_keywords() 動態讀取（使用者可在 Sources 頁面自訂並儲存）
 # 此處僅保留做為 import 路徑別名，實際預設值定義在 utils/loaders.py
@@ -545,7 +638,8 @@ def _extract_news_domain(url: str) -> str | None:
     return domain or None
 
 
-def _build_google_news_rss_for_domain(domain, start_time=None, end_time=None, keywords=None):
+def _build_google_news_rss_for_domain(domain, start_time=None, end_time=None, keywords=None,
+                                       lang_params=None):
     """
     建立 Google News RSS 查詢 URL。
 
@@ -553,6 +647,9 @@ def _build_google_news_rss_for_domain(domain, start_time=None, end_time=None, ke
     必須在 site: 前面加上關鍵字才能正常運作，格式：
         (kw1 OR kw2) site:domain when:Xd
     時間精確過濾由 _filter_items_by_time_range 在 client 端補做。
+
+    lang_params: dict with hl/gl/ceid keys，用於多語言來源。
+                 預設使用繁體中文（TW）參數。
     """
     # 計算 when: 參數
     when_str = "when:3d"   # 預設抓最近 3 天
@@ -577,9 +674,15 @@ def _build_google_news_rss_for_domain(domain, start_time=None, end_time=None, ke
     if when_str:
         query += f" {when_str}"
 
+    # 語言/地區參數
+    p = lang_params or {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"}
+    hl   = p.get("hl",   "zh-TW")
+    gl   = p.get("gl",   "TW")
+    ceid = p.get("ceid", "TW:zh-Hant")
+
     # 用 safe=':/' 確保 site: 的冒號不被編碼（編碼後 Google 不識別為 operator）
     query_encoded = quote(query, safe=':/')
-    return f"https://news.google.com/rss/search?q={query_encoded}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
+    return f"https://news.google.com/rss/search?q={query_encoded}&hl={hl}&gl={gl}&ceid={ceid}"
 
 
 def _fetch_domain_items(domain, source_name, limit=20, start_time=None, end_time=None, keywords=None):
@@ -668,6 +771,71 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
 
         src_type  = src.get("type", "rss")
         url_field = src.get("url", "")
+
+        # ── 全球媒體：兩階段抓取 ──────────────────────────────────────────────
+        is_global = any(c in _GLOBAL_MEDIA_CATEGORIES for c in cats)
+        if is_global:
+            src_lang    = (src.get("language") or "en").strip().lower()
+            src_country = (src.get("country") or src.get("region") or "").strip()
+            lang_label  = _LANG_DISPLAY_LABEL.get(src_lang, "")  # "" = zh/en（不標）
+            lang_params = _LANG_NEWS_PARAMS.get(src_lang, _LANG_NEWS_PARAMS["en"])
+            lang_kw     = _LANG_TW_KEYWORDS.get(src_lang, _LANG_TW_KEYWORDS["en"])
+
+            seen_urls: set = set()
+            all_phase: list = []
+
+            def _tag_items(items, kw_match: bool):
+                for item in items:
+                    item["source"]          = src_name
+                    item["source_category"] = cats
+                    item["source_region"]   = src_country or src.get("region", "")
+                    item["source_type"]     = src_type
+                    item["source_language"] = src_lang
+                    item["source_country"]  = src_country
+                    item["tw_keyword_match"] = kw_match
+                    # 非中文、非英文來源：在標題後加語言標籤
+                    if lang_label and not item.get("_lang_tagged"):
+                        title = item.get("title", "")
+                        if title and not title.endswith(lang_label):
+                            item["title"] = f"{title} {lang_label}"
+                        item["_lang_tagged"] = True
+                return items
+
+            # Phase 1：關鍵字搜尋，只收涉台美中文章（用語言專屬關鍵字）
+            domain = (src.get("domain") or src.get("site")
+                      or _extract_news_domain(url_field) or url_field)
+            if domain:
+                domain = domain.lower().replace("www.", "")
+                p1_url = _build_google_news_rss_for_domain(
+                    domain, start_time=start_time, end_time=end_time,
+                    keywords=lang_kw, lang_params=lang_params
+                )
+                p1_items = _fetch_rss_items(p1_url, src_name, limit=limit_per_source)
+                _tag_items(p1_items, kw_match=True)
+                for item in p1_items:
+                    key = (item.get("original_url") or item.get("url") or "").lower().strip()
+                    if key and key not in seen_urls:
+                        seen_urls.add(key)
+                        all_phase.append(item)
+
+            # Phase 2：直接 RSS（一般新聞），不做關鍵字過濾
+            direct_rss = (
+                src.get("rss") or src.get("rss_url")
+                or src.get("feed") or src.get("feed_url")
+            )
+            if not direct_rss and src_type == "rss" and url_field.startswith("http"):
+                direct_rss = url_field
+            if direct_rss:
+                p2_items = _fetch_rss_items(direct_rss, src_name, limit=limit_per_source)
+                _tag_items(p2_items, kw_match=False)
+                for item in p2_items:
+                    key = (item.get("original_url") or item.get("url") or "").lower().strip()
+                    if key and key not in seen_urls:
+                        seen_urls.add(key)
+                        all_phase.append(item)
+
+            return all_phase
+        # ── 一般來源（非全球媒體）：原有邏輯 ────────────────────────────────
 
         # type=rss：優先使用 rss/rss_url/feed/feed_url，
         #           再看 url 是否為完整 http 網址（使用者手填的真實 RSS feed）
@@ -1189,10 +1357,37 @@ def _is_taiwan_china_related(item):
 
 
 def _is_taiwan_us_china(item):
+    # 全球媒體 Phase 1 命中者（已以關鍵字過濾）直接視為台美中相關
+    if item.get("tw_keyword_match"):
+        return True
     text = _item_text(item)
-    tw_keywords = ["taiwan", "台灣", "台湾", "taipei", "臺北", "台北"]
-    us_keywords = ["united states", "u.s.", "us ", "usa", "美國", "美国", "washington"]
-    cn_keywords = ["china", "中國", "中国", "中共", "beijing", "北京"]
+    tw_keywords = [
+        # 中文
+        "taiwan", "台灣", "台湾", "taipei", "臺北", "台北",
+        # 日文
+        "台湾", "台湾海峡",
+        # 韓文
+        "대만", "대만해협",
+        # 西班牙文
+        "taiwán",
+        # 法文
+        "taïwan",
+        # 俄文
+        "тайвань",
+        # 阿拉伯文
+        "تايوان",
+    ]
+    us_keywords = [
+        "united states", "u.s.", "us ", "usa", "美國", "美国", "washington",
+        "アメリカ", "미국", "estados unidos", "états-unis", "etats-unis",
+        "vereinigte staaten", "соединённые штаты", "сша",
+        "الولايات المتحدة", "ארצות הברית",
+    ]
+    cn_keywords = [
+        "china", "中國", "中国", "中共", "beijing", "北京",
+        "中国", "중국", "베이징", "chine", "pékin", "kina",
+        "cina", "китай", "пекин", "الصين", "סין",
+    ]
 
     has_tw = _contains_any(text, tw_keywords)
     has_us = _contains_any(text, us_keywords)
@@ -1202,14 +1397,26 @@ def _is_taiwan_us_china(item):
 
 
 def _is_taiwan_security(item):
+    # 全球媒體 Phase 1 命中者加上安全關鍵字才算
     text = _item_text(item)
-    tw_keywords = ["taiwan", "台灣", "台湾", "taipei", "臺北", "台北"]
+    tw_keywords = [
+        "taiwan", "台灣", "台湾", "taipei", "臺北", "台北",
+        "台湾", "대만", "taiwán", "taïwan", "тайвань", "تايوان",
+    ]
     sec_keywords = [
         "security", "national security", "defense", "defence", "military",
         "國安", "安全", "國防", "防務", "防卫", "防衛",
         "軍事", "軍演", "演習", "灰色地帶", "灰色地带",
         "blockade", "封鎖", "封锁", "missile", "飛彈", "飞弹",
         "cyber", "網攻", "网攻", "資安", "网络安全", "網路安全",
+        # 多語言安全詞
+        "安全保障", "軍事演習",  # 日文
+        "국방", "안보", "군사",  # 韓文
+        "defensa", "seguridad", "militar",  # 西班牙文
+        "défense", "sécurité", "militaire",  # 法文
+        "sicherheit", "verteidigung", "militär",  # 德文
+        "безопасность", "оборона", "военный",  # 俄文
+        "الأمن", "الدفاع", "العسكري",  # 阿拉伯文
     ]
     return _contains_any(text, tw_keywords) and _contains_any(text, sec_keywords)
 
@@ -1221,6 +1428,20 @@ def _is_china_news(item):
         "pla", "解放軍", "解放军",
         "新華社", "新华社", "人民日報", "人民日报",
         "國台辦", "国台办", "中國外交部", "中国外交部",
+        # 多語言
+        "중국", "베이징",  # 韓文
+        "中国", "北京",    # 日文（同中文字元，已涵蓋）
+        "chine", "pékin", "péking",  # 法文
+        "kina", "peking",  # 瑞典/挪威文
+        "cina", "pechino",  # 義大利文
+        "chinesisch", "volksrepublik china",  # 德文
+        "китай", "пекин",  # 俄文/烏克蘭文
+        "الصين", "بكين",  # 阿拉伯文
+        "סין", "בייג'ינג",  # 希伯來文
+        "çin", "pekin",  # 土耳其文
+        "trung quốc", "bắc kinh",  # 越南文
+        "จีน", "ปักกิ่ง",  # 泰文
+        "चीन", "बीजिंग",  # 印地語
     ]
     return _contains_any(text, keywords)
 
@@ -1465,6 +1686,8 @@ def _format_item_block(label, items, item_to_sx=None):
         content = _safe_text(item.get("content"))
         url = _safe_text(item.get("original_url") or item.get("url"))
         region = _safe_text(item.get("source_region"))
+        src_country  = _safe_text(item.get("source_country"))
+        src_language = _safe_text(item.get("source_language"))
 
         # 找對應的 Sx 代碼，讓 AI 知道引用哪個
         sx_code = ""
@@ -1474,8 +1697,15 @@ def _format_item_block(label, items, item_to_sx=None):
         sx_label = f" [{sx_code}]" if sx_code else ""
 
         lines.append(f"{idx}.{sx_label} 標題: {title}")
-        if source:
-            lines.append(f"   來源: {source}")
+        # 來源＋國家（供 AI 在報告中提及媒體國籍）
+        source_meta = source
+        if src_country:
+            source_meta = f"{source}（{src_country}）" if source else f"（{src_country}）"
+        if source_meta:
+            lines.append(f"   來源: {source_meta}")
+        if src_language and src_language not in ("zh", "zh-tw", "zh-cn", "en"):
+            lang_display = _LANG_DISPLAY_LABEL.get(src_language, f"[{src_language}]")
+            lines.append(f"   語言: {lang_display}")
         if region:
             lines.append(f"   區域: {region}")
         if summary:
@@ -1730,6 +1960,7 @@ def _generate_multiphase_synthesis(
     sub_reports_block = "\n\n".join(
         f"═══ {name} ═══\n{text}" for name, text in sub_reports
     )
+    expert_data_block_section = ("Expert Analysis Data:\n" + expert_data_block) if has_expert_data else ""
 
     _cb("stage", f"🤖 AI 綜整 {len(sub_reports)} 份子報告，生成最終簡報…")
 
@@ -1751,6 +1982,7 @@ Requirements:
 5. Identify cross-regional patterns, escalating trends, and strategic implications.
 6. CRITICAL — Citation codes [S1][S2][S3]... are embedded in the sub-reports. You MUST preserve every [Sx] code exactly as it appears — do NOT renumber, merge, drop, or invent any [Sx] marker. When you incorporate a fact from a sub-report that has a citation code, carry that exact code into the synthesis text. These codes are the only link to the source bibliography and must NOT be lost.
 7. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
+7a. MANDATORY — Media country attribution: When citing a non-Chinese / non-English language media outlet, you MUST note which country it is from on first mention. Format: 「[媒體名稱]（[國家名稱]）」. Examples: 《朝日新聞》（日本）、《韓聯社》（韓國）、《明鏡週刊》（德國）、《費加羅報》（法國）。For articles that carry a language tag such as [日文], [韓文], [德文] etc. in their title, treat them as coming from the corresponding country. This rule has NO exceptions.
 8. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name in Chinese characters (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English/romanised name in parentheses. ADDITIONAL RULE for Japanese, Korean, and Vietnamese names: after the Chinese characters, add the romanised form in square brackets, e.g. 岸田文雄[Kishida Fumio]、尹錫悅[Yoon Suk-yeol]、阮富仲[Nguyễn Phú Trọng]. Format: [Title][Chinese name][Romanised]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄[Kishida Fumio]（Fumio Kishida）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）、越南國家主席阮富仲[Nguyễn Phú Trọng]（Nguyễn Phú Trọng）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
 9a. MANDATORY — Expert names: whenever an expert or analyst is cited in 七、專家研析, render their name in bold (**Name**) and include their full title and affiliation on first mention. E.g. **美國智庫戰略與國際研究中心（CSIS）資深研究員王大維（David Wang）**。
 9. MANDATORY — Organizations and institutions: On first mention, always provide both Chinese and English names. Format: Chinese name（English Name）. Examples: 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）、美國在台協會（American Institute in Taiwan, AIT）. This rule has NO exceptions.
@@ -1820,7 +2052,7 @@ Strategic Context:
 
 Sub-reports from regional analyst teams:
 {sub_reports_block}
-{("Expert Analysis Data:\n" + expert_data_block) if has_expert_data else ""}
+{expert_data_block_section}
 """
 
     client = _get_openai_client()
@@ -2085,6 +2317,7 @@ Requirements:
 10. Only use source markers that exist in the provided News data.
 11. Keep citations light and readable. Do not attach a citation to every single sentence unless necessary.
 12. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
+12a. MANDATORY — Media country attribution: When citing a non-Chinese / non-English language media outlet, you MUST note which country it is from on first mention. Format: 「[媒體名稱]（[國家名稱]）」. Examples: 《朝日新聞》（日本）、《韓聯社》（韓國）、《明鏡週刊》（德國）、《費加羅報》（法國）。For articles that carry a language tag such as [日文], [韓文], [德文] etc. in their title, treat them as coming from the corresponding country. The news data also includes "來源" with a country in parentheses — use that country when provided. This rule has NO exceptions.
 13. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name in Chinese characters (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English/romanised name in parentheses. ADDITIONAL RULE for Japanese, Korean, and Vietnamese names: after the Chinese characters, add the romanised form in square brackets, e.g. 岸田文雄[Kishida Fumio]、尹錫悅[Yoon Suk-yeol]、阮富仲[Nguyễn Phú Trọng]. Format: [Title][Chinese name][Romanised]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄[Kishida Fumio]（Fumio Kishida）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）、越南國家主席阮富仲[Nguyễn Phú Trọng]（Nguyễn Phú Trọng）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
 13a. MANDATORY — Expert names: whenever an expert or analyst is cited in 七、專家研析, render their name in bold (**Name**) and include their full title and affiliation on first mention. E.g. **美國智庫戰略與國際研究中心（CSIS）資深研究員王大維（David Wang）**。
 14. MANDATORY — Organizations and institutions: On first mention, always provide both Chinese and English names. Format: Chinese name（English Name）. Examples: 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）、美國在台協會（American Institute in Taiwan, AIT）、中華民國國防部（Ministry of National Defense, ROC）. This rule has NO exceptions.
