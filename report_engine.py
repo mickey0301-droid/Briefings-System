@@ -241,32 +241,21 @@ def _fetch_rss_items(rss_url, source_name, limit=20):
         print(f"[Briefings] RSS fetch failed for {source_name}: {e}")
         return []
 
-    def _fetch_one(item):
+    # 只使用 RSS 的 title + summary，不額外抓全文
+    # （與 daily_report.py 做法一致，速度快且不會因為抓全文而逾時）
+    output = []
+    for item in parsed[:limit]:
         raw_url = item.get("url", "")
-        resolved_url = _resolve_google_news_url(raw_url)
-        article_content = _fetch_article_content(resolved_url)
-        return {
+        output.append({
             "title": item.get("title", "").strip(),
             "url": raw_url,
-            "original_url": resolved_url,
+            "original_url": raw_url,
             "source": source_name,
             "published": item.get("published", ""),
             "summary": item.get("summary", ""),
-            "content": article_content,
+            "content": "",
             "source_type": "rss",
-        }
-
-    # 平行抓取各篇全文，每篇最多等 20 秒，整組最多等 30 秒
-    output = []
-    batch = parsed[:limit]
-    with ThreadPoolExecutor(max_workers=min(5, len(batch) or 1)) as art_ex:
-        futs = {art_ex.submit(_fetch_one, it): it for it in batch}
-        for fut in as_completed(futs, timeout=30):
-            try:
-                output.append(fut.result())
-            except Exception:
-                pass
-
+        })
     return output
 
 
