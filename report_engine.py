@@ -31,6 +31,17 @@ except Exception:
     def fetch_official_media_for_range(start_time=None, end_time=None, requested_subsources=None):
         return {}
 
+# Mapping from loaders.py subsource keys → cn_official.py subsource keys
+_CN_SUBSOURCE_MAP = {
+    "people_daily": "rmrb",
+    "xinwen_lianbo": "xwlb",
+    "pla_daily": "jfjb",
+    "xinhua": "xhs",
+    "mfa_press": "fmprc",
+    "mod_press": "mod",
+    "taiwan_affairs_office": "gwytb",
+}
+
 import requests
 import xml.etree.ElementTree as ET
 from urllib.parse import quote
@@ -1005,6 +1016,39 @@ def generate_report(
         start_time=start_time,
         end_time=end_time,
     )
+
+    # -------------------------------------------------
+    # Chinese Official Media (direct scraping)
+    # -------------------------------------------------
+    try:
+        normalized_sel = _normalize_selected_sources(selected_sources, all_sources=sources)
+        cn_subsources = [
+            _CN_SUBSOURCE_MAP[s["subsource"]]
+            for s in normalized_sel
+            if s.get("type") == "cn_official" and s.get("subsource") in _CN_SUBSOURCE_MAP
+        ]
+        if cn_subsources:
+            cn_results = fetch_official_media_for_range(
+                start_time=start_time,
+                end_time=end_time,
+                requested_subsources=cn_subsources,
+            )
+            for subsource_items in cn_results.values():
+                for cn_item in subsource_items:
+                    items.append({
+                        "title": cn_item.get("title", ""),
+                        "url": cn_item.get("link", ""),
+                        "original_url": cn_item.get("link", ""),
+                        "source": cn_item.get("source_name", ""),
+                        "published": cn_item.get("published"),
+                        "summary": cn_item.get("summary", ""),
+                        "content": cn_item.get("content", ""),
+                        "source_region": cn_item.get("region", "中國"),
+                        "source_category": cn_item.get("category", ["中共官媒"]),
+                        "source_type": "cn_official",
+                    })
+    except Exception as e:
+        print(f"[Briefings] CN official media fetch failed: {e}")
 
     items = _filter_items_by_time_range(items, start_time, end_time)
 
