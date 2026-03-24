@@ -60,9 +60,8 @@ APP_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = APP_DIR / "outputs"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-st.set_page_config(page_title="Briefings", layout="wide")
-st.title("Briefings")
-st.caption("本機版 AI 情報簡報系統")
+st.set_page_config(page_title="公情綜整報告", layout="wide")
+st.title("公情綜整報告")
 
 
 # =========================================================
