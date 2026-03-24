@@ -1,5 +1,5 @@
 import inspect
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, date
 from pathlib import Path
 import pytz
 
@@ -1885,6 +1885,16 @@ elif selected_page == "Schedule":
                         key=f"hourly_{selected_idx}",
                     )
                 )
+                _sf_raw = s.get("start_from", "")
+                try:
+                    _sf_default = date.fromisoformat(_sf_raw[:10]) if _sf_raw else now_tw().date()
+                except Exception:
+                    _sf_default = now_tw().date()
+                s["start_from"] = st.date_input(
+                    "生效開始日期",
+                    value=_sf_default,
+                    key=f"start_from_{selected_idx}",
+                ).isoformat()
 
             elif mode == "daily":
                 daily_text = st.text_input(
@@ -1893,6 +1903,16 @@ elif selected_page == "Schedule":
                     key=f"daily_{selected_idx}",
                 )
                 s["daily_times"] = _csv_to_list(daily_text) or ["09:00"]
+                _sf_raw = s.get("start_from", "")
+                try:
+                    _sf_default = date.fromisoformat(_sf_raw[:10]) if _sf_raw else now_tw().date()
+                except Exception:
+                    _sf_default = now_tw().date()
+                s["start_from"] = st.date_input(
+                    "生效開始日期",
+                    value=_sf_default,
+                    key=f"start_from_{selected_idx}",
+                ).isoformat()
 
             elif mode == "weekly":
                 weekly_days = st.multiselect(
@@ -1908,6 +1928,16 @@ elif selected_page == "Schedule":
                 )
                 s["weekly_days"] = weekly_days or [0]
                 s["weekly_times"] = _csv_to_list(weekly_times_text) or ["09:00"]
+                _sf_raw = s.get("start_from", "")
+                try:
+                    _sf_default = date.fromisoformat(_sf_raw[:10]) if _sf_raw else now_tw().date()
+                except Exception:
+                    _sf_default = now_tw().date()
+                s["start_from"] = st.date_input(
+                    "生效開始日期",
+                    value=_sf_default,
+                    key=f"start_from_{selected_idx}",
+                ).isoformat()
 
             elif mode == "monthly":
                 monthly_days_text = st.text_input(
@@ -1930,6 +1960,16 @@ elif selected_page == "Schedule":
                         pass
                 s["monthly_days"] = month_days or [1]
                 s["monthly_times"] = _csv_to_list(monthly_times_text) or ["09:00"]
+                _sf_raw = s.get("start_from", "")
+                try:
+                    _sf_default = date.fromisoformat(_sf_raw[:10]) if _sf_raw else now_tw().date()
+                except Exception:
+                    _sf_default = now_tw().date()
+                s["start_from"] = st.date_input(
+                    "生效開始日期",
+                    value=_sf_default,
+                    key=f"start_from_{selected_idx}",
+                ).isoformat()
 
         st.markdown("#### 來源與專家篩選")
 

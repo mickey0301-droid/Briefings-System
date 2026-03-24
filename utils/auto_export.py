@@ -69,6 +69,7 @@ def default_schedule():
         "weekly_times": ["09:00"],
         "monthly_days": [1],
         "monthly_times": ["09:00"],
+        "start_from": "",
         "coverage_hours": 24,
         "selected_source_categories": [],
         "selected_source_names": [],
@@ -326,11 +327,22 @@ def compute_next_runs(schedule, count=5, now=None):
             return [dt]
         return []
 
+    # 非 once 模式：若設了 start_from，從該日期開始算（不早於 now）
+    start_from_str = s.get("start_from", "")
+    effective_now = now
+    if start_from_str:
+        try:
+            sf = datetime.strptime(start_from_str[:10], "%Y-%m-%d")
+            if sf > now:
+                effective_now = sf
+        except Exception:
+            pass
+
     if mode == "hourly":
         interval = max(1, int(s.get("hourly_interval_hours", 4)))
         # 對齊整點
-        base = now.replace(minute=0, second=0, microsecond=0)
-        if now.minute > 0 or now.second > 0 or now.microsecond > 0:
+        base = effective_now.replace(minute=0, second=0, microsecond=0)
+        if effective_now.minute > 0 or effective_now.second > 0 or effective_now.microsecond > 0:
             base += timedelta(hours=1)
 
         while len(results) < count:
@@ -342,11 +354,11 @@ def compute_next_runs(schedule, count=5, now=None):
         return results
 
     # daily / weekly / monthly
-    cursor = now.replace(second=0, microsecond=0)
+    cursor = effective_now.replace(second=0, microsecond=0)
     for i in range(0, 400):
         day_dt = (cursor + timedelta(days=i)).replace(hour=0, minute=0)
         cands = candidate_run_times_for_day(s, day_dt)
-        cands = [x for x in cands if x >= now]
+        cands = [x for x in cands if x >= effective_now]
         cands.sort()
         for c in cands:
             results.append(c)
@@ -367,6 +379,16 @@ def get_due_run_key(schedule, now=None):
         if now.year == dt.year and now.month == dt.month and now.day == dt.day and now.hour == dt.hour and now.minute == dt.minute:
             return dt.strftime("%Y-%m-%d %H:%M")
         return None
+
+    # 非 once 模式：若設了 start_from，今天日期必須 >= 該日期才執行
+    start_from_str = s.get("start_from", "")
+    if start_from_str:
+        try:
+            start_from_date = datetime.strptime(start_from_str[:10], "%Y-%m-%d").date()
+            if now.date() < start_from_date:
+                return None
+        except Exception:
+            pass
 
     if mode == "hourly":
         interval = max(1, int(s.get("hourly_interval_hours", 4)))

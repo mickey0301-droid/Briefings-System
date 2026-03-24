@@ -380,13 +380,15 @@ def _fetch_rss_items(rss_url, source_name, limit=20):
     try:
         r = fetch(rss_url, _REQUEST_HEADERS, 10)
         r.raise_for_status()
-        parsed = _parse_rss(r.text)
+        # r.content (bytes) 讓 ET 直接用 XML 宣告中的 encoding，
+        # 避免 requests 把 text/xml 錯誤預設成 iso-8859-1
+        parsed = _parse_rss(r.content)
         print(f"[RSS] {source_name}: HTTP {r.status_code}, "
               f"content-type={r.headers.get('content-type','?')!r}, "
-              f"len={len(r.text)}, items={len(parsed)}, "
+              f"len={len(r.content)}, items={len(parsed)}, "
               f"url={rss_url[:120]}")
-        if len(parsed) == 0 and len(r.text) > 0:
-            print(f"[RSS] {source_name} response preview: {r.text[:300]!r}")
+        if len(parsed) == 0 and len(r.content) > 0:
+            print(f"[RSS] {source_name} response preview: {r.content[:300]!r}")
     except Exception as e:
         print(f"[Briefings] RSS fetch failed for {source_name}: {e}")
         return []
@@ -682,10 +684,10 @@ def debug_fetch_source(src: dict, start_time=None, end_time=None) -> dict:
         r = requests.get(rss_url, headers=_REQUEST_HEADERS, timeout=12)
         result["http_status"]    = r.status_code
         result["content_type"]   = r.headers.get("content-type", "?")
-        result["response_len"]   = len(r.text)
-        result["response_preview"] = r.text[:300].replace("\n", " ")
+        result["response_len"]   = len(r.content)
+        result["response_preview"] = r.content[:300].decode("utf-8", errors="replace").replace("\n", " ")
 
-        parsed = _parse_rss(r.text)
+        parsed = _parse_rss(r.content)
         result["items_parsed"] = len(parsed)
         result["items"] = parsed[:5]
     except Exception as e:

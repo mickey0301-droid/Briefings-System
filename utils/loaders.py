@@ -14,6 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = BASE_DIR / "config"
 
 SOURCES_PATH = CONFIG_DIR / "sources.json"
+SOURCES_USER_PATH = CONFIG_DIR / "sources_user.json"
 EXPERTS_PATH = CONFIG_DIR / "experts.json"
 PROFILES_PATH = CONFIG_DIR / "profiles.json"
 INSIGHTS_PATH = CONFIG_DIR / "insights.txt"
@@ -394,7 +395,9 @@ def load_global_media_sources():
 
 
 def load_sources(editable_only=False):
-    data = read_json(SOURCES_PATH)
+    # 優先讀取使用者本地版本（不被 git pull 覆蓋）
+    active_path = SOURCES_USER_PATH if SOURCES_USER_PATH.exists() else SOURCES_PATH
+    data = read_json(active_path)
     if not isinstance(data, list):
         data = []
 
@@ -425,7 +428,8 @@ def save_sources(sources):
         if n.get("fixed") or n.get("readonly") or n["type"] == "cn_official":
             continue
         normalized.append(n)
-    write_json(SOURCES_PATH, normalized)
+    # 始終寫到 _user 版本，不動 git 追蹤的預設檔
+    write_json(SOURCES_USER_PATH, normalized)
 
 
 def load_experts():

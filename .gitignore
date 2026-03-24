@@ -14,6 +14,7 @@ config/auto_export_user.json
 config/auto_export_state.json
 config/insights_user.json
 config/category_keywords_user.json
+config/sources_user.json
 
 # 其他暫存
 *.log
