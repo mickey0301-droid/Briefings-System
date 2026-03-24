@@ -221,23 +221,46 @@ def _parse_rss(xml_text):
     except Exception:
         return items
 
-    for item in root.findall(".//item"):
-        title = (item.findtext("title") or "").strip()
-        link = (item.findtext("link") or "").strip()
-        pub_date = (item.findtext("pubDate") or "").strip()
-        description = (item.findtext("description") or "").strip()
+    # 支援 Atom feed 的 <entry> 以及 RSS 的 <item>
+    entries = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
+
+    for item in entries:
+        def _text(*tags):
+            for t in tags:
+                v = item.findtext(t) or item.findtext(f"{{http://www.w3.org/2005/Atom}}{t}")
+                if v:
+                    return v.strip()
+            return ""
+
+        title = _text("title")
+        # Atom <link href="..."> 和 RSS <link>
+        link = _text("link")
+        if not link:
+            le = item.find("link") or item.find("{http://www.w3.org/2005/Atom}link")
+            if le is not None:
+                link = le.get("href", "")
+
+        # 支援多種日期欄位：pubDate / published / updated / dc:date
+        pub_date = (
+            _text("pubDate")
+            or _text("published")
+            or _text("updated")
+            or _text("{http://purl.org/dc/elements/1.1/}date")
+        )
+        description = _text("description", "summary", "content")
 
         # Google News RSS 的 <source url="https://cna.com.tw">中央社</source>
         src_elem = item.find("source")
         source_publisher_url = src_elem.get("url", "") if src_elem is not None else ""
 
-        items.append({
-            "title": title,
-            "url": link,
-            "published": pub_date,
-            "summary": description,
-            "source_publisher_url": source_publisher_url,
-        })
+        if title or link:
+            items.append({
+                "title": title,
+                "url": link,
+                "published": pub_date,
+                "summary": description,
+                "source_publisher_url": source_publisher_url,
+            })
     return items
 
 
@@ -391,14 +414,17 @@ def _extract_news_domain(url: str) -> str | None:
 def _build_google_news_rss_for_domain(domain, start_time=None, end_time=None, keywords=None):
     """
     建立 Google News RSS 查詢 URL。
-    使用 after:YYYY/MM/DD before:YYYY/MM/DD 格式（斜線，非連字號）做時間篩選。
-    不在查詢中加入關鍵字，關鍵字過濾留到 generate_report() 處理。
+    after: 使用 start_time 日期；before: 使用 end_time + 1 天
+    （Google News before: 排除該日期本身，不加 1 天會漏掉當天所有文章）。
+    精確時間截斷由 _filter_items_by_time_range 在 client 端補做。
     """
+    from datetime import timedelta
     query = f"site:{domain}"
     if start_time:
         query += f" after:{start_time.strftime('%Y/%m/%d')}"
     if end_time:
-        query += f" before:{end_time.strftime('%Y/%m/%d')}"
+        before_date = end_time + timedelta(days=1)
+        query += f" before:{before_date.strftime('%Y/%m/%d')}"
     query_encoded = quote(query)
     return f"https://news.google.com/rss/search?q={query_encoded}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
 
@@ -485,16 +511,23 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
                 item["source_type"] = "gnews"
             return fetched
 
-        # 優先找直接 RSS feed URL（支援多個欄位名稱）
-        rss_url = (
-            src.get("rss") or src.get("rss_url") or src.get("feed") or src.get("feed_url")
-        )
+        src_type  = src.get("type", "rss")
         url_field = src.get("url", "")
-        if not rss_url and url_field.startswith("http"):
-            rss_url = url_field
 
-        # 沒有直接 RSS URL → 從 url/domain/site 欄位取 domain，查 Google News RSS
+        # type=rss：優先使用 rss/rss_url/feed/feed_url，
+        #           再看 url 是否為完整 http 網址（使用者手填的真實 RSS feed）
+        # type=domain（或其他）：永遠走 Google News RSS site: 查詢
+        rss_url = None
+        if src_type == "rss":
+            rss_url = (
+                src.get("rss") or src.get("rss_url")
+                or src.get("feed") or src.get("feed_url")
+            )
+            if not rss_url and url_field.startswith("http"):
+                rss_url = url_field
+
         if not rss_url:
+            # domain 或沒有直接 feed URL → Google News site: 查詢
             domain = (src.get("domain") or src.get("site")
                       or _extract_news_domain(url_field) or url_field)
             if not domain:

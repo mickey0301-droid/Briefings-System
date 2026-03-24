@@ -1026,7 +1026,7 @@ elif selected_page == "Sources":
                 "description": st.column_config.TextColumn("description"),
             },
         )
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns([2, 2, 1])
         with c1:
             if st.button("儲存台灣媒體編輯", key="save_tw_sources", use_container_width=True):
                 rows = _clean_batch_df(edited_tw_df)
@@ -1050,6 +1050,34 @@ elif selected_page == "Sources":
                 save_sources(current)
                 st.success(f"已刪除 {len(del_tw)} 筆。")
                 st.rerun()
+        with c3:
+            if st.button("🔬 測試抓取", key="test_tw_fetch", use_container_width=True):
+                st.session_state["show_tw_test"] = True
+        if st.session_state.get("show_tw_test"):
+            with st.spinner("測試抓取中..."):
+                import report_engine as _re
+                from datetime import datetime, timedelta
+                _now = datetime.now()
+                _results = []
+                for _src in tw_sources[:5]:
+                    _url = _src.get("url", "")
+                    _rss = _src.get("rss") or _src.get("rss_url") or (_url if _url.startswith("http") else None)
+                    if not _rss:
+                        from urllib.parse import quote as _q
+                        _dom = _url.lower().replace("www.", "")
+                        from datetime import timedelta as _td
+                        _after = (_now - _td(days=1)).strftime("%Y/%m/%d")
+                        _before = (_now + _td(days=1)).strftime("%Y/%m/%d")
+                        _rss = f"https://news.google.com/rss/search?q=site:{_dom}%20after:{_after}%20before:{_before}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
+                    _items = _re._fetch_rss_items(_rss, _src["name"], limit=5)
+                    _results.append((_src["name"], _rss, _items))
+            st.markdown("**抓取測試結果（前 5 個來源）：**")
+            for _name, _rss_url, _its in _results:
+                st.markdown(f"**{_name}** → `{len(_its)}` 篇")
+                st.caption(_rss_url[:120])
+                for _it in _its[:3]:
+                    st.markdown(f"- {_it.get('title','')[:80]}　`{_it.get('published','')[:20]}`")
+            st.session_state["show_tw_test"] = False
 
     # ── 自訂國際媒體 ──────────────────────────────────────────────────────────
     with src_tab_intl:
