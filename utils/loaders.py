@@ -365,7 +365,7 @@ def normalize_global_media_source(item: dict) -> dict:
         "region": country or continent,
         "enabled": True,
         "description": f"global media | language={language} | type={media_type}",
-        "readonly": False,
+        "readonly": True,
         "fixed": False,
     }
 
