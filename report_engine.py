@@ -365,15 +365,16 @@ def _fetch_domain_items(domain, source_name, limit=20, start_time=None, end_time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_source=20,
-                              start_time=None, end_time=None):
+                              start_time=None, end_time=None, status_callback=None):
     """
     從各來源抓取新聞條目。
     start_time / end_time 會傳入 domain 類來源（Google News RSS），
     確保查詢結果已在 Google 端預先依日期篩選，減少漏抓問題。
+    status_callback(msg: str) 若提供，會在每個來源完成時被呼叫。
     """
 
     normalized_sources = _normalize_selected_sources(selected_sources, all_sources=all_sources)
-
+    total = len(normalized_sources)
     all_items = []
 
     def fetch_single(src):
@@ -421,19 +422,28 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
             enriched["source_type"] = src.get("type", enriched.get("source_type", "rss"))
             enriched_items.append(enriched)
 
-        print(f"[Briefings] Source fetched: {name} -> {len(enriched_items)}")
+        return name, enriched_items
 
-        return enriched_items
-
+    completed = 0
     with ThreadPoolExecutor(max_workers=10) as executor:
 
-        futures = [executor.submit(fetch_single, src) for src in normalized_sources]
+        futures = {executor.submit(fetch_single, src): src for src in normalized_sources}
 
         for future in as_completed(futures):
             try:
-                items = future.result()
+                name, items = future.result()
                 all_items.extend(items)
+                completed += 1
+                if status_callback and items:
+                    status_callback(
+                        f"rss",
+                        f"{name}：{len(items)} 篇",
+                        completed, total, len(all_items),
+                    )
+                elif status_callback:
+                    status_callback("rss_progress", None, completed, total, len(all_items))
             except Exception as e:
+                completed += 1
                 print("Fetch error:", e)
 
     return all_items
@@ -1077,10 +1087,26 @@ def generate_report(
     language="zh",
     insights_text="",
     format_options=None,
-    topic=None
+    topic=None,
+    status_callback=None,
 ):
+    """
+    status_callback(event, detail, *args) 是可選的 UI 回呼，格式：
+      ("rss",          "來源名：N篇", completed, total, total_items)
+      ("rss_progress", None,          completed, total, total_items)
+      ("stage",        "訊息文字")
+    """
+
+    def _cb(event, detail=None, *args):
+        if status_callback:
+            try:
+                status_callback(event, detail, *args)
+            except Exception:
+                pass
 
     sources = load_sources()
+    n_src = len(_normalize_selected_sources(selected_sources, all_sources=sources))
+    _cb("stage", f"⏳ 開始從 {n_src} 個來源抓取 RSS…")
 
     items = fetch_items_from_sources(
         selected_sources=selected_sources,
@@ -1088,7 +1114,9 @@ def generate_report(
         limit_per_source=20,
         start_time=start_time,
         end_time=end_time,
+        status_callback=status_callback,
     )
+    _cb("stage", f"✅ RSS 抓取完成，共取得 {len(items)} 篇原始文章")
 
     # -------------------------------------------------
     # Chinese Official Media (direct scraping)
@@ -1101,17 +1129,15 @@ def generate_report(
             if s.get("type") == "cn_official" and s.get("subsource") in _CN_SUBSOURCE_MAP
         ]
         if cn_subsources:
+            _cb("stage", f"🇨🇳 爬取中共官媒（{', '.join(cn_subsources)}）…")
             cn_results = fetch_official_media_for_range(
                 start_time=start_time,
                 end_time=end_time,
                 requested_subsources=cn_subsources,
             )
+            cn_count = 0
             for subsource_items in cn_results.values():
                 for cn_item in subsource_items:
-                    # CN official scrapers set published=midnight of the target date.
-                    # To ensure items pass _filter_items_by_time_range, clamp published
-                    # to be within [start_time, end_time]. We know these articles are
-                    # relevant because the scraper was explicitly called for this date range.
                     raw_published = cn_item.get("published")
                     if isinstance(raw_published, datetime):
                         clamped = max(raw_published.replace(hour=12, minute=0, second=0), start_time)
@@ -1130,27 +1156,25 @@ def generate_report(
                         "source_category": cn_item.get("category", ["中共官媒"]),
                         "source_type": "cn_official",
                     })
+                    cn_count += 1
+            _cb("stage", f"✅ 中共官媒取得 {cn_count} 篇")
     except Exception as e:
         print(f"[Briefings] CN official media fetch failed: {e}")
 
     items = _filter_items_by_time_range(items, start_time, end_time)
+    _cb("stage", f"🕐 時間範圍過濾後剩 {len(items)} 篇")
 
     items = filter_items_by_topic(items, topic)
 
     # -------------------------------------------------
     # 兩段式過濾 + 全文補抓
-    #
-    # 路徑 A（台灣／中國議題）：
-    #   關鍵字過濾 → 命中者補抓全文（最多 40 篇）
-    #
-    # 路徑 B（國際要聞 / 全球媒體）：
-    #   熱度排名（被最多來源同時報導） → 取 top 20 代表篇 → 補抓全文
+    # 路徑 A（台灣／中國議題）：關鍵字過濾 → 補抓全文（最多 40 篇）
+    # 路徑 B（國際要聞 / 全球媒體）：熱度排名 → 取 top 20 → 補抓全文
     # -------------------------------------------------
 
-    # 分流：依來源類別區分
-    tw_cn_items = []   # 路徑 A：台灣／中國
-    global_items = []  # 路徑 B：全球媒體
-    other_items  = []  # 其他（cn_official 等已有全文）
+    tw_cn_items = []
+    global_items = []
+    other_items  = []
 
     for it in items:
         cats = set(it.get("source_category") or [])
@@ -1161,16 +1185,14 @@ def generate_report(
         else:
             tw_cn_items.append(it)
 
-    # 路徑 A：關鍵字過濾
     tw_cn_matched = [i for i in tw_cn_items if _matches_tw_cn(i)]
-    print(f"[Briefings] 台灣/中國關鍵字命中：{len(tw_cn_matched)} / {len(tw_cn_items)}")
+    _cb("stage", f"🔍 台灣/中國關鍵字命中：{len(tw_cn_matched)} / {len(tw_cn_items)} 篇")
 
-    # 路徑 B：熱度排名
     global_top = _rank_by_coverage(global_items, top_n=20)
-    print(f"[Briefings] 國際要聞熱度篩選：{len(global_top)} / {len(global_items)}")
+    _cb("stage", f"🌍 國際熱點排名：取前 {len(global_top)} / {len(global_items)} 篇最多來源報導")
 
-    # 合併待補全文清單（上限 60 篇，避免過多 HTTP 請求）
-    to_enrich = (tw_cn_matched[:40] + global_top[:20])
+    to_enrich = tw_cn_matched[:40] + global_top[:20]
+    _cb("stage", f"📄 補抓 {len(to_enrich)} 篇全文（10 個並行連線）…")
 
     def _enrich_one(item):
         url = item.get("original_url") or item.get("url") or ""
@@ -1190,6 +1212,9 @@ def generate_report(
     except Exception as e:
         print(f"[Briefings] Article enrichment failed (using summaries): {e}")
         items = to_enrich + other_items
+
+    with_content = sum(1 for i in items if i.get("content"))
+    _cb("stage", f"✅ 全文補抓完成：{with_content} / {len(items)} 篇有全文")
 
     # -------------------------------------------------
     # Expert Monitoring
@@ -1366,6 +1391,8 @@ News data:
 {news_data_block}
 {("Expert Analysis Data:" + chr(10) + expert_data_block) if has_expert_data else ""}
 """
+
+    _cb("stage", f"🤖 AI 生成簡報中（共 {len(items)} 篇文章進入分析）…")
 
     client = _get_openai_client()
 

@@ -140,6 +140,7 @@ def _call_generate_report(
     profile_name,
     language,
     insights_text,
+    status_callback=None,
 ):
     fn = getattr(report_engine, "generate_report", None)
     if fn is None:
@@ -161,6 +162,7 @@ def _call_generate_report(
         "language": language,
         "insights_text": insights_text,
         "insights": insights_text,
+        "status_callback": status_callback,
     }
 
     for name in sig.parameters:
@@ -621,7 +623,7 @@ if selected_page == "Briefings":
             try:
                 status.info("開始生成")
                 detail.caption("正在準備任務參數。")
-                progress.progress(10)
+                progress.progress(5)
 
                 insight_lines = []
 
@@ -649,17 +651,42 @@ if selected_page == "Briefings":
                 if extra_insights.strip():
                     combined_insights = f"{combined_insights}\n\n{extra_insights.strip()}".strip()
 
-                status.info("抓取資料並生成 AI 簡報")
-                detail.markdown(
-                    f"""
-**本次時間範圍：** {start_dt.strftime('%Y-%m-%d %H:%M')} ～ {end_dt.strftime('%Y-%m-%d %H:%M')}
+                status.info("抓取資料中…")
 
-**已選來源數：** {len(selected_sources)}
+                # ── 即時抓取狀態顯示 ──────────────────────────────────
+                fetch_log_placeholder = st.empty()
+                fetch_log_lines: list[str] = []
+                rss_found_sources: list[str] = []
 
-**已選專家數：** {len(selected_experts)}
-"""
-                )
-                progress.progress(45)
+                def _on_fetch_status(event, detail, *args):
+                    if event == "stage":
+                        fetch_log_lines.append(detail)
+                        if "🤖" in detail:
+                            status.info("AI 生成簡報中…")
+                            progress.progress(75)
+                        elif "✅ 全文" in detail:
+                            progress.progress(65)
+                        elif "📄" in detail:
+                            progress.progress(55)
+                        elif "✅ RSS" in detail:
+                            progress.progress(30)
+                        elif "⏳" in detail:
+                            progress.progress(10)
+                    elif event == "rss" and detail:
+                        rss_found_sources.append(detail)
+                        completed, total, total_items = args[0], args[1], args[2]
+                        pct = int(10 + (completed / max(total, 1)) * 20)
+                        progress.progress(min(pct, 30))
+                    # 組合顯示文字
+                    display_lines = fetch_log_lines[-6:]
+                    if rss_found_sources:
+                        recent = "　".join(rss_found_sources[-4:])
+                        display_lines.append(f"　　↳ {recent}")
+                    fetch_log_placeholder.markdown(
+                        "\n\n".join(display_lines)
+                    )
+
+                progress.progress(10)
 
                 report_text, filtered_items = _call_generate_report(
                     start_time=start_dt,
@@ -669,10 +696,12 @@ if selected_page == "Briefings":
                     profile_name=profile_name,
                     language=language,
                     insights_text=combined_insights,
+                    status_callback=_on_fetch_status,
                 )
 
+                fetch_log_placeholder.empty()
                 status.info("輸出檔案")
-                progress.progress(75)
+                progress.progress(80)
 
                 ts = _now_str()
                 base_name = f"briefings_{ts}"
