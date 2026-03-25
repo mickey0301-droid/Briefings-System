@@ -750,7 +750,7 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
         cat = cats[0] if cats else ""
         src_name = src.get("name", "")
 
-        # 自訂專家：若有 rss_url 直接抓 RSS；否則用名字查 Google News
+        # 自訂專家：若有 rss_url 直接抓 RSS；否則用 expert_gnews_urls 生成所有查詢 URL
         if cat == "自訂專家":
             expert_name = src_name.strip()
             if not expert_name:
@@ -760,20 +760,46 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
                 # 直接從自訂 RSS URL 抓取；時間過濾在 client 端由 _filter_items_by_time_range 完成
                 fetched = _fetch_rss_items(direct_rss, expert_name, limit=limit_per_source)
             else:
-                # 沒有 RSS URL → 根據名字語系自動選擇 locale 並查 Google News
-                # 判斷是否純 ASCII（英文名）→ 用 en-US；否則用 zh-TW
-                _is_ascii_name = all(ord(c) < 128 for c in expert_name.replace(" ", ""))
-                if _is_ascii_name:
-                    _gnews_params = "hl=en-US&gl=US&ceid=US:en"
-                else:
-                    _gnews_params = "hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
-                kw = f'"{expert_name}"'
-                if start_time:
-                    kw += f" after:{start_time.strftime('%Y/%m/%d')}"
-                if end_time:
-                    kw += f" before:{end_time.strftime('%Y/%m/%d')}"
-                gnews_url = f"https://news.google.com/rss/search?q={quote(kw)}&{_gnews_params}"
-                fetched = _fetch_rss_items(gnews_url, expert_name, limit=limit_per_source)
+                # 無 rss_url → 用 expert_gnews_urls 產生所有語系的 Google News 查詢
+                from utils.loaders import expert_gnews_urls as _expert_gnews_urls
+                # 從 src dict 重建最小 expert dict 以供 helper 使用
+                _exp_dict = {
+                    "name_zh": src.get("name_zh") or ("" if all(ord(c) < 128 for c in expert_name.replace(" ", "")) else expert_name),
+                    "name_en": src.get("name_en") or (expert_name if all(ord(c) < 128 for c in expert_name.replace(" ", "")) else ""),
+                    "region": src.get("region", ""),
+                    "rss_url": "",
+                }
+                _url_pairs = _expert_gnews_urls(_exp_dict)
+                if not _url_pairs:
+                    # fallback: single URL from display name
+                    _is_ascii = all(ord(c) < 128 for c in expert_name.replace(" ", ""))
+                    _p = "hl=en-US&gl=US&ceid=US:en" if _is_ascii else "hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
+                    _url_pairs = [("", f"https://news.google.com/rss/search?q={quote(chr(34)+expert_name+chr(34))}&{_p}")]
+                # Query all URLs, add time params, deduplicate by URL
+                fetched = []
+                _seen_urls: set = set()
+                for _label, _base_url in _url_pairs:
+                    # Inject time params into query string
+                    _sep = "&" if "?" in _base_url else "?"
+                    _timed_url = _base_url
+                    if start_time or end_time:
+                        # Extract existing q= param and append date range
+                        import urllib.parse as _up
+                        _parsed = _up.urlparse(_base_url)
+                        _qs = _up.parse_qs(_parsed.query)
+                        _q = _qs.get("q", [""])[0]
+                        if start_time:
+                            _q += f" after:{start_time.strftime('%Y/%m/%d')}"
+                        if end_time:
+                            _q += f" before:{end_time.strftime('%Y/%m/%d')}"
+                        _qs["q"] = [_q]
+                        _new_query = _up.urlencode({k: v[0] for k, v in _qs.items()})
+                        _timed_url = _up.urlunparse(_parsed._replace(query=_new_query))
+                    for _item in _fetch_rss_items(_timed_url, expert_name, limit=limit_per_source):
+                        _key = (_item.get("url") or _item.get("link") or "").lower().strip()
+                        if _key and _key not in _seen_urls:
+                            _seen_urls.add(_key)
+                            fetched.append(_item)
             # 時間過濾（補足 direct RSS 無法在 URL 帶時間的情況）
             fetched = _filter_items_by_time_range(fetched, start_time, end_time)
             for item in fetched:

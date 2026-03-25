@@ -1429,27 +1429,42 @@ elif selected_page == "Sources":
                 st.rerun()
 
         st.markdown("### 專家搜尋名稱預覽")
-        st.caption("若「rss_url」欄位為空，系統會依下表「自動生成 RSS URL」向 Google News 搜尋。英文名用 en-US，中文名用 zh-TW。可直接複製連結貼入 rss_url 欄位以自訂。")
+        st.caption(
+            "若「rss_url」欄位為空，系統依下表自動生成 Google News RSS URL 搜尋。"
+            "英文名用 en-US、中文名用 zh-TW、中國大陸專家另加 zh-CN。"
+            "可複製連結貼入 rss_url 欄位以覆蓋。"
+        )
+        from utils.loaders import expert_gnews_urls as _expert_gnews_urls
         preview_rows = []
         for e in load_experts():
             name = display_expert_name(e)
             rss_url = (e.get("rss_url") or "").strip()
-            if not rss_url:
-                import urllib.parse as _up
-                _is_ascii = all(ord(c) < 128 for c in name.replace(" ", ""))
-                _params = "hl=en-US&gl=US&ceid=US:en" if _is_ascii else "hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
-                auto_url = f'https://news.google.com/rss/search?q={_up.quote(chr(34) + name + chr(34))}&{_params}'
-            else:
-                auto_url = "（已設自訂 rss_url）"
-            preview_rows.append(
-                {
-                    "display_name": name,
-                    "自動生成 RSS URL（rss_url 空白時使用）": auto_url,
-                    "search_names": ", ".join(e.get("search_names", [])),
+            url_pairs = _expert_gnews_urls(e)   # [] if rss_url is set
+            if rss_url:
+                preview_rows.append({
+                    "專家名稱": name,
+                    "類型": "自訂 rss_url",
+                    "URL": rss_url,
                     "category": ", ".join(e.get("category", [])),
                     "enabled": e.get("enabled", True),
-                }
-            )
+                })
+            elif url_pairs:
+                for label, url in url_pairs:
+                    preview_rows.append({
+                        "專家名稱": name,
+                        "類型": label,
+                        "URL": url,
+                        "category": ", ".join(e.get("category", [])),
+                        "enabled": e.get("enabled", True),
+                    })
+            else:
+                preview_rows.append({
+                    "專家名稱": name,
+                    "類型": "（無名稱可生成）",
+                    "URL": "",
+                    "category": ", ".join(e.get("category", [])),
+                    "enabled": e.get("enabled", True),
+                })
         if preview_rows:
             st.dataframe(pd.DataFrame(preview_rows), use_container_width=True, hide_index=True)
         else:

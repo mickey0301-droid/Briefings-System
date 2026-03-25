@@ -16,6 +16,7 @@ CONFIG_DIR = BASE_DIR / "config"
 SOURCES_PATH = CONFIG_DIR / "sources.json"
 SOURCES_USER_PATH = CONFIG_DIR / "sources_user.json"
 EXPERTS_PATH = CONFIG_DIR / "experts.json"
+EXPERTS_USER_PATH = CONFIG_DIR / "experts_user.json"   # user-local, not git-tracked → survives updates
 PROFILES_PATH = CONFIG_DIR / "profiles.json"
 INSIGHTS_PATH = CONFIG_DIR / "insights.txt"
 AUTO_EXPORT_PATH = CONFIG_DIR / "auto_export.json"
@@ -448,10 +449,52 @@ def save_sources(sources):
 
 
 def load_experts():
-    data = read_json(EXPERTS_PATH)
+    # 優先讀取使用者本地版本（不被 git pull 覆蓋），與 load_sources 邏輯一致
+    active_path = EXPERTS_USER_PATH if EXPERTS_USER_PATH.exists() else EXPERTS_PATH
+    data = read_json(active_path)
     if not isinstance(data, list):
         data = []
     return [normalize_expert(item) for item in data]
+
+
+def expert_gnews_urls(expert: dict) -> list:
+    """
+    Return a list of (label, url) tuples for Google News RSS queries
+    based on the expert's name fields.
+
+    Rules:
+    - name_en (ASCII)  → en-US locale
+    - name_zh          → zh-TW locale (traditional Chinese)
+    - name_zh + region indicates mainland China (CN / 中國) → also zh-CN locale
+    If rss_url is set, returns [] (direct RSS takes priority, no auto-URL needed).
+    """
+    import urllib.parse as _up
+
+    if (expert.get("rss_url") or "").strip():
+        return []   # custom RSS URL set; auto-generation not needed
+
+    results = []
+    name_zh = (expert.get("name_zh") or "").strip()
+    name_en = (expert.get("name_en") or "").strip()
+    region  = (expert.get("region") or "").strip().upper()
+
+    def _gnews(name: str, params: str) -> str:
+        q = _up.quote(f'"{name}"')
+        return f"https://news.google.com/rss/search?q={q}&{params}"
+
+    # English name → en-US
+    if name_en:
+        results.append(("英文名（en-US）", _gnews(name_en, "hl=en-US&gl=US&ceid=US:en")))
+
+    # Chinese name → zh-TW (traditional)
+    if name_zh:
+        results.append(("中文名（zh-TW）", _gnews(name_zh, "hl=zh-TW&gl=TW&ceid=TW:zh-Hant")))
+        # Mainland China indicator → also add zh-CN (simplified)
+        _cn_regions = {"CN", "中國", "中国", "大陸", "大陆", "CHINA", "MAINLAND"}
+        if any(r in region for r in _cn_regions):
+            results.append(("中文名－簡體（zh-CN）", _gnews(name_zh, "hl=zh-CN&gl=SG&ceid=SG:zh-Hans")))
+
+    return results
 
 
 def experts_as_sources() -> list:
@@ -488,7 +531,8 @@ def experts_as_sources() -> list:
 
 def save_experts(experts):
     normalized = [normalize_expert(item) for item in (experts or [])]
-    write_json(EXPERTS_PATH, normalized)
+    # 始終寫到 _user 版本，不動 git 追蹤的預設檔，避免被更新覆蓋
+    write_json(EXPERTS_USER_PATH, normalized)
 
 
 _INSIGHTS_USER_PATH = "config/insights_user.json"
