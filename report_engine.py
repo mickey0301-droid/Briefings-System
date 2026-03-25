@@ -2373,6 +2373,21 @@ def generate_segmented_report(
     )
     _cb("stage", f"✅ RSS 抓取完成，共取得 {len(all_items)} 篇文章")
 
+    # ── 1a. 抓取專家 RSS / Google News（若有選取專家）────────────────────────
+    if selected_experts:
+        _cb("stage", f"🔍 抓取專家文章…")
+        try:
+            expert_items = fetch_expert_items(selected_experts)
+            if expert_items:
+                for _ei in expert_items:
+                    if isinstance(_ei, dict):
+                        _ei.setdefault("source_region", "")
+                        _ei.setdefault("source_category", ["自訂專家"])
+                all_items = expert_items + all_items   # expert items優先排序
+                _cb("stage", f"✅ 專家文章：{len(expert_items)} 篇已加入分析池")
+        except Exception as _e:
+            print(f"[Segmented] Expert fetch failed: {_e}")
+
     # ── 1b. 建立全局 source_map（同 _generate_multiphase_synthesis 做法）──
     #   先建 source_map，再傳給 _format_item_block，讓 AI 能使用 [Sx] 引用
     source_map = _build_citation_source_map(all_items, max_sources=30)
