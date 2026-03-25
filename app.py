@@ -803,7 +803,7 @@ if selected_page == "Briefings":
                     seg_fn = getattr(report_engine, "generate_segmented_report", None)
                     if seg_fn is None:
                         raise RuntimeError("找不到 report_engine.generate_segmented_report()")
-                    report_text = seg_fn(
+                    report_text, filtered_items = seg_fn(
                         start_time=start_dt,
                         end_time=end_dt,
                         language=language,
@@ -811,7 +811,6 @@ if selected_page == "Briefings":
                         format_options=selected_format_config,
                         status_callback=_on_fetch_status,
                     )
-                    filtered_items = []
                 else:
                     report_text, filtered_items = _call_generate_report(
                         start_time=start_dt,
