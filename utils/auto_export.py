@@ -613,9 +613,31 @@ def upload_to_google_drive_if_needed(file_path, schedule):
 def try_generate_report_via_report_engine(schedule, context):
     """
     盡量相容既有 report_engine.generate_report 的不同參數形式。
+    支援 report_mode: "single" | "multi_phase" | "segmented"。
     """
     import report_engine
 
+    _report_mode = schedule.get("report_mode", "single")
+
+    # ── 分段報告模式 ─────────────────────────────────────────────
+    if _report_mode == "segmented":
+        if not hasattr(report_engine, "generate_segmented_report"):
+            raise RuntimeError("找不到 report_engine.generate_segmented_report")
+        report_text = report_engine.generate_segmented_report(
+            start_time=context["start_time"],
+            end_time=context["end_time"],
+            language=schedule.get("language", "繁體中文"),
+            insights_text=context.get("insights_text", ""),
+            format_options=None,
+            status_callback=None,
+        )
+        if isinstance(report_text, dict):
+            report_text = json.dumps(report_text, ensure_ascii=False, indent=2)
+        elif not isinstance(report_text, str):
+            report_text = str(report_text)
+        return report_text
+
+    # ── 單份 / 綜合報告模式 ──────────────────────────────────────
     if not hasattr(report_engine, "generate_report"):
         raise RuntimeError("找不到 report_engine.generate_report")
 
@@ -623,7 +645,6 @@ def try_generate_report_via_report_engine(schedule, context):
     sig = inspect.signature(fn)
 
     # multiphase_groups: None = single mode, list = multi-phase (empty list = all groups)
-    _report_mode = schedule.get("report_mode", "single")
     _multiphase_groups = (
         schedule.get("multiphase_groups") or []
     ) if _report_mode == "multi_phase" else None

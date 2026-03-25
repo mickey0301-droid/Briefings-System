@@ -1803,6 +1803,433 @@ MULTIPHASE_GROUP_OPTIONS = [
 ]
 
 
+# =====================================================
+# Segmented-report constants & helpers
+# =====================================================
+
+# 19 sections for the segmented report.
+# Each section independently searches Google News with topic-specific keywords.
+# kw_zh = primary Chinese-language query; kw_en = secondary English-language query.
+_SEGMENTED_SECTIONS = [
+    {
+        "id": "intl_news",
+        "label": "二、國際要聞",
+        "section_path": "二、國際要聞",
+        "kw_zh": "國際局勢 OR 全球外交 OR 聯合國 OR 地緣政治 OR 國際安全 OR 戰爭 OR 武裝衝突",
+        "kw_en": "\"international affairs\" OR \"global politics\" OR diplomacy OR \"United Nations\" OR geopolitics OR war OR conflict OR sanctions",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "tw_us_cn",
+        "label": "三、台美中要聞",
+        "section_path": "三、台美中要聞",
+        "kw_zh": "台灣 OR 台海 OR 兩岸 OR 台美關係 OR 美中關係 OR 中共 OR 台美中",
+        "kw_en": "Taiwan OR \"Taiwan strait\" OR \"cross-strait\" OR \"US-China\" OR \"US-Taiwan\" OR CCP OR \"Sino-American\"",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "tw_security",
+        "label": "四、台灣國安要聞",
+        "section_path": "四、台灣國安要聞",
+        "kw_zh": "台灣 AND (國安 OR 國防 OR 解放軍 OR 軍演 OR 灰色地帶 OR 資安 OR 飛彈 OR 網路攻擊)",
+        "kw_en": "Taiwan AND (security OR defense OR PLA OR military OR \"gray zone\" OR cyber OR missile OR drills)",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "cn_external",
+        "label": "五（一）中國對外情勢",
+        "section_path": "五、中國要聞｜（一）中國對外情勢",
+        "kw_zh": "中國 AND (外交 OR 軍事 OR 南海 OR 東海 OR 台海 OR 制裁 OR 對外政策 OR 王毅 OR 軍演)",
+        "kw_en": "China AND (diplomacy OR military OR \"South China Sea\" OR \"East China Sea\" OR Taiwan OR sanctions OR \"foreign policy\" OR PLA OR \"belt and road\")",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "cn_domestic",
+        "label": "五（二）中國內部情勢",
+        "section_path": "五、中國要聞｜（二）中國內部情勢",
+        "kw_zh": "中國 AND (習近平 OR 共產黨 OR 國內經濟 OR 人權 OR 新疆 OR 香港 OR 西藏 OR 房地產 OR 政治局)",
+        "kw_en": "China AND (\"Xi Jinping\" OR CCP OR economy OR \"human rights\" OR Xinjiang OR \"Hong Kong\" OR Tibet OR \"real estate\" OR Politburo OR crackdown)",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "asia_pacific_intl",
+        "label": "六（一）亞太地區－國際要聞",
+        "section_path": "六、區域情勢｜（一）亞太地區｜1. 國際要聞研析",
+        "kw_zh": "亞太 OR 日本 OR 韓國 OR 澳洲 OR 印度 OR 東南亞 OR 東協 OR 印太 OR 菲律賓 OR 越南 OR 印尼",
+        "kw_en": "Asia-Pacific OR Japan OR Korea OR Australia OR India OR \"Southeast Asia\" OR ASEAN OR \"Indo-Pacific\" OR Philippines OR Vietnam OR Indonesia",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "asia_pacific_twcn",
+        "label": "六（一）亞太地區－台美中要聞",
+        "section_path": "六、區域情勢｜（一）亞太地區｜2. 台美中要聞研析",
+        "kw_zh": "(日本 OR 韓國 OR 澳洲 OR 印度 OR 東南亞 OR 菲律賓 OR 越南) AND (台灣 OR 中國 OR 美國 OR 兩岸)",
+        "kw_en": "(Japan OR Korea OR Australia OR India OR \"Southeast Asia\" OR Philippines OR Vietnam) AND (Taiwan OR China OR \"United States\" OR \"cross-strait\")",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "west_asia_intl",
+        "label": "六（二）亞西地區－國際要聞",
+        "section_path": "六、區域情勢｜（二）亞西地區｜1. 國際要聞研析",
+        "kw_zh": "中東 OR 以色列 OR 伊朗 OR 沙烏地阿拉伯 OR 加薩 OR 伊拉克 OR 敘利亞 OR 土耳其 OR 葉門",
+        "kw_en": "\"Middle East\" OR Israel OR Iran OR Saudi OR Gaza OR Iraq OR Syria OR Turkey OR Yemen OR Lebanon OR Palestine",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "west_asia_twcn",
+        "label": "六（二）亞西地區－台美中要聞",
+        "section_path": "六、區域情勢｜（二）亞西地區｜2. 台美中要聞研析",
+        "kw_zh": "(中東 OR 以色列 OR 伊朗 OR 沙烏地 OR 土耳其) AND (台灣 OR 中國 OR 美國)",
+        "kw_en": "(\"Middle East\" OR Israel OR Iran OR Saudi OR Turkey OR Gulf) AND (Taiwan OR China OR \"United States\")",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "north_am_intl",
+        "label": "六（三）北美地區－國際要聞",
+        "section_path": "六、區域情勢｜（三）北美地區｜1. 國際要聞研析",
+        "kw_zh": "美國 OR 加拿大 OR 川普 OR 白宮 OR 美國國會 OR 美國外交",
+        "kw_en": "\"United States\" OR Canada OR Trump OR \"White House\" OR Congress OR Pentagon OR \"State Department\" OR Washington",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "north_am_twcn",
+        "label": "六（三）北美地區－台美中要聞",
+        "section_path": "六、區域情勢｜（三）北美地區｜2. 台美中要聞研析",
+        "kw_zh": "(美國 OR 加拿大) AND (台灣 OR 中國 OR 台海 OR 兩岸)",
+        "kw_en": "(\"United States\" OR Canada) AND (Taiwan OR China OR \"Taiwan Strait\" OR \"cross-strait\" OR CCP)",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "latin_am_intl",
+        "label": "六（四）拉丁美洲及加勒比海－國際要聞",
+        "section_path": "六、區域情勢｜（四）拉丁美洲及加勒比海｜1. 國際要聞研析",
+        "kw_zh": "拉丁美洲 OR 巴西 OR 阿根廷 OR 哥倫比亞 OR 委內瑞拉 OR 古巴 OR 加勒比海 OR 智利 OR 秘魯",
+        "kw_en": "\"Latin America\" OR Brazil OR Argentina OR Colombia OR Venezuela OR Cuba OR Caribbean OR Chile OR Peru OR Mexico",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "latin_am_twcn",
+        "label": "六（四）拉丁美洲及加勒比海－台美中要聞",
+        "section_path": "六、區域情勢｜（四）拉丁美洲及加勒比海｜2. 台美中要聞研析",
+        "kw_zh": "(拉丁美洲 OR 巴西 OR 阿根廷 OR 哥倫比亞 OR 智利) AND (台灣 OR 中國 OR 美國)",
+        "kw_en": "(\"Latin America\" OR Brazil OR Argentina OR Chile OR Colombia OR Peru) AND (Taiwan OR China OR \"United States\")",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "europe_intl",
+        "label": "六（五）歐洲地區－國際要聞",
+        "section_path": "六、區域情勢｜（五）歐洲地區｜1. 國際要聞研析",
+        "kw_zh": "歐洲 OR 歐盟 OR 北約 OR 烏克蘭 OR 俄羅斯 OR 英國 OR 德國 OR 法國 OR 波蘭",
+        "kw_en": "Europe OR EU OR NATO OR Ukraine OR Russia OR UK OR Germany OR France OR Poland OR Macron OR Scholz OR Zelensky",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "europe_twcn",
+        "label": "六（五）歐洲地區－台美中要聞",
+        "section_path": "六、區域情勢｜（五）歐洲地區｜2. 台美中要聞研析",
+        "kw_zh": "(歐洲 OR 歐盟 OR 北約 OR 英國 OR 德國 OR 法國 OR 烏克蘭) AND (台灣 OR 中國)",
+        "kw_en": "(Europe OR EU OR NATO OR UK OR Germany OR France OR Poland OR Ukraine) AND (Taiwan OR China)",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "africa_intl",
+        "label": "六（六）非洲地區－國際要聞",
+        "section_path": "六、區域情勢｜（六）非洲地區｜1. 國際要聞研析",
+        "kw_zh": "非洲 OR 奈及利亞 OR 南非 OR 肯亞 OR 衣索比亞 OR 埃及 OR 蘇丹 OR 剛果",
+        "kw_en": "Africa OR Nigeria OR \"South Africa\" OR Kenya OR Ethiopia OR Egypt OR Sudan OR Congo OR Ghana OR Tanzania OR Sahel",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "africa_twcn",
+        "label": "六（六）非洲地區－台美中要聞",
+        "section_path": "六、區域情勢｜（六）非洲地區｜2. 台美中要聞研析",
+        "kw_zh": "(非洲 OR 奈及利亞 OR 南非 OR 肯亞 OR 埃及 OR 衣索比亞) AND (台灣 OR 中國 OR 美國)",
+        "kw_en": "(Africa OR Nigeria OR \"South Africa\" OR Kenya OR Egypt OR Ethiopia OR Sudan) AND (Taiwan OR China OR \"United States\")",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "expert_intl",
+        "label": "七（一）專家研析－國際要聞",
+        "section_path": "七、專家研析｜1. 國際要聞研析",
+        "kw_zh": "(智庫 OR 研析 OR 學者 OR 評論員) AND (國際 OR 全球 OR 安全 OR 外交 OR 地緣政治)",
+        "kw_en": "(\"think tank\" OR analysis OR scholar OR commentary OR expert OR analyst) AND (international OR global OR security OR diplomacy OR geopolitics)",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+    {
+        "id": "expert_twcn",
+        "label": "七（二）專家研析－台美中要聞",
+        "section_path": "七、專家研析｜2. 台美中要聞研析",
+        "kw_zh": "(智庫 OR 研析 OR 學者 OR 評論員) AND (台灣 OR 中國 OR 台海 OR 兩岸 OR 美中)",
+        "kw_en": "(\"think tank\" OR analysis OR expert OR scholar OR commentary) AND (Taiwan OR China OR \"Taiwan strait\" OR \"cross-strait\" OR \"US-China\")",
+        "lp_zh": {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"},
+        "lp_en": {"hl": "en-US", "gl": "US", "ceid": "US:en"},
+    },
+]
+
+
+def _fetch_items_for_section(section: dict, start_time=None, end_time=None,
+                              limit_per_query: int = 6) -> list:
+    """
+    Independently fetch articles for one segmented-report section.
+    Runs two Google News searches (zh + en) and deduplicates by URL.
+    """
+    results: list = []
+    seen_urls: set = set()
+
+    def _run_query(kw: str, lp: dict):
+        # Use a bare Google News search (no site: restriction) so every section
+        # gets results even if the user's configured sources are narrow.
+        p = lp or {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"}
+        hl   = p.get("hl", "zh-TW")
+        gl   = p.get("gl", "TW")
+        ceid = p.get("ceid", "TW:zh-Hant")
+
+        when_str = "when:3d"
+        if start_time and end_time:
+            hours = max(1, int((end_time - start_time).total_seconds() / 3600))
+            if hours <= 6:
+                when_str = "when:6h"
+            elif hours <= 24:
+                when_str = "when:1d"
+            elif hours <= 72:
+                when_str = "when:3d"
+            elif hours <= 168:
+                when_str = "when:7d"
+            else:
+                when_str = ""
+
+        query = f"({kw})"
+        if when_str:
+            query += f" {when_str}"
+        query_encoded = quote(query, safe=':/')
+        url = f"https://news.google.com/rss/search?q={query_encoded}&hl={hl}&gl={gl}&ceid={ceid}"
+        return _fetch_rss_items(url, section["label"], limit=limit_per_query)
+
+    # Chinese query
+    for item in _run_query(section["kw_zh"], section.get("lp_zh")):
+        key = (item.get("original_url") or item.get("url") or "").lower().strip()
+        if key:
+            if key not in seen_urls:
+                seen_urls.add(key)
+                item["section_id"] = section["id"]
+                results.append(item)
+        else:
+            item["section_id"] = section["id"]
+            results.append(item)
+
+    # English query (supplement if still < limit)
+    for item in _run_query(section["kw_en"], section.get("lp_en")):
+        key = (item.get("original_url") or item.get("url") or "").lower().strip()
+        if key:
+            if key not in seen_urls:
+                seen_urls.add(key)
+                item["section_id"] = section["id"]
+                results.append(item)
+        else:
+            item["section_id"] = section["id"]
+            results.append(item)
+
+    return results
+
+
+def _generate_segmented_final_report(
+    section_mini_reports: list,
+    language_label: str,
+    insights_block: str = "",
+    status_callback=None,
+) -> str:
+    """
+    Given 19 section mini-reports, ask AI to write:
+    - 一、摘要
+    - 八、研析 / 1. 國際要聞研析 / 2. 台美中要聞研析
+    then assemble the full report.
+    """
+    from utils.ai_briefing import get_client
+
+    def _cb(msg):
+        if status_callback:
+            try:
+                status_callback("stage", msg)
+            except Exception:
+                pass
+
+    _cb("🤖 AI 綜整 19 份章節小報告，撰寫摘要與研析…")
+
+    # Build a compact summary of all 19 mini-reports for the AI
+    mini_block = "\n\n".join(
+        f"═══ {label} ═══\n{text}"
+        for label, text in section_mini_reports
+    )
+
+    synthesis_prompt = f"""You are a senior strategic intelligence analyst.
+
+Below are 19 section mini-reports covering all chapters of a strategic intelligence briefing.
+Your task is to write ONLY the following three parts (do NOT re-write the other chapters):
+
+1. 一、摘要（1-2 paragraphs: most important strategic judgements of this issue）
+2. 八、研析
+   1. 國際要聞研析（cross-chapter analysis of international developments）
+   2. 台美中要聞研析（cross-chapter strategic analysis of Taiwan-US-China dynamics）
+
+Write in {language_label}, in formal analytical prose (NOT bullet points).
+Do NOT repeat the content of the 19 section reports — synthesize and elevate.
+Do NOT place URLs in the body text.
+MANDATORY: cite specific outlet names (Chinese + English on first mention).
+MANDATORY: cite specific people with their titles.
+
+Strategic Context:
+{insights_block or "None"}
+
+Section mini-reports:
+{mini_block}
+
+Output format (ONLY these three sections):
+一、摘要
+
+八、研析
+1. 國際要聞研析
+
+2. 台美中要聞研析
+"""
+
+    client = get_client()
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[{"role": "user", "content": synthesis_prompt}],
+        temperature=0.3,
+    )
+    return response.choices[0].message.content
+
+
+def generate_segmented_report(
+    start_time,
+    end_time,
+    language: str = "zh",
+    insights_text: str = "",
+    format_options=None,
+    status_callback=None,
+):
+    """
+    分段報告：每個章節/小節獨立搜尋 Google News，各自生成 2-3 段小報告，
+    最後 AI 撰寫「一、摘要」和「八、研析」，組裝成完整報告。
+    """
+    from utils.ai_briefing import generate_section_mini_report
+
+    def _cb(event, detail=None, *args):
+        if status_callback:
+            try:
+                status_callback(event, detail, *args)
+            except Exception:
+                pass
+
+    language_label = _normalize_language_label(language)
+    insights_block = insights_text or ""
+    total_sections = len(_SEGMENTED_SECTIONS)
+    section_mini_reports: list = []  # [(label, text), ...]
+
+    _cb("stage", f"📰 分段報告：共 {total_sections} 個章節，各自獨立搜尋並生成小報告…")
+
+    for idx, sec in enumerate(_SEGMENTED_SECTIONS, 1):
+        label = sec["label"]
+        _cb("stage", f"🔍 [{idx}/{total_sections}] 搜尋：{label}…")
+
+        # 1. Fetch articles for this section
+        items = _fetch_items_for_section(sec, start_time=start_time, end_time=end_time,
+                                          limit_per_query=6)
+
+        _cb("rss", f"{label}：{len(items)} 篇", idx, total_sections, len(items))
+
+        # 2. Enrich top articles (up to 8)
+        top_items = items[:8]
+        enriched = []
+        for item in top_items:
+            url = item.get("original_url") or item.get("url") or ""
+            if url and not item.get("content"):
+                resolved = _resolve_google_news_url(url)
+                content = _fetch_article_content(resolved)
+                enriched_item = dict(item)
+                enriched_item["original_url"] = resolved
+                enriched_item["content"] = content
+                enriched.append(enriched_item)
+            else:
+                enriched.append(item)
+
+        # 3. Build news block for this section
+        news_block = _format_item_block(label, enriched, None)
+
+        # 4. Generate mini-report for this section
+        _cb("stage", f"✍️  [{idx}/{total_sections}] AI 撰寫：{label}…")
+        try:
+            mini_text = generate_section_mini_report(
+                section_path=sec["section_path"],
+                section_label=label,
+                news_block=news_block,
+                language=language_label,
+            )
+        except Exception as e:
+            print(f"[Segmented] Section mini-report failed for {label}: {e}")
+            mini_text = f"本期資料不足，無法生成{label}小報告。"
+
+        section_mini_reports.append((label, mini_text))
+        _cb("stage", f"✅ [{idx}/{total_sections}] 完成：{label}")
+
+    # 5. AI writes 一、摘要 and 八、研析
+    synthesis_text = _generate_segmented_final_report(
+        section_mini_reports=section_mini_reports,
+        language_label=language_label,
+        insights_block=insights_block,
+        status_callback=status_callback,
+    )
+
+    # 6. Assemble final report
+    _cb("stage", "📄 組裝完整分段報告…")
+    report_lines = ["【戰略情報簡報】（分段報告）", ""]
+
+    # Extract 一、摘要 from synthesis
+    summary_text = ""
+    analysis_text = ""
+    if "八、研析" in synthesis_text:
+        parts = synthesis_text.split("八、研析", 1)
+        summary_text = parts[0].strip()
+        analysis_text = "八、研析\n" + parts[1].strip()
+    else:
+        summary_text = synthesis_text.strip()
+        analysis_text = "八、研析\n1. 國際要聞研析\n本期無相關分析。\n\n2. 台美中要聞研析\n本期無相關分析。"
+
+    report_lines.append(summary_text)
+    report_lines.append("")
+
+    # Insert section mini-reports as complete chapter structure
+    for label, text in section_mini_reports:
+        report_lines.append(f"{'─' * 60}")
+        report_lines.append(text)
+        report_lines.append("")
+
+    report_lines.append(f"{'─' * 60}")
+    report_lines.append(analysis_text)
+
+    final_report = "\n".join(report_lines)
+    return final_report, []
+
+
 def _get_item_source_group(item: dict) -> str:
     """Return the source-group key for a single item."""
     if item.get("source_type") == "cn_official":

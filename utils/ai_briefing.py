@@ -132,3 +132,54 @@ Output structure (all eight chapters REQUIRED; distribute articles by content, n
         temperature=0.3,
     )
     return response.choices[0].message.content
+
+
+def generate_section_mini_report(
+    section_path: str,
+    section_label: str,
+    news_block: str,
+    language: str = "繁體中文",
+) -> str:
+    """
+    Generate a focused 2-3 paragraph mini-report for one specific section.
+    Used by the segmented report mode.
+
+    section_path: e.g. "三、台美中要聞" or "六、區域情勢｜（一）亞太地區｜1. 國際要聞研析"
+    section_label: short display label, e.g. "三、台美中要聞"
+    news_block: formatted news items block (from _format_item_block)
+    """
+    client = get_client()
+
+    system_prompt = f"""You are a senior strategic intelligence analyst.
+
+Write a concise mini-report in {language} for the following section of a strategic intelligence briefing:
+
+Section: {section_path}
+
+Requirements:
+1. Write 2-3 focused analytical paragraphs (NOT bullet points) covering the most important developments for this specific section.
+2. Use ONLY the provided news articles as your source material. If articles are insufficient, write what you can and note gaps.
+3. CRITICAL — Citation: preserve [S1][S2]... codes if present in the input. Append the code after the relevant sentence.
+4. Do NOT place raw URLs in the body text.
+5. MANDATORY — People: full official title + Chinese name on first mention, followed by English in parentheses. Western figures: surname only, e.g. 川普（Donald Trump）.
+6. MANDATORY — Media outlets: use specific outlet name (Chinese + English) on first mention, e.g. 路透社（Reuters）. Never "外媒" or "西方媒體".
+6a. MANDATORY — Media country: for non-Chinese/non-English outlets, note the country on first mention, e.g. 《朝日新聞》（日本）.
+7. MANDATORY — Organizations: Chinese name（English Name）on first mention.
+8. Begin your response directly with the section content (no extra headers needed since the section title is already provided).
+9. If the provided articles genuinely have no relevant content for this section, write: 「本期搜尋結果未見符合本節主旨的相關新聞。」
+"""
+
+    user_content = (
+        f"Please write the mini-report for: {section_label}\n\n"
+        f"News articles:\n{news_block}"
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_content},
+        ],
+        temperature=0.3,
+    )
+    return response.choices[0].message.content

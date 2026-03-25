@@ -663,10 +663,17 @@ if selected_page == "Briefings":
     # ── 報告模式 ────────────────────────────────────────────────────────
     _rmode_col1, _rmode_col2 = st.columns([1, 2])
     with _rmode_col1:
+        def _rmode_label(x):
+            if x == "single":
+                return "單份報告"
+            elif x == "multi_phase":
+                return "綜合報告（多段生成）"
+            else:
+                return "分段報告（按章節搜尋）"
         report_mode_brief = st.radio(
             "報告模式",
-            options=["single", "multi_phase"],
-            format_func=lambda x: "單份報告" if x == "single" else "綜合報告（多段生成）",
+            options=["single", "multi_phase", "segmented"],
+            format_func=_rmode_label,
             horizontal=True,
             key="briefings_report_mode",
         )
@@ -681,6 +688,9 @@ if selected_page == "Briefings":
                 default=[],
                 key="briefings_multiphase_groups",
             )
+        elif report_mode_brief == "segmented":
+            multiphase_groups_brief = None
+            st.caption("分段報告：每章每節獨立搜尋 Google News，生成各節小報告後彙整成完整報告。無需選擇來源群組。")
         else:
             multiphase_groups_brief = None
             st.caption("單份報告：所有來源一次性生成。")
@@ -789,19 +799,33 @@ if selected_page == "Briefings":
 
                 progress.progress(10)
 
-                report_text, filtered_items = _call_generate_report(
-                    start_time=start_dt,
-                    end_time=end_dt,
-                    selected_sources=selected_sources,
-                    selected_experts=selected_experts,
-                    profile_name=profile_name,
-                    language=language,
-                    insights_text=combined_insights,
-                    status_callback=_on_fetch_status,
-                    multiphase_groups=(
-                        multiphase_groups_brief if report_mode_brief == "multi_phase" else None
-                    ),
-                )
+                if report_mode_brief == "segmented":
+                    seg_fn = getattr(report_engine, "generate_segmented_report", None)
+                    if seg_fn is None:
+                        raise RuntimeError("找不到 report_engine.generate_segmented_report()")
+                    report_text = seg_fn(
+                        start_time=start_dt,
+                        end_time=end_dt,
+                        language=language,
+                        insights_text=combined_insights,
+                        format_options=selected_format_config,
+                        status_callback=_on_fetch_status,
+                    )
+                    filtered_items = []
+                else:
+                    report_text, filtered_items = _call_generate_report(
+                        start_time=start_dt,
+                        end_time=end_dt,
+                        selected_sources=selected_sources,
+                        selected_experts=selected_experts,
+                        profile_name=profile_name,
+                        language=language,
+                        insights_text=combined_insights,
+                        status_callback=_on_fetch_status,
+                        multiphase_groups=(
+                            multiphase_groups_brief if report_mode_brief == "multi_phase" else None
+                        ),
+                    )
 
                 fetch_log_placeholder.empty()
                 status.info("輸出檔案")
@@ -2070,11 +2094,22 @@ elif selected_page == "Schedule":
                 s["start_from"] = f"{_sf_date.isoformat()} {_sf_time.strftime('%H:%M')}"
 
         st.markdown("#### 報告模式")
+        def _sched_rmode_label(x):
+            if x == "single":
+                return "單份報告"
+            elif x == "multi_phase":
+                return "綜合報告（多段生成）"
+            else:
+                return "分段報告（按章節搜尋）"
+        _rmode_options = ["single", "multi_phase", "segmented"]
+        _rmode_current = s.get("report_mode", "single")
+        if _rmode_current not in _rmode_options:
+            _rmode_current = "single"
         s["report_mode"] = st.radio(
             "報告模式",
-            options=["single", "multi_phase"],
-            format_func=lambda x: "單份報告" if x == "single" else "綜合報告（多段生成）",
-            index=["single", "multi_phase"].index(s.get("report_mode", "single")),
+            options=_rmode_options,
+            format_func=_sched_rmode_label,
+            index=_rmode_options.index(_rmode_current),
             horizontal=True,
             key=f"report_mode_{selected_idx}",
         )
@@ -2088,6 +2123,9 @@ elif selected_page == "Schedule":
                 default=s.get("multiphase_groups") or [],
                 key=f"multiphase_groups_{selected_idx}",
             )
+        elif s["report_mode"] == "segmented":
+            s["multiphase_groups"] = []
+            st.caption("分段報告：每章每節獨立搜尋 Google News，無需選擇來源群組。")
         else:
             s["multiphase_groups"] = []
 
