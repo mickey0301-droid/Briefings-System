@@ -806,6 +806,8 @@ if selected_page == "Briefings":
                     report_text, filtered_items = seg_fn(
                         start_time=start_dt,
                         end_time=end_dt,
+                        selected_sources=selected_sources,
+                        selected_experts=selected_experts,
                         language=language,
                         insights_text=combined_insights,
                         format_options=selected_format_config,

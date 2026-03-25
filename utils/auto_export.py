@@ -623,14 +623,20 @@ def try_generate_report_via_report_engine(schedule, context):
     if _report_mode == "segmented":
         if not hasattr(report_engine, "generate_segmented_report"):
             raise RuntimeError("找不到 report_engine.generate_segmented_report")
-        report_text = report_engine.generate_segmented_report(
+        _seg_sources = context["filtered_sources"] if context.get("filtered_sources") else context.get("all_sources", [])
+        _seg_experts = context["filtered_experts"] if context.get("filtered_experts") else context.get("all_experts", [])
+        seg_result = report_engine.generate_segmented_report(
             start_time=context["start_time"],
             end_time=context["end_time"],
+            selected_sources=_seg_sources,
+            selected_experts=_seg_experts,
             language=schedule.get("language", "繁體中文"),
             insights_text=context.get("insights_text", ""),
             format_options=None,
             status_callback=None,
         )
+        # generate_segmented_report returns (report_text, filtered_items)
+        report_text = seg_result[0] if isinstance(seg_result, tuple) else seg_result
         if isinstance(report_text, dict):
             report_text = json.dumps(report_text, ensure_ascii=False, indent=2)
         elif not isinstance(report_text, str):

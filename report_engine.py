@@ -2119,17 +2119,99 @@ Output format (ONLY these three sections):
     return response.choices[0].message.content
 
 
+# ── 章節關鍵字比對輔助函式 ─────────────────────────────────────────────────
+
+def _split_top_level(s: str, sep: str) -> list:
+    """Split string by sep only at top level (not inside parentheses)."""
+    parts: list = []
+    depth = 0
+    current: list = []
+    i = 0
+    while i < len(s):
+        if s[i] == '(':
+            depth += 1
+            current.append(s[i])
+            i += 1
+        elif s[i] == ')':
+            depth -= 1
+            current.append(s[i])
+            i += 1
+        elif depth == 0 and s[i:i + len(sep)] == sep:
+            parts.append("".join(current))
+            current = []
+            i += len(sep)
+        else:
+            current.append(s[i])
+            i += 1
+    if current:
+        parts.append("".join(current))
+    return parts
+
+
+def _eval_section_query(text: str, query: str) -> bool:
+    """
+    Evaluate a Google-News-style AND/OR keyword query against text.
+    Handles:
+      "A OR B OR C"
+      "A AND B"
+      "A AND (B OR C)"
+      "(A OR B) AND (C OR D)"
+    """
+    query = query.strip()
+    if not query:
+        return False
+    text_lower = text.lower()
+
+    # Try top-level OR split
+    or_parts = _split_top_level(query, " OR ")
+    if len(or_parts) > 1:
+        return any(_eval_section_query(text_lower, p.strip()) for p in or_parts)
+
+    # Try top-level AND split
+    and_parts = _split_top_level(query, " AND ")
+    if len(and_parts) > 1:
+        return all(_eval_section_query(text_lower, p.strip()) for p in and_parts)
+
+    # Single term or parenthesised group
+    inner = query.strip("() \"'")
+    if " OR " in inner or " AND " in inner:
+        return _eval_section_query(text_lower, inner)
+
+    kw = inner.lower()
+    return bool(kw) and kw in text_lower
+
+
+def _classify_items_to_sections(all_items: list, sections: list) -> dict:
+    """
+    Classify items into section buckets by matching kw_zh / kw_en queries
+    against each item's title + summary.  An item may appear in multiple sections.
+    Returns: {section_id: [item, ...]}
+    """
+    buckets: dict = {sec["id"]: [] for sec in sections}
+    for item in all_items:
+        title   = item.get("title")   or ""
+        summary = item.get("summary") or ""
+        text    = f"{title} {summary}"
+        for sec in sections:
+            if (_eval_section_query(text, sec.get("kw_zh", ""))
+                    or _eval_section_query(text, sec.get("kw_en", ""))):
+                buckets[sec["id"]].append(item)
+    return buckets
+
+
 def generate_segmented_report(
     start_time,
     end_time,
+    selected_sources=None,
+    selected_experts=None,
     language: str = "zh",
     insights_text: str = "",
     format_options=None,
     status_callback=None,
 ):
     """
-    分段報告：每個章節/小節獨立搜尋 Google News，各自生成 2-3 段小報告，
-    最後 AI 撰寫「一、摘要」和「八、研析」，組裝成完整報告。
+    分段報告：先從設定的 RSS 來源統一抓取文章，再按各章節關鍵字分類，
+    各章節獨立生成小報告，最後 AI 撰寫「一、摘要」和「八、研析」，組裝成完整報告。
     """
     from utils.ai_briefing import generate_section_mini_report
 
@@ -2145,37 +2227,42 @@ def generate_segmented_report(
     total_sections = len(_SEGMENTED_SECTIONS)
     section_mini_reports: list = []  # [(label, text), ...]
 
-    _cb("stage", f"📰 分段報告：共 {total_sections} 個章節，各自獨立搜尋並生成小報告…")
+    # ── 1. 從 RSS 來源抓取所有文章（與 generate_report 相同流程） ───────────
+    sources = load_sources()
+    _sel = selected_sources or []
+    n_src = len(_normalize_selected_sources(_sel, all_sources=sources))
+    _cb("stage", f"⏳ 分段報告：從 {n_src} 個來源抓取 RSS…")
+
+    all_items = fetch_items_from_sources(
+        selected_sources=_sel,
+        all_sources=sources,
+        limit_per_source=30,
+        start_time=start_time,
+        end_time=end_time,
+        status_callback=status_callback,
+    )
+    _cb("stage", f"✅ RSS 抓取完成，共取得 {len(all_items)} 篇文章")
+
+    # ── 2. 按章節關鍵字分類 ────────────────────────────────────────────────
+    _cb("stage", "📂 按章節關鍵字分類文章…")
+    section_buckets = _classify_items_to_sections(all_items, _SEGMENTED_SECTIONS)
+    classified = sum(1 for item in all_items
+                     if any(item in section_buckets[s["id"]] for s in _SEGMENTED_SECTIONS))
+    _cb("stage", f"📂 分類完成：{classified}/{len(all_items)} 篇分入各章節")
+
+    # ── 3. 各章節生成小報告 ────────────────────────────────────────────────
+    _cb("stage", f"📰 分段報告：共 {total_sections} 個章節，各自生成小報告…")
 
     for idx, sec in enumerate(_SEGMENTED_SECTIONS, 1):
         label = sec["label"]
-        _cb("stage", f"🔍 [{idx}/{total_sections}] 搜尋：{label}…")
-
-        # 1. Fetch articles for this section
-        items = _fetch_items_for_section(sec, start_time=start_time, end_time=end_time,
-                                          limit_per_query=6)
+        items = section_buckets.get(sec["id"], [])[:12]
 
         _cb("rss", f"{label}：{len(items)} 篇", idx, total_sections, len(items))
 
-        # 2. Enrich top articles (up to 8)
-        top_items = items[:8]
-        enriched = []
-        for item in top_items:
-            url = item.get("original_url") or item.get("url") or ""
-            if url and not item.get("content"):
-                resolved = _resolve_google_news_url(url)
-                content = _fetch_article_content(resolved)
-                enriched_item = dict(item)
-                enriched_item["original_url"] = resolved
-                enriched_item["content"] = content
-                enriched.append(enriched_item)
-            else:
-                enriched.append(item)
+        # Build news block for this section
+        news_block = _format_item_block(label, items, None)
 
-        # 3. Build news block for this section
-        news_block = _format_item_block(label, enriched, None)
-
-        # 4. Generate mini-report for this section
+        # Generate mini-report for this section
         _cb("stage", f"✍️  [{idx}/{total_sections}] AI 撰寫：{label}…")
         try:
             mini_text = generate_section_mini_report(
