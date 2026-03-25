@@ -515,16 +515,22 @@ def experts_as_sources() -> list:
         if not name:
             continue
         rss_url = (e.get("rss_url") or "").strip()
+        # 合併「自訂專家」與專家自身的 category，讓來源分類選單可以用專家分類篩選
+        expert_cats = normalize_category(e.get("category"))
+        merged_cats = ["自訂專家"] + [c for c in expert_cats if c and c != "自訂專家"]
         sources.append({
             "name": name,
             "type": "rss" if rss_url else "domain",
             "url": rss_url,
-            "category": ["自訂專家"],
+            "category": merged_cats,
             "region": (e.get("region") or "").strip(),
             "enabled": True,
             "description": (e.get("description") or "").strip(),
             "readonly": True,       # prevent save_sources from writing these back
             "from_expert": True,    # marker so UI can identify them
+            # keep expert name fields so fetch_items_from_sources can build URLs
+            "name_zh": (e.get("name_zh") or "").strip(),
+            "name_en": (e.get("name_en") or "").strip(),
         })
     return sources
 
