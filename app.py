@@ -459,7 +459,7 @@ def _build_source_editor_df(source_items, blank_rows=8):
 
 
 def _build_expert_editor_df(expert_items, blank_rows=8):
-    columns = ["name_zh", "name_en", "aliases", "category", "affiliation", "region", "enabled", "description", "rss_url"]
+    columns = ["name_zh", "name_en", "aliases", "category", "affiliation", "region", "rss_url", "enabled", "description"]
     rows = [expert_to_editor_row(x) for x in expert_items]
     df = pd.DataFrame(rows, columns=columns) if rows else pd.DataFrame(columns=columns)
     df = _append_blank_rows(df, blank_rows=blank_rows)
@@ -1335,7 +1335,7 @@ elif selected_page == "Sources":
         st.markdown("### 表格式批次貼上新增專家")
         st.caption("可直接從外部複製多列資料貼到下表，再按「批次加入專家」。")
 
-        expert_batch_columns = ["name_zh", "name_en", "aliases", "category", "affiliation", "region", "enabled", "description", "rss_url"]
+        expert_batch_columns = ["name_zh", "name_en", "aliases", "category", "affiliation", "region", "rss_url", "enabled", "description"]
         expert_batch_default = pd.DataFrame([{c: "" for c in expert_batch_columns} for _ in range(8)])
         expert_batch_default["enabled"] = True
 
