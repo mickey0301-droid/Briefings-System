@@ -1658,6 +1658,71 @@ elif selected_page == "Sources":
         cn_experts = [e for e in experts if "中國專家" in _expert_cats(e)]
         tw_experts = [e for e in experts if "台灣專家" in _expert_cats(e)]
 
+        # ── 備份 / 匯入 ───────────────────────────────────────────────────────
+        with st.expander("💾 備份 / 匯入專家清單", expanded=False):
+            import json as _json
+
+            _bcol1, _bcol2 = st.columns(2)
+
+            with _bcol1:
+                st.markdown("**備份**")
+                st.caption("將目前全部專家匯出為 JSON 檔，可留存或日後重新匯入。")
+                _backup_bytes = _json.dumps(
+                    experts, ensure_ascii=False, indent=2
+                ).encode("utf-8")
+                st.download_button(
+                    "⬇️ 下載 experts_backup.json",
+                    data=_backup_bytes,
+                    file_name="experts_backup.json",
+                    mime="application/json",
+                    use_container_width=True,
+                    key="expert_backup_btn",
+                )
+
+            with _bcol2:
+                st.markdown("**匯入**")
+                st.caption("接受之前備份的 JSON 檔。「合併」保留現有專家並加入／更新匯入的；「取代」清空後全部重建。")
+                _imp_file = st.file_uploader(
+                    "選擇 JSON 檔",
+                    type=["json"],
+                    key="expert_import_file",
+                    label_visibility="collapsed",
+                )
+                _imp_mode = st.radio(
+                    "匯入模式",
+                    options=["合併（保留現有）", "取代（清空重建）"],
+                    horizontal=True,
+                    key="expert_import_mode",
+                )
+                if st.button("✅ 確認匯入", key="expert_import_btn", use_container_width=True):
+                    if not _imp_file:
+                        st.error("請先選擇 JSON 檔。")
+                    else:
+                        try:
+                            _imp_data = _json.loads(_imp_file.read().decode("utf-8"))
+                            if not isinstance(_imp_data, list):
+                                st.error("格式錯誤：JSON 應為陣列（list of experts）。")
+                            else:
+                                _imp_items = [editor_row_to_expert(e) for e in _imp_data]
+                                _imp_items = [e for e in _imp_items
+                                              if display_expert_name(e) != "Unnamed Expert"]
+                                if _imp_mode.startswith("取代"):
+                                    _merged = _imp_items
+                                else:
+                                    _current = load_experts()
+                                    _cur_names = {display_expert_name(e) for e in _current}
+                                    # 更新已有 / 新增沒有的
+                                    _base = [e for e in _current
+                                             if display_expert_name(e) not in
+                                             {display_expert_name(x) for x in _imp_items}]
+                                    _merged = _base + _imp_items
+                                save_experts(_merged)
+                                st.success(f"已匯入 {len(_imp_items)} 筆專家。")
+                                st.rerun()
+                        except Exception as _e:
+                            st.error(f"匯入失敗：{_e}")
+
+        # ── 三個子標籤 ────────────────────────────────────────────────────────
         exp_sub_intl, exp_sub_cn, exp_sub_tw = st.tabs(
             ["🌐 國際專家", "🇨🇳 中國專家", "🇹🇼 台灣專家"]
         )
