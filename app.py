@@ -1671,9 +1671,27 @@ elif selected_page == "Sources":
         st.markdown("### 可編輯中共官媒")
         st.caption(
             f"共 {len(cn_editable_sources)} 筆（含預設值）。"
-            "可直接修改 URL 或次分類，儲存後生效。"
+            "可直接修改簡體名、URL 或次分類，儲存後生效。"
         )
-        cn_ed_df = _build_source_editor_df(cn_editable_sources, blank_rows=3)
+        _cn_ed_cols = ["name", "name_sc", "url", "category", "region", "enabled", "description"]
+        _cn_ed_rows = [
+            {
+                "name":        s.get("name", ""),
+                "name_sc":     s.get("name_sc", ""),
+                "url":         s.get("url", ""),
+                "category":    ", ".join(s.get("category") or []),
+                "region":      s.get("region", ""),
+                "enabled":     bool(s.get("enabled", True)),
+                "description": s.get("description", ""),
+            }
+            for s in cn_editable_sources
+        ]
+        # Pad with blank rows
+        for _ in range(max(0, 3 - len(_cn_ed_rows))):
+            _cn_ed_rows.append({c: "" for c in _cn_ed_cols})
+            _cn_ed_rows[-1]["enabled"] = True
+        cn_ed_df = pd.DataFrame(_cn_ed_rows, columns=_cn_ed_cols)
+
         edited_cn_df = st.data_editor(
             cn_ed_df,
             num_rows="dynamic",
@@ -1681,9 +1699,9 @@ elif selected_page == "Sources":
             height=320,
             key=f"cn_sources_editor_{_src_v}",
             column_config={
-                "name":        st.column_config.TextColumn("名稱"),
-                "type":        st.column_config.SelectboxColumn("type", options=["rss", "domain"]),
-                "url":         st.column_config.TextColumn("RSS URL（zh-CN）"),
+                "name":        st.column_config.TextColumn("名稱（繁體）"),
+                "name_sc":     st.column_config.TextColumn("簡體名"),
+                "url":         st.column_config.TextColumn("Google News zh-CN RSS URL"),
                 "category":    st.column_config.TextColumn("category"),
                 "region":      st.column_config.TextColumn("region"),
                 "enabled":     st.column_config.CheckboxColumn("enabled", default=True),
@@ -1701,8 +1719,10 @@ elif selected_page == "Sources":
                     item = editor_row_to_source(row)
                     if item["name"]:
                         if "中共官媒" not in (item.get("category") or []):
-                            item.setdefault("category", [])
-                            item["category"] = ["中共官媒"] + item["category"]
+                            item["category"] = ["中共官媒"] + (item.get("category") or [])
+                        # Preserve name_sc through the description field isn't ideal;
+                        # store it directly on the item before normalize strips it.
+                        item["name_sc"] = str(row.get("name_sc", "") or "").strip()
                         new_cn.append(item)
                 save_sources(non_cn + new_cn)
                 st.success("中共官媒清單已儲存。")
@@ -1723,11 +1743,24 @@ elif selected_page == "Sources":
                 st.rerun()
 
         st.markdown("### 固定中共官媒（唯讀）")
-        st.caption("人民日報、新聞聯播、解放軍報使用特殊 scraper，不開放編輯。")
+        st.caption(
+            "人民日報、新聞聯播、解放軍報使用特殊 scraper，不開放編輯。"
+            "下表顯示對應的 Google News zh-CN RSS URL 供參考或複製使用。"
+        )
         cn_fixed = [s for s in fixed_sources if s.get("type") == "cn_official"]
-        _cn_rows = [source_to_editor_row(x) for x in cn_fixed]
-        _cn_df   = pd.DataFrame(_cn_rows) if _cn_rows else pd.DataFrame(columns=["name", "category", "description"])
-        st.dataframe(_cn_df[["name", "category", "description"]], use_container_width=True, hide_index=True)
+        _cn_rows = [
+            {
+                "名稱":     s.get("name", ""),
+                "簡體名":   s.get("name_sc", ""),
+                "category": ", ".join(s.get("category") or []),
+                "Google News zh-CN RSS URL": s.get("gnews_url", ""),
+            }
+            for s in cn_fixed
+        ]
+        _cn_df = pd.DataFrame(_cn_rows) if _cn_rows else pd.DataFrame(
+            columns=["名稱", "簡體名", "category", "Google News zh-CN RSS URL"]
+        )
+        st.dataframe(_cn_df, use_container_width=True, hide_index=True)
 
 
 # =========================================================

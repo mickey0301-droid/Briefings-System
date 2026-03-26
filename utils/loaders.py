@@ -25,12 +25,15 @@ FORMATS_PATH = CONFIG_DIR / "formats.json"
 GLOBAL_MEDIA_PATH = CONFIG_DIR / "global_media.json"
 
 # 固定抓法（特殊 scraper，不可編輯）
+# gnews_url: 參考用 Google News zh-CN RSS（scraper 本身不使用此欄位）
 FIXED_CN_OFFICIAL_SOURCES = [
     {
         "name": "人民日報",
+        "name_sc": "人民日报",
         "subsource": "people_daily",
         "type": "cn_official",
         "url": "",
+        "gnews_url": "https://news.google.com/rss/search?q=%22%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒"],
         "region": "CN",
         "enabled": True,
@@ -40,9 +43,11 @@ FIXED_CN_OFFICIAL_SOURCES = [
     },
     {
         "name": "新聞聯播",
+        "name_sc": "新闻联播",
         "subsource": "xinwen_lianbo",
         "type": "cn_official",
         "url": "",
+        "gnews_url": "https://news.google.com/rss/search?q=%22%E6%96%B0%E9%97%BB%E8%81%94%E6%92%AD%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒"],
         "region": "CN",
         "enabled": True,
@@ -52,9 +57,11 @@ FIXED_CN_OFFICIAL_SOURCES = [
     },
     {
         "name": "解放軍報",
+        "name_sc": "解放军报",
         "subsource": "pla_daily",
         "type": "cn_official",
         "url": "",
+        "gnews_url": "https://news.google.com/rss/search?q=%22%E8%A7%A3%E6%94%BE%E5%86%9B%E6%8A%A5%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒", "軍事"],
         "region": "CN",
         "enabled": True,
@@ -69,6 +76,7 @@ FIXED_CN_OFFICIAL_SOURCES = [
 CN_OFFICIAL_EDITABLE_DEFAULTS = [
     {
         "name": "新華社",
+        "name_sc": "新华社",
         "type": "rss",
         "url": "https://news.google.com/rss/search?q=%22%E6%96%B0%E5%8D%8E%E7%A4%BE%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒"],
@@ -78,6 +86,7 @@ CN_OFFICIAL_EDITABLE_DEFAULTS = [
     },
     {
         "name": "中國外交部記者會",
+        "name_sc": "中国外交部记者会",
         "type": "rss",
         "url": "https://news.google.com/rss/search?q=%22%E4%B8%AD%E5%9B%BD%E5%A4%96%E4%BA%A4%E9%83%A8%E8%AE%B0%E8%80%85%E4%BC%9A%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒", "外交"],
@@ -87,6 +96,7 @@ CN_OFFICIAL_EDITABLE_DEFAULTS = [
     },
     {
         "name": "中國國防部記者會",
+        "name_sc": "中国国防部记者会",
         "type": "rss",
         "url": "https://news.google.com/rss/search?q=%22%E4%B8%AD%E5%9B%BD%E5%9B%BD%E9%98%B2%E9%83%A8%E8%AE%B0%E8%80%85%E4%BC%9A%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒", "國防"],
@@ -96,6 +106,7 @@ CN_OFFICIAL_EDITABLE_DEFAULTS = [
     },
     {
         "name": "國台辦",
+        "name_sc": "国台办",
         "type": "rss",
         "url": "https://news.google.com/rss/search?q=%22%E5%9B%BD%E5%8F%B0%E5%8A%9E%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒", "涉台"],
@@ -311,6 +322,7 @@ def normalize_source(item: dict) -> dict:
 
     normalized = {
         "name": (item.get("name") or "").strip(),
+        "name_sc": (item.get("name_sc") or "").strip(),  # 簡體字名（中共官媒）
         "subsource": (item.get("subsource") or "").strip(),
         "type": source_type,
         "url": (item.get("url") or "").strip(),
