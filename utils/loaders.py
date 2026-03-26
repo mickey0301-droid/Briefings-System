@@ -458,7 +458,25 @@ def load_global_media_sources():
     return results
 
 
+def _restore_from_github(local_path: Path, repo_path: str) -> None:
+    """
+    If *local_path* does not exist, attempt to pull it from the GitHub repo.
+    Called at the top of every load_* function so data survives Streamlit
+    Cloud restarts (ephemeral filesystem).  Silently does nothing if
+    credentials are absent or the file isn't in the repo yet.
+    """
+    if local_path.exists():
+        return
+    try:
+        from utils.github_storage import fetch_file
+        fetch_file(local_path, repo_path)
+    except Exception:
+        pass
+
+
 def load_sources(editable_only=False):
+    # 若本機檔案不存在（Streamlit Cloud 重啟後），先從 GitHub 拉回
+    _restore_from_github(SOURCES_USER_PATH, "config/sources_user.json")
     # 優先讀取使用者本地版本（不被 git pull 覆蓋）
     active_path = SOURCES_USER_PATH if SOURCES_USER_PATH.exists() else SOURCES_PATH
     data = read_json(active_path)
@@ -511,6 +529,8 @@ def save_sources(sources):
 
 
 def load_experts():
+    # 若本機檔案不存在（Streamlit Cloud 重啟後），先從 GitHub 拉回
+    _restore_from_github(EXPERTS_USER_PATH, "config/experts_user.json")
     # 優先讀取使用者本地版本（不被 git pull 覆蓋），與 load_sources 邏輯一致
     active_path = EXPERTS_USER_PATH if EXPERTS_USER_PATH.exists() else EXPERTS_PATH
     data = read_json(active_path)
@@ -831,6 +851,10 @@ def load_category_keywords() -> dict:
     優先讀取使用者自訂檔（category_keywords_user.json），
     不存在時回傳 DEFAULT_CATEGORY_KEYWORDS 的副本。
     """
+    # 若本機檔案不存在（Streamlit Cloud 重啟後），先從 GitHub 拉回
+    _restore_from_github(
+        _CATEGORY_KEYWORDS_USER_PATH, "config/category_keywords_user.json"
+    )
     if _CATEGORY_KEYWORDS_USER_PATH.exists():
         try:
             with open(_CATEGORY_KEYWORDS_USER_PATH, "r", encoding="utf-8") as f:

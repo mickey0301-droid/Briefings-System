@@ -33,6 +33,42 @@ def _get_config():
     return token, owner, repo, branch
 
 
+def fetch_file(local_path: Path, repo_path: str) -> bool:
+    """
+    Download a file from GitHub and write it to local_path.
+
+    Used on startup to restore ephemeral-filesystem files that were saved to
+    the repo by a previous Streamlit session (via commit_file).
+
+    Returns True if the file was successfully fetched and written.
+    Returns False if credentials are missing, the file doesn't exist in the
+    repo, or any network error occurs.  Never raises.
+    """
+    try:
+        token, owner, repo, branch = _get_config()
+        if not (token and owner and repo):
+            return False
+
+        api_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{repo_path}"
+        headers = {
+            "Authorization": f"token {token}",
+            "Accept":        "application/vnd.github.v3+json",
+        }
+        r = requests.get(api_url, headers=headers,
+                         params={"ref": branch}, timeout=10)
+        if r.status_code != 200:
+            return False
+
+        raw = r.json().get("content", "")
+        content = base64.b64decode(raw).decode("utf-8")
+        local_path.parent.mkdir(parents=True, exist_ok=True)
+        local_path.write_text(content, encoding="utf-8")
+        return True
+
+    except Exception:
+        return False
+
+
 def commit_file(local_path: Path, repo_path: str, message: str) -> bool:
     """
     Commit a local file to GitHub.
