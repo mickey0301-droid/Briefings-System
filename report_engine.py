@@ -1214,6 +1214,7 @@ def _build_citation_source_map(items, max_sources=12):
             "source": source,
             "url": url,
             "published_at": published_str,
+            "edition": (item.get("edition") or "").strip(),
         })
 
         if len(ordered) >= max_sources:
@@ -1255,6 +1256,7 @@ def _format_chicago_note(idx: int, src: dict) -> str:
     published_at = src.get("published_at", "").strip()
     url = src.get("url", "").strip()
     author = src.get("author", "").strip()  # optional field; usually absent for RSS
+    edition = src.get("edition", "").strip()
 
     sup = _to_superscript(idx)
     parts = []
@@ -1267,9 +1269,10 @@ def _format_chicago_note(idx: int, src: dict) -> str:
     if title:
         parts.append(f'"{title}."')
 
-    # Website / publication name (italics not possible in plain text; omit italics)
+    # Website / publication name, optionally with edition (版/則)
     if source:
-        parts.append(source + ".")
+        source_label = f"{source}（{edition}）" if edition else source
+        parts.append(source_label + ".")
 
     # Publication date
     if published_at:

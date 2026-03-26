@@ -42,7 +42,7 @@ def contains_real_keyword(text: str, title: str = "") -> bool:
     return False
 
 
-def _make_item(source_name: str, title: str, link: str, published: datetime, summary: str = "", content: str = "", category=None):
+def _make_item(source_name: str, title: str, link: str, published: datetime, summary: str = "", content: str = "", category=None, edition: str = ""):
     return {
         "source_name": source_name,
         "title": title.strip(),
@@ -52,7 +52,8 @@ def _make_item(source_name: str, title: str, link: str, published: datetime, sum
         "content": content.strip(),
         "category": category or ["China Official Media"],
         "type": "cn_official",
-        "region": "中國"
+        "region": "中國",
+        "edition": edition,
     }
 
 
@@ -99,6 +100,7 @@ def fetch_people_daily(target_date: datetime) -> list[dict]:
                         published=target_date,
                         summary=txt_preview[:280],
                         content=txt_preview,
+                        edition=f"第{p:02d}版",
                     ))
                 except Exception:
                     continue
@@ -152,6 +154,7 @@ def fetch_xinwen_lianbo(target_date: datetime) -> list[dict]:
                     published=target_date,
                     summary=content[:280],
                     content=content[:1200],
+                    edition=f"第{idx}則",
                 ))
         else:
             # fallback：頁面結構特殊，改抓所有 <p> 段落，每段編一則
@@ -166,6 +169,7 @@ def fetch_xinwen_lianbo(target_date: datetime) -> list[dict]:
                     published=target_date,
                     summary=para[:280],
                     content=para[:1200],
+                    edition=f"第{idx}則",
                 ))
 
     except Exception:
@@ -239,6 +243,7 @@ def fetch_pla_daily(target_date: datetime) -> list[dict]:
                 published=target_date,
                 summary=content[:280],
                 content=content[:1200],
+                edition=f"第{paper_num}版",
             ))
 
     return items
