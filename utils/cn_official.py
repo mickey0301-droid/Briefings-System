@@ -9,6 +9,16 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 }
 
+_CN_DISPLAY = {
+    "rmrb":  "人民日報",
+    "xwlb":  "新聞聯播",
+    "jfjb":  "解放軍報",
+    "xhs":   "新華社",
+    "fmprc": "中國外交部",
+    "mod":   "中國國防部",
+    "gwytb": "國台辦",
+}
+
 KEYWORDS = [
     "台湾", "台独", "台岛", "两岸", "台海", "涉台",
     "一中原则", "一个中国原则", "一个中国政策",
@@ -343,56 +353,71 @@ def fetch_gwytb(target_date: datetime) -> list[dict]:
     )
 
 
-def fetch_official_media_for_day(target_date: datetime, requested_subsources: list[str] | None = None) -> dict[str, list[dict]]:
-    # None → 預設抓全部；空 list [] → 明確表示什麼都不抓，直接回傳空結果
+_FETCH_MAP = {
+    "rmrb":  fetch_people_daily,
+    "xwlb":  fetch_xinwen_lianbo,
+    "jfjb":  fetch_pla_daily,
+    "xhs":   fetch_xinhua,
+    "fmprc": fetch_fmprc,
+    "mod":   fetch_mod,
+    "gwytb": fetch_gwytb,
+}
+
+_ALL_KEYS = ["rmrb", "xwlb", "jfjb", "xhs", "fmprc", "mod", "gwytb"]
+
+
+def fetch_official_media_for_day(
+    target_date: datetime,
+    requested_subsources: list[str] | None = None,
+    callback=None,
+) -> dict[str, list[dict]]:
+    """callback(event, detail, completed, total, total_items) — 與 RSS status_callback 格式相同。"""
+    empty = {k: [] for k in _ALL_KEYS}
     if requested_subsources is not None and len(requested_subsources) == 0:
-        return {"rmrb": [], "xwlb": [], "jfjb": [], "xhs": [], "fmprc": [], "mod": [], "gwytb": []}
-    requested = set(requested_subsources) if requested_subsources is not None else {"rmrb", "xwlb", "jfjb", "xhs", "fmprc", "mod", "gwytb"}
+        return empty
 
-    result = {
-        "rmrb": [],
-        "xwlb": [],
-        "jfjb": [],
-        "xhs": [],
-        "fmprc": [],
-        "mod": [],
-        "gwytb": [],
-    }
+    requested_set = set(requested_subsources) if requested_subsources is not None else set(_ALL_KEYS)
+    ordered = [k for k in _ALL_KEYS if k in requested_set]
+    total = len(ordered)
+    result = {k: [] for k in _ALL_KEYS}
+    total_items = 0
 
-    if "rmrb" in requested:
-        result["rmrb"] = fetch_people_daily(target_date)
-    if "xwlb" in requested:
-        result["xwlb"] = fetch_xinwen_lianbo(target_date)
-    if "jfjb" in requested:
-        result["jfjb"] = fetch_pla_daily(target_date)
-    if "xhs" in requested:
-        result["xhs"] = fetch_xinhua(target_date)
-    if "fmprc" in requested:
-        result["fmprc"] = fetch_fmprc(target_date)
-    if "mod" in requested:
-        result["mod"] = fetch_mod(target_date)
-    if "gwytb" in requested:
-        result["gwytb"] = fetch_gwytb(target_date)
+    for idx, key in enumerate(ordered, 1):
+        name = _CN_DISPLAY.get(key, key)
+        if callback:
+            try:
+                callback("stage", f"⏳ {name}：抓取中…")
+            except Exception:
+                pass
+        items = _FETCH_MAP[key](target_date)
+        result[key] = items
+        total_items += len(items)
+        if callback:
+            try:
+                callback("rss", f"{name}：{len(items)} 篇", idx, total, total_items)
+            except Exception:
+                pass
 
     return result
 
 
-def fetch_official_media_for_range(start_time: datetime, end_time: datetime, requested_subsources: list[str] | None = None) -> dict[str, list[dict]]:
-    result = {
-        "rmrb": [],
-        "xwlb": [],
-        "jfjb": [],
-        "xhs": [],
-        "fmprc": [],
-        "mod": [],
-        "gwytb": [],
-    }
+def fetch_official_media_for_range(
+    start_time: datetime,
+    end_time: datetime,
+    requested_subsources: list[str] | None = None,
+    callback=None,
+) -> dict[str, list[dict]]:
+    result = {k: [] for k in _ALL_KEYS}
 
     current = start_time.replace(hour=0, minute=0, second=0, microsecond=0)
     last = end_time.replace(hour=0, minute=0, second=0, microsecond=0)
 
     while current <= last:
-        daily = fetch_official_media_for_day(current, requested_subsources=requested_subsources)
+        daily = fetch_official_media_for_day(
+            current,
+            requested_subsources=requested_subsources,
+            callback=callback,
+        )
         for key, value in daily.items():
             result[key].extend(value)
         current += timedelta(days=1)

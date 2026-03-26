@@ -2932,6 +2932,7 @@ def generate_report(
                 start_time=start_time,
                 end_time=end_time,
                 requested_subsources=cn_subsources,
+                callback=_cb,
             )
             cn_count = 0
             for subsource_items in cn_results.values():
