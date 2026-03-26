@@ -1,226 +1,5 @@
 [
   {
-    "name": "中央通訊社",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "https://www.cna.com.tw/rss/aall.aspx",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "自由時報",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "https://news.ltn.com.tw/rss/all.xml",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "聯合報",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "https://udn.com/rssfeed/news/2/6638?ch=news",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "中國時報",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "chinatimes.com",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "上報",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "upmedia.mg",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "風傳媒",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "https://www.storm.mg/rss.xml",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "放言",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "fountmedia.io",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "新頭殼",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "https://newtalk.tw/rss/index",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "三立新聞",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "setn.com",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "民視新聞",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "ftvnews.com.tw",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "關鍵評論網",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "https://www.thenewslens.com/rss",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "東森新聞雲",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "ettoday.net",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
-    "name": "今日新聞",
-    "name_sc": "",
-    "domain": "",
-    "language": "",
-    "subsource": "",
-    "type": "rss",
-    "url": "nownews.com",
-    "category": [
-      "自訂台灣媒體"
-    ],
-    "region": "Taiwan",
-    "enabled": true,
-    "description": "",
-    "readonly": false,
-    "fixed": false
-  },
-  {
     "name": "新華社",
     "name_sc": "",
     "domain": "xinhuanet.com",
@@ -2292,6 +2071,227 @@
       "自訂國際媒體"
     ],
     "region": "英國",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "中央通訊社",
+    "name_sc": "",
+    "domain": "cna.com.tw",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Acna.com.tw&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "自由時報",
+    "name_sc": "",
+    "domain": "ltn.com.tw",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Altn.com.tw&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "聯合報",
+    "name_sc": "",
+    "domain": "udn.com",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Audn.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "中國時報",
+    "name_sc": "",
+    "domain": "chinatimes.com",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Achinatimes.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "上報",
+    "name_sc": "",
+    "domain": "upmedia.mg",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aupmedia.mg&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "風傳媒",
+    "name_sc": "",
+    "domain": "storm.mg",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aorm.mg&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "放言",
+    "name_sc": "",
+    "domain": "fountmedia.io",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Afountmedia.io&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "新頭殼",
+    "name_sc": "",
+    "domain": "newtalk.tw",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Anewtalk.tw&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "三立新聞",
+    "name_sc": "",
+    "domain": "setn.com",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aetn.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "民視新聞",
+    "name_sc": "",
+    "domain": "ftvnews.com.tw",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aftvnews.com.tw&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "關鍵評論網",
+    "name_sc": "",
+    "domain": "thenewslens",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aenewslens&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "東森新聞雲",
+    "name_sc": "",
+    "domain": "ettoday.net",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aettoday.net&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "今日新聞",
+    "name_sc": "",
+    "domain": "nownews.com",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Anownews.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂台灣媒體"
+    ],
+    "region": "Taiwan",
     "enabled": true,
     "description": "",
     "readonly": false,
