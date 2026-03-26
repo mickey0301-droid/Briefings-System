@@ -1875,7 +1875,7 @@
   {
     "name": "International Institute for Strategic Studies",
     "name_sc": "",
-    "domain": "http://iiss.org/",
+    "domain": "iiss.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -1892,7 +1892,7 @@
   {
     "name": "Political Studies Association",
     "name_sc": "",
-    "domain": "http://psa.ac.uk/",
+    "domain": ".ac.uk/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -1909,7 +1909,7 @@
   {
     "name": "French Institute for International and Strategic Affairs",
     "name_sc": "",
-    "domain": "http://iris-france.org/",
+    "domain": "iris-france.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -1926,7 +1926,7 @@
   {
     "name": "Institut Thomas More",
     "name_sc": "",
-    "domain": "http://institut-thomas-more.org/",
+    "domain": "institut-thomas-more.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -1943,7 +1943,7 @@
   {
     "name": "Foundation for Strategic Research",
     "name_sc": "",
-    "domain": "http://frstrategie.org/",
+    "domain": "frstrategie.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -1960,7 +1960,7 @@
   {
     "name": "French Institute of International Relations",
     "name_sc": "",
-    "domain": "http://ifri.org/en",
+    "domain": "ifri.org/en",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -1977,7 +1977,7 @@
   {
     "name": "Mercator Institute for China Studies",
     "name_sc": "",
-    "domain": "http://merics.org/en/report",
+    "domain": "merics.org/en/report",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -1994,7 +1994,7 @@
   {
     "name": "Clingendael Institute",
     "name_sc": "",
-    "domain": "http://clingendael.org/",
+    "domain": "clingendael.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2011,7 +2011,7 @@
   {
     "name": "European Council on Foreign Relations",
     "name_sc": "",
-    "domain": "ecfr.eu",
+    "domain": "ecfr.eu/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2028,7 +2028,7 @@
   {
     "name": "European Values Center for Security Policy",
     "name_sc": "",
-    "domain": "http://europeanvalues.cz/",
+    "domain": "europeanvalues.cz/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2045,7 +2045,7 @@
   {
     "name": "Institute of Developing Economies",
     "name_sc": "",
-    "domain": "http://ide.go.jp/",
+    "domain": "ide.go.jp/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2062,7 +2062,7 @@
   {
     "name": "Japan Institute of International Affairs",
     "name_sc": "",
-    "domain": "http://jiia.or.jp/",
+    "domain": "jiia.or.jp/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2079,7 +2079,7 @@
   {
     "name": "Sasakawa Peace Foundation",
     "name_sc": "",
-    "domain": "http://spf.org/",
+    "domain": "spf.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2096,7 +2096,7 @@
   {
     "name": "ISEAS-Yusof Ishak Institute",
     "name_sc": "",
-    "domain": "http://iseas.edu.sg/",
+    "domain": "iseas.edu.sg/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2113,7 +2113,7 @@
   {
     "name": "Singapore Institute of International Affairs",
     "name_sc": "",
-    "domain": "http://siiaonline.org/",
+    "domain": "siiaonline.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2130,7 +2130,7 @@
   {
     "name": "Observer Research Foundation",
     "name_sc": "",
-    "domain": "http://orfonline.org/",
+    "domain": "orfonline.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2147,7 +2147,7 @@
   {
     "name": "Institute for Defence Studies and Analyses",
     "name_sc": "",
-    "domain": "http://idsa.in/",
+    "domain": "idsa.in/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2164,7 +2164,7 @@
   {
     "name": "Vivekananda International Foundation",
     "name_sc": "",
-    "domain": "http://vifindia.org/",
+    "domain": "vifindia.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2181,7 +2181,7 @@
   {
     "name": "Gateway House",
     "name_sc": "",
-    "domain": "http://gatewayhouse.in/",
+    "domain": "gatewayhouse.in/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2198,7 +2198,7 @@
   {
     "name": "Australian Strategic Policy Institute",
     "name_sc": "",
-    "domain": "http://aspi.org.au/",
+    "domain": "aspi.org.au/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2215,7 +2215,7 @@
   {
     "name": "Lowy Institute",
     "name_sc": "",
-    "domain": "http://lowyinstitute.org/",
+    "domain": "lowyinstitute.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2232,7 +2232,7 @@
   {
     "name": "Stockholm International Peace Research Institute",
     "name_sc": "",
-    "domain": "http://sipri.org/",
+    "domain": "sipri.org/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2249,7 +2249,7 @@
   {
     "name": "Swedish Institute for International Affairs",
     "name_sc": "",
-    "domain": "http://ui.se/english/",
+    "domain": "ui.se/english/",
     "language": "",
     "subsource": "",
     "type": "rss",
@@ -2258,6 +2258,40 @@
       "自訂國際媒體"
     ],
     "region": "瑞典",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "German Marshall Fund",
+    "name_sc": "",
+    "domain": "gmfus.org/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Agmfus.org&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂國際媒體"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "RUSI",
+    "name_sc": "",
+    "domain": "rusi.org/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Arusi.org&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂國際媒體"
+    ],
+    "region": "",
     "enabled": true,
     "description": "",
     "readonly": false,
