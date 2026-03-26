@@ -176,11 +176,11 @@ def _filter_experts_by_selection(experts, selected_categories, selected_names):
 # ── 來源群組定義（label, main_cat_keys, sub_cat_keys）──────────────────────────
 # sub_cat_keys: 群組內的次分類，選擇後自動展開為該次分類的所有來源名稱
 _SOURCE_GROUPS = [
-    ("自訂",    ["自訂台灣媒體", "自訂國際媒體"],  ["自訂台灣媒體", "自訂國際媒體"]),
-    ("全球媒體", ["全球媒體"],
-                ["Asia-Pacific", "歐洲地區", "亞西地區", "北美地區", "拉丁美洲及加勒比海", "非洲地區"]),
-    ("中共官媒", ["中共官媒"],                    ["外交", "軍事", "國防", "涉台"]),
-    ("自訂專家", ["自訂專家"],                    []),
+    ("自訂媒體",  ["自訂台灣媒體", "自訂國際媒體"],  ["自訂台灣媒體", "自訂國際媒體"]),
+    ("自訂專家",  ["自訂專家"],                     []),
+    ("全球媒體",  ["全球媒體"],
+                 ["Asia-Pacific", "歐洲地區", "亞西地區", "北美地區", "拉丁美洲及加勒比海", "非洲地區"]),
+    ("中共官媒",  ["中共官媒"],                     ["外交", "軍事", "國防", "涉台"]),
 ]
 
 
@@ -578,7 +578,7 @@ def _build_source_editor_df(source_items, blank_rows=8):
 
 
 def _build_expert_editor_df(expert_items, blank_rows=8):
-    columns = ["name_zh", "name_en", "aliases", "category", "affiliation", "region", "rss_url", "enabled", "description"]
+    columns = ["name_zh", "name_sc", "name_en", "aliases", "category", "affiliation", "region", "rss_url", "enabled", "description"]
     rows = [expert_to_editor_row(x) for x in expert_items]
     df = pd.DataFrame(rows, columns=columns) if rows else pd.DataFrame(columns=columns)
     df = _append_blank_rows(df, blank_rows=blank_rows)
@@ -1386,9 +1386,30 @@ elif selected_page == "Sources":
                 st.rerun()
 
         with st.expander("單筆新增專家", expanded=False):
+            _exp_type = st.radio(
+                "專家類型",
+                options=["國際", "台灣", "中國大陸"],
+                horizontal=True,
+                key="single_exp_type",
+            )
+            _type_hint = {
+                "國際":   ("category 建議：國際專家", "region 範例：US / UK / Japan"),
+                "台灣":   ("category 建議：台灣專家", "region 建議：Taiwan"),
+                "中國大陸": ("category 建議：中國專家", "region 建議：CN"),
+            }[_exp_type]
+            st.caption(f"{_type_hint[0]}　　{_type_hint[1]}")
+
             c1, c2 = st.columns(2)
             with c1:
-                exp_name_zh = st.text_input("中文名 name_zh", key="single_exp_name_zh")
+                exp_name_zh = st.text_input("中文名 name_zh（繁體）", key="single_exp_name_zh")
+                if _exp_type == "中國大陸":
+                    exp_name_sc = st.text_input(
+                        "簡體字名 name_sc（中國大陸專家）",
+                        key="single_exp_name_sc",
+                        help="留空時系統自動由繁體中文名轉換；填入則直接使用此名稱搜尋 Google News zh-CN。",
+                    )
+                else:
+                    exp_name_sc = ""
                 exp_name_en = st.text_input("英文名 name_en", key="single_exp_name_en")
                 exp_aliases = st.text_input("aliases（逗號分隔）", key="single_exp_aliases")
                 exp_category = st.text_input("category（逗號分隔）", key="single_exp_category")
@@ -1403,6 +1424,7 @@ elif selected_page == "Sources":
                 new_item = editor_row_to_expert(
                     {
                         "name_zh": exp_name_zh,
+                        "name_sc": exp_name_sc,
                         "name_en": exp_name_en,
                         "aliases": exp_aliases,
                         "category": exp_category,
@@ -1426,7 +1448,7 @@ elif selected_page == "Sources":
         st.markdown("### 表格式批次貼上新增專家")
         st.caption("可直接從外部複製多列資料貼到下表，再按「批次加入專家」。")
 
-        expert_batch_columns = ["name_zh", "name_en", "aliases", "category", "affiliation", "region", "rss_url", "enabled", "description"]
+        expert_batch_columns = ["name_zh", "name_sc", "name_en", "aliases", "category", "affiliation", "region", "rss_url", "enabled", "description"]
         expert_batch_default = pd.DataFrame([{c: "" for c in expert_batch_columns} for _ in range(8)])
         expert_batch_default["enabled"] = True
 
@@ -1437,15 +1459,16 @@ elif selected_page == "Sources":
             height=280,
             key="expert_batch_editor",
             column_config={
-                "name_zh": st.column_config.TextColumn("name_zh"),
-                "name_en": st.column_config.TextColumn("name_en"),
+                "name_zh": st.column_config.TextColumn("中文名（繁體）"),
+                "name_sc": st.column_config.TextColumn("簡體名（中國大陸）"),
+                "name_en": st.column_config.TextColumn("英文名"),
                 "aliases": st.column_config.TextColumn("aliases"),
                 "category": st.column_config.TextColumn("category"),
                 "affiliation": st.column_config.TextColumn("affiliation"),
                 "region": st.column_config.TextColumn("region"),
                 "enabled": st.column_config.CheckboxColumn("enabled", default=True),
                 "description": st.column_config.TextColumn("description"),
-                "rss_url": st.column_config.TextColumn("rss_url（RSS URL）"),
+                "rss_url": st.column_config.TextColumn("RSS URL"),
             },
         )
 
@@ -1483,15 +1506,16 @@ elif selected_page == "Sources":
             height=420,
             key="editable_experts_editor",
             column_config={
-                "name_zh": st.column_config.TextColumn("name_zh"),
-                "name_en": st.column_config.TextColumn("name_en"),
+                "name_zh": st.column_config.TextColumn("中文名（繁體）"),
+                "name_sc": st.column_config.TextColumn("簡體名（中國大陸）"),
+                "name_en": st.column_config.TextColumn("英文名"),
                 "aliases": st.column_config.TextColumn("aliases"),
                 "category": st.column_config.TextColumn("category"),
                 "affiliation": st.column_config.TextColumn("affiliation"),
                 "region": st.column_config.TextColumn("region"),
                 "enabled": st.column_config.CheckboxColumn("enabled", default=True),
                 "description": st.column_config.TextColumn("description"),
-                "rss_url": st.column_config.TextColumn("rss_url（RSS URL）"),
+                "rss_url": st.column_config.TextColumn("RSS URL"),
             },
         )
 

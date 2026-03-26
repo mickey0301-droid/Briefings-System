@@ -285,10 +285,12 @@ def unique_keep_order(seq):
 
 def build_expert_search_names(expert: dict):
     name_zh = (expert.get("name_zh") or "").strip()
+    name_sc = (expert.get("name_sc") or "").strip()   # 簡體字名（中國大陸專家）
     name_en = (expert.get("name_en") or "").strip()
     aliases = normalize_aliases(expert.get("aliases"))
 
-    zh_simplified = tw_to_simplified(name_zh) if name_zh else ""
+    # Use explicit name_sc if provided; otherwise auto-convert from name_zh
+    zh_simplified = name_sc or (tw_to_simplified(name_zh) if name_zh else "")
     alias_expanded = []
     for a in aliases:
         alias_expanded.append(a)
@@ -332,6 +334,7 @@ def normalize_expert(item: dict) -> dict:
     item = item or {}
     normalized = {
         "name_zh": (item.get("name_zh") or "").strip(),
+        "name_sc": (item.get("name_sc") or "").strip(),  # 簡體字名（中國大陸專家）
         "name_en": (item.get("name_en") or "").strip(),
         "aliases": normalize_aliases(item.get("aliases")),
         "category": normalize_category(item.get("category")),
@@ -486,13 +489,22 @@ def expert_gnews_urls(expert: dict) -> list:
     if name_en:
         results.append(("英文名（en-US）", _gnews(name_en, "hl=en-US&gl=US&ceid=US:en")))
 
+    name_sc = (expert.get("name_sc") or "").strip()   # 簡體字名
+
     # Chinese name → zh-TW (traditional)
     if name_zh:
         results.append(("中文名（zh-TW）", _gnews(name_zh, "hl=zh-TW&gl=TW&ceid=TW:zh-Hant")))
         # Mainland China indicator → also add zh-CN (simplified)
         _cn_regions = {"CN", "中國", "中国", "大陸", "大陆", "CHINA", "MAINLAND"}
-        if any(r in region for r in _cn_regions):
-            results.append(("中文名－簡體（zh-CN）", _gnews(name_zh, "hl=zh-CN&gl=SG&ceid=SG:zh-Hans")))
+        is_cn = any(r in region for r in _cn_regions)
+        if is_cn:
+            # Prefer explicit name_sc; fall back to auto-converting name_zh
+            sc_name = name_sc or tw_to_simplified(name_zh)
+            if sc_name:
+                results.append(("簡體名（zh-CN）", _gnews(sc_name, "hl=zh-CN&gl=SG&ceid=SG:zh-Hans")))
+    elif name_sc:
+        # Only name_sc is set (no traditional Chinese name)
+        results.append(("簡體名（zh-CN）", _gnews(name_sc, "hl=zh-CN&gl=SG&ceid=SG:zh-Hans")))
 
     return results
 
@@ -820,6 +832,7 @@ def editor_row_to_source(row: dict):
 def expert_to_editor_row(expert: dict):
     return {
         "name_zh": expert.get("name_zh", ""),
+        "name_sc": expert.get("name_sc", ""),
         "name_en": expert.get("name_en", ""),
         "aliases": list_to_csv(expert.get("aliases")),
         "category": list_to_csv(expert.get("category")),
@@ -835,6 +848,7 @@ def editor_row_to_expert(row: dict):
     return normalize_expert(
         {
             "name_zh": row.get("name_zh", ""),
+            "name_sc": row.get("name_sc", ""),
             "name_en": row.get("name_en", ""),
             "aliases": row.get("aliases", ""),
             "category": row.get("category", ""),
