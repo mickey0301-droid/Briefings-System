@@ -17,19 +17,27 @@ import requests
 
 def _get_config():
     token = owner = repo = branch = ""
+    _secrets_error = ""
     try:
         import streamlit as st
         token  = st.secrets.get("GITHUB_TOKEN",  "")
         owner  = st.secrets.get("GITHUB_OWNER",  "")
         repo   = st.secrets.get("GITHUB_REPO",   "")
         branch = st.secrets.get("GITHUB_BRANCH", "main")
-    except Exception:
-        pass
+    except Exception as _e:
+        _secrets_error = str(_e)
     import os
     token  = token  or os.getenv("GITHUB_TOKEN",  "")
     owner  = owner  or os.getenv("GITHUB_OWNER",  "")
     repo   = repo   or os.getenv("GITHUB_REPO",   "")
     branch = branch or os.getenv("GITHUB_BRANCH", "main")
+    # Surface secrets parse errors so they appear in the sync warning
+    if _secrets_error and not (token and owner and repo):
+        try:
+            import streamlit as st
+            st.session_state["_github_sync_error"] = f"st.secrets 解析失敗：{_secrets_error}"
+        except Exception:
+            pass
     return token, owner, repo, branch
 
 
