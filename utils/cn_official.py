@@ -165,24 +165,64 @@ def fetch_xinwen_lianbo(target_date: datetime) -> list[dict]:
 
 
 def fetch_pla_daily(target_date: datetime) -> list[dict]:
+    """
+    www.81.cn/jfjbmap 是「解放軍報版面圖」閱讀器，結構與人民日報相同：
+      node_XX.htm   → 版面索引頁，含文章連結
+      content_XXXXXXXX.htm → 個別文章頁
+    逐一掃 node 頁、找文章連結、取標題 + 正文。
+    """
     items = []
-    try:
-        jfj_url = f"http://www.81.cn/jfjbmap/content/{target_date.strftime('%Y-%m/%d')}/node_01.htm"
-        r = requests.get(jfj_url, headers=HEADERS, timeout=10)
-        r.encoding = "utf-8"
+    seen_titles: set[str] = set()
+    date_path = target_date.strftime("%Y-%m/%d")   # e.g. "2026-03/26"
+    base = f"http://www.81.cn/jfjbmap/content/{date_path}"
 
-        if r.status_code == 200:
-            text = BeautifulSoup(r.text, "html.parser").get_text(" ", strip=True)
-            items.append(_make_item(
-                source_name="解放軍報",
-                title=f"解放軍報 {target_date.strftime('%Y-%m-%d')}",
-                link=jfj_url,
-                published=target_date,
-                summary=text[:280],
-                content=text[:1200],
-            ))
-    except Exception:
-        pass
+    for p in range(1, 11):
+        node_url = f"{base}/node_{p:02d}.htm"
+        try:
+            r = requests.get(node_url, headers=HEADERS, timeout=10)
+            if r.status_code == 404:
+                break           # 該日沒有這麼多版，提前結束
+            if r.status_code != 200:
+                continue
+            r.encoding = "utf-8"
+
+            # 文章連結形如 content_12345678.htm（相對路徑）
+            art_names = set(re.findall(r'content_\d+\.htm', r.text))
+            for art_name in art_names:
+                art_url = f"{base}/{art_name}"
+                try:
+                    art_r = requests.get(art_url, headers=HEADERS, timeout=10)
+                    if art_r.status_code != 200:
+                        continue
+                    art_r.encoding = "utf-8"
+
+                    title_m = re.search(r"<title>(.*?)</title>", art_r.text, re.S)
+                    if not title_m:
+                        continue
+                    title = title_m.group(1).strip()
+                    if not title or title in seen_titles:
+                        continue
+                    seen_titles.add(title)
+
+                    # 嘗試常見正文容器，找不到就用全頁文字
+                    art_soup = BeautifulSoup(art_r.text, "html.parser")
+                    body_div = (art_soup.find(id=re.compile(r"article|content|ozoom|text", re.I))
+                                or art_soup.find("div", class_=re.compile(r"article|content|text", re.I)))
+                    txt = body_div.get_text(" ", strip=True) if body_div else art_soup.get_text(" ", strip=True)
+                    txt = txt[:1200]
+
+                    items.append(_make_item(
+                        source_name="解放軍報",
+                        title=title,
+                        link=art_url,
+                        published=target_date,
+                        summary=txt[:280],
+                        content=txt,
+                    ))
+                except Exception:
+                    continue
+        except Exception:
+            continue
 
     return items
 
