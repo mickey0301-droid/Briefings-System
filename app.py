@@ -1614,38 +1614,37 @@ elif selected_page == "Sources":
         # ── 新增中共官媒 ───────────────────────────────────────────────────────
         with st.expander("單筆新增中共官媒", expanded=False):
             st.caption(
-                "填入簡體字名稱後可自動生成 Google News zh-CN RSS URL，"
+                "填入網域後自動生成 Google News zh-CN RSS URL（site:domain 格式），"
                 "也可直接貼上自訂 RSS URL 覆蓋。"
             )
+            from utils.loaders import cn_gnews_url_from_domain as _cn_url_gen
             c1, c2 = st.columns(2)
             with c1:
-                cn_new_name    = st.text_input("顯示名稱（繁體可）", key="cn_new_name")
-                cn_new_sc      = st.text_input(
-                    "簡體字名稱（用於生成搜尋 URL）",
-                    key="cn_new_sc",
-                    help="留空時使用顯示名稱作為搜尋關鍵字",
+                cn_new_name   = st.text_input("顯示名稱", key="cn_new_name")
+                cn_new_domain = st.text_input(
+                    "網域（例：xinhuanet.com）",
+                    key="cn_new_domain",
+                    help="填入後自動生成 site:domain 的 Google News zh-CN RSS URL",
                 )
-                _cn_sub_opts   = ["（無）", "外交", "軍事", "國防", "涉台"]
-                cn_new_subcat  = st.selectbox("次分類", options=_cn_sub_opts, key="cn_new_subcat")
+                _cn_sub_opts  = ["（無）", "外交", "軍事", "國防", "涉台"]
+                cn_new_subcat = st.selectbox("次分類", options=_cn_sub_opts, key="cn_new_subcat")
             with c2:
-                _sc_for_url    = cn_new_sc.strip() or cn_new_name.strip()
-                import urllib.parse as _ulp
-                _auto_url = (
-                    "https://news.google.com/rss/search?q="
-                    + _ulp.quote(f'"{_sc_for_url}"')
-                    + "&hl=zh-CN&gl=SG&ceid=SG:zh-Hans"
-                ) if _sc_for_url else ""
-                cn_new_url  = st.text_input(
-                    "RSS URL（留空則使用下方自動生成的 URL）",
+                _auto_url = _cn_url_gen(cn_new_domain.strip()) if cn_new_domain.strip() else ""
+                if _auto_url:
+                    st.caption(f"自動生成 URL：")
+                    st.code(_auto_url, language=None)
+                cn_new_url    = st.text_input(
+                    "自訂 RSS URL（留空則使用自動生成的 URL）",
                     key="cn_new_url",
                 )
-                st.caption(f"自動生成 URL：`{_auto_url}`" if _auto_url else "")
                 cn_new_enabled = st.checkbox("enabled", value=True, key="cn_new_enabled")
 
             if st.button("新增中共官媒", key="cn_add_btn"):
                 _name = cn_new_name.strip()
                 if not _name:
                     st.error("請填入顯示名稱。")
+                elif not cn_new_domain.strip() and not cn_new_url.strip():
+                    st.error("請填入網域或 RSS URL。")
                 else:
                     _url  = cn_new_url.strip() or _auto_url
                     _cats = ["中共官媒"]
@@ -1653,12 +1652,13 @@ elif selected_page == "Sources":
                         _cats.append(cn_new_subcat)
                     _new_src = normalize_source({
                         "name":     _name,
+                        "domain":   cn_new_domain.strip(),
                         "type":     "rss",
                         "url":      _url,
                         "category": _cats,
                         "region":   "CN",
                         "enabled":  cn_new_enabled,
-                        "description": f"Google News zh-CN（{cn_new_sc.strip() or _name}）",
+                        "description": f"Google News site:{cn_new_domain.strip()} zh-CN",
                     })
                     _current = load_sources(editable_only=True)
                     _current = [x for x in _current if x.get("name") != _name]
@@ -1671,13 +1671,13 @@ elif selected_page == "Sources":
         st.markdown("### 可編輯中共官媒")
         st.caption(
             f"共 {len(cn_editable_sources)} 筆（含預設值）。"
-            "可直接修改簡體名、URL 或次分類，儲存後生效。"
+            "修改網域後儲存，RSS URL 會自動更新；也可直接修改 URL 覆蓋。"
         )
-        _cn_ed_cols = ["name", "name_sc", "url", "category", "region", "enabled", "description"]
+        _cn_ed_cols = ["name", "domain", "url", "category", "region", "enabled", "description"]
         _cn_ed_rows = [
             {
                 "name":        s.get("name", ""),
-                "name_sc":     s.get("name_sc", ""),
+                "domain":      s.get("domain", ""),
                 "url":         s.get("url", ""),
                 "category":    ", ".join(s.get("category") or []),
                 "region":      s.get("region", ""),
@@ -1686,7 +1686,6 @@ elif selected_page == "Sources":
             }
             for s in cn_editable_sources
         ]
-        # Pad with blank rows
         for _ in range(max(0, 3 - len(_cn_ed_rows))):
             _cn_ed_rows.append({c: "" for c in _cn_ed_cols})
             _cn_ed_rows[-1]["enabled"] = True
@@ -1699,9 +1698,9 @@ elif selected_page == "Sources":
             height=320,
             key=f"cn_sources_editor_{_src_v}",
             column_config={
-                "name":        st.column_config.TextColumn("名稱（繁體）"),
-                "name_sc":     st.column_config.TextColumn("簡體名"),
-                "url":         st.column_config.TextColumn("Google News zh-CN RSS URL"),
+                "name":        st.column_config.TextColumn("名稱"),
+                "domain":      st.column_config.TextColumn("網域（auto-generates URL）"),
+                "url":         st.column_config.TextColumn("RSS URL（留空則從網域生成）"),
                 "category":    st.column_config.TextColumn("category"),
                 "region":      st.column_config.TextColumn("region"),
                 "enabled":     st.column_config.CheckboxColumn("enabled", default=True),
@@ -1711,18 +1710,22 @@ elif selected_page == "Sources":
         c1, c2 = st.columns(2)
         with c1:
             if st.button("儲存中共官媒編輯", key="save_cn_sources", use_container_width=True):
+                from utils.loaders import cn_gnews_url_from_domain as _cn_url_gen2
                 rows = _clean_batch_df(edited_cn_df)
                 current = load_sources(editable_only=True)
                 non_cn = [s for s in current if "中共官媒" not in (s.get("category") or [])]
                 new_cn = []
                 for row in rows:
+                    _dom = str(row.get("domain", "") or "").strip()
+                    _url = str(row.get("url", "") or "").strip()
+                    # Auto-generate URL from domain when URL is empty
+                    if _dom and not _url:
+                        row["url"] = _cn_url_gen2(_dom)
                     item = editor_row_to_source(row)
+                    item["domain"] = _dom
                     if item["name"]:
                         if "中共官媒" not in (item.get("category") or []):
                             item["category"] = ["中共官媒"] + (item.get("category") or [])
-                        # Preserve name_sc through the description field isn't ideal;
-                        # store it directly on the item before normalize strips it.
-                        item["name_sc"] = str(row.get("name_sc", "") or "").strip()
                         new_cn.append(item)
                 save_sources(non_cn + new_cn)
                 st.success("中共官媒清單已儲存。")
@@ -1743,23 +1746,16 @@ elif selected_page == "Sources":
                 st.rerun()
 
         st.markdown("### 固定中共官媒（唯讀）")
-        st.caption(
-            "人民日報、新聞聯播、解放軍報使用特殊 scraper，不開放編輯。"
-            "下表顯示對應的 Google News zh-CN RSS URL 供參考或複製使用。"
-        )
+        st.caption("人民日報、新聞聯播、解放軍報使用特殊 scraper，不開放編輯。")
         cn_fixed = [s for s in fixed_sources if s.get("type") == "cn_official"]
         _cn_rows = [
             {
                 "名稱":     s.get("name", ""),
-                "簡體名":   s.get("name_sc", ""),
                 "category": ", ".join(s.get("category") or []),
-                "Google News zh-CN RSS URL": s.get("gnews_url", ""),
             }
             for s in cn_fixed
         ]
-        _cn_df = pd.DataFrame(_cn_rows) if _cn_rows else pd.DataFrame(
-            columns=["名稱", "簡體名", "category", "Google News zh-CN RSS URL"]
-        )
+        _cn_df = pd.DataFrame(_cn_rows) if _cn_rows else pd.DataFrame(columns=["名稱", "category"])
         st.dataframe(_cn_df, use_container_width=True, hide_index=True)
 
 

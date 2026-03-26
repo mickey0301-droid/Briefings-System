@@ -25,15 +25,12 @@ FORMATS_PATH = CONFIG_DIR / "formats.json"
 GLOBAL_MEDIA_PATH = CONFIG_DIR / "global_media.json"
 
 # 固定抓法（特殊 scraper，不可編輯）
-# gnews_url: 參考用 Google News zh-CN RSS（scraper 本身不使用此欄位）
 FIXED_CN_OFFICIAL_SOURCES = [
     {
         "name": "人民日報",
-        "name_sc": "人民日报",
         "subsource": "people_daily",
         "type": "cn_official",
         "url": "",
-        "gnews_url": "https://news.google.com/rss/search?q=%22%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒"],
         "region": "CN",
         "enabled": True,
@@ -43,11 +40,9 @@ FIXED_CN_OFFICIAL_SOURCES = [
     },
     {
         "name": "新聞聯播",
-        "name_sc": "新闻联播",
         "subsource": "xinwen_lianbo",
         "type": "cn_official",
         "url": "",
-        "gnews_url": "https://news.google.com/rss/search?q=%22%E6%96%B0%E9%97%BB%E8%81%94%E6%92%AD%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒"],
         "region": "CN",
         "enabled": True,
@@ -57,11 +52,9 @@ FIXED_CN_OFFICIAL_SOURCES = [
     },
     {
         "name": "解放軍報",
-        "name_sc": "解放军报",
         "subsource": "pla_daily",
         "type": "cn_official",
         "url": "",
-        "gnews_url": "https://news.google.com/rss/search?q=%22%E8%A7%A3%E6%94%BE%E5%86%9B%E6%8A%A5%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒", "軍事"],
         "region": "CN",
         "enabled": True,
@@ -71,48 +64,48 @@ FIXED_CN_OFFICIAL_SOURCES = [
     },
 ]
 
-# 可編輯的中共官媒預設值（type=rss，使用 Google News zh-CN RSS）
+# 可編輯的中共官媒預設值（type=rss，由網域生成 Google News zh-CN RSS URL）
 # 若使用者的 sources 中已有同名來源，則不重複注入。
 CN_OFFICIAL_EDITABLE_DEFAULTS = [
     {
         "name": "新華社",
-        "name_sc": "新华社",
+        "domain": "xinhuanet.com",
         "type": "rss",
-        "url": "https://news.google.com/rss/search?q=%22%E6%96%B0%E5%8D%8E%E7%A4%BE%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=site%3Axinhuanet.com&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒"],
         "region": "CN",
         "enabled": True,
-        "description": "Google News zh-CN（可編輯）",
+        "description": "Google News site:xinhuanet.com zh-CN",
     },
     {
         "name": "中國外交部記者會",
-        "name_sc": "中国外交部记者会",
+        "domain": "fmprc.gov.cn",
         "type": "rss",
-        "url": "https://news.google.com/rss/search?q=%22%E4%B8%AD%E5%9B%BD%E5%A4%96%E4%BA%A4%E9%83%A8%E8%AE%B0%E8%80%85%E4%BC%9A%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=site%3Afmprc.gov.cn&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒", "外交"],
         "region": "CN",
         "enabled": True,
-        "description": "Google News zh-CN（可編輯）",
+        "description": "Google News site:fmprc.gov.cn zh-CN",
     },
     {
         "name": "中國國防部記者會",
-        "name_sc": "中国国防部记者会",
+        "domain": "mod.gov.cn",
         "type": "rss",
-        "url": "https://news.google.com/rss/search?q=%22%E4%B8%AD%E5%9B%BD%E5%9B%BD%E9%98%B2%E9%83%A8%E8%AE%B0%E8%80%85%E4%BC%9A%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=site%3Amod.gov.cn&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒", "國防"],
         "region": "CN",
         "enabled": True,
-        "description": "Google News zh-CN（可編輯）",
+        "description": "Google News site:mod.gov.cn zh-CN",
     },
     {
         "name": "國台辦",
-        "name_sc": "国台办",
+        "domain": "gwytb.gov.cn",
         "type": "rss",
-        "url": "https://news.google.com/rss/search?q=%22%E5%9B%BD%E5%8F%B0%E5%8A%9E%22&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
+        "url": "https://news.google.com/rss/search?q=site%3Agwytb.gov.cn&hl=zh-CN&gl=SG&ceid=SG:zh-Hans",
         "category": ["中共官媒", "涉台"],
         "region": "CN",
         "enabled": True,
-        "description": "Google News zh-CN（可編輯）",
+        "description": "Google News site:gwytb.gov.cn zh-CN",
     },
 ]
 
@@ -314,15 +307,29 @@ def display_expert_name(expert: dict) -> str:
     return name_zh or name_en or "Unnamed Expert"
 
 
+def cn_gnews_url_from_domain(domain: str) -> str:
+    """Generate a Google News zh-CN RSS URL from a bare domain string."""
+    import urllib.parse as _up
+    domain = domain.strip().lstrip("https://").lstrip("http://").split("/")[0]
+    return (
+        "https://news.google.com/rss/search?q="
+        + _up.quote(f"site:{domain}")
+        + "&hl=zh-CN&gl=SG&ceid=SG:zh-Hans"
+    )
+
+
 def normalize_source(item: dict) -> dict:
     item = item or {}
     source_type = (item.get("type") or "rss").strip().lower()
     if source_type not in ["rss", "domain", "cn_official"]:
         source_type = "rss"
 
+    raw_domain = (item.get("domain") or "").strip()
+
     normalized = {
         "name": (item.get("name") or "").strip(),
-        "name_sc": (item.get("name_sc") or "").strip(),  # 簡體字名（中共官媒）
+        "name_sc": (item.get("name_sc") or "").strip(),  # 簡體字名（中共官媒用）
+        "domain": raw_domain,                             # 來源網域（用於生成 zh-CN RSS URL）
         "subsource": (item.get("subsource") or "").strip(),
         "type": source_type,
         "url": (item.get("url") or "").strip(),
@@ -333,6 +340,9 @@ def normalize_source(item: dict) -> dict:
         "readonly": bool(item.get("readonly", False)),
         "fixed": bool(item.get("fixed", False)),
     }
+    # Auto-generate URL from domain if url is empty
+    if normalized["domain"] and not normalized["url"]:
+        normalized["url"] = cn_gnews_url_from_domain(normalized["domain"])
     return normalized
 
 
