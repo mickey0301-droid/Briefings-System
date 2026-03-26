@@ -136,40 +136,44 @@ def fetch_xinwen_lianbo(target_date: datetime) -> list[dict]:
 
         soup = BeautifulSoup(r.text, "html.parser")
 
-        # 找個別文章連結，例如 /xinwenlianbo/20260326/001/
-        hrefs = sorted(set(
-            a["href"] for a in soup.find_all("a", href=True)
-            if re.search(rf"/xinwenlianbo/{yyyymmdd}/\d+", a["href"])
-        ))
+        # 索引頁上的各則連結，例如 /xinwenlianbo/20260325/1/
+        # 保序（不用 set）：連結在頁面中的排列順序就是播出順序
+        seen_hrefs: set[str] = set()
+        article_links: list[tuple[str, str]] = []  # (href, title_from_link_text)
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            if not re.search(rf"/xinwenlianbo/{yyyymmdd}/\d+", href):
+                continue
+            if href in seen_hrefs:
+                continue
+            seen_hrefs.add(href)
+            link_title = a.get_text(strip=True)
+            article_links.append((href, link_title))
 
-        if hrefs:
-            # 每個子頁獨立抓取，編號命名
-            for idx, href in enumerate(hrefs, 1):
+        if article_links:
+            # 索引頁的連結文字即是標題，直接用；子頁只取正文
+            for idx, (href, link_title) in enumerate(article_links, 1):
                 item_url = ("https://cn.govopendata.com" + href
                             if href.startswith("/") else href)
                 try:
                     item_r = requests.get(item_url, headers=HEADERS, timeout=10)
                     item_r.encoding = "utf-8"
                     item_soup = BeautifulSoup(item_r.text, "html.parser")
-
-                    # 取標題：heading > <title> > 首段前40字
-                    heading = item_soup.find(["h1", "h2", "h3"])
-                    if heading and heading.get_text(strip=True):
-                        title_text = heading.get_text(strip=True)
-                    else:
-                        tag = item_soup.find("title")
-                        title_text = tag.get_text(strip=True) if tag else ""
-
-                    if not title_text:
-                        paras = [p.get_text(strip=True) for p in item_soup.find_all("p") if p.get_text(strip=True)]
-                        title_text = (paras[0][:40].rstrip("，。：: ") + "…") if paras else f"第{idx}則"
-
-                    title = f"新聞聯播 第{idx}則：{title_text}"
                     text = item_soup.get_text(" ", strip=True)
+
+                    # 若連結文字為空（純數字編號等），改取子頁 h1/h2 或首段
+                    title_text = link_title
+                    if not title_text or title_text.isdigit():
+                        h = item_soup.find(["h1", "h2", "h3"])
+                        if h and h.get_text(strip=True):
+                            title_text = h.get_text(strip=True)
+                        else:
+                            paras = [p.get_text(strip=True) for p in item_soup.find_all("p") if p.get_text(strip=True)]
+                            title_text = (paras[0][:50].rstrip("，。：: ") + "…") if paras else f"第{idx}則"
 
                     items.append(_make_item(
                         source_name="新聞聯播",
-                        title=title,
+                        title=f"新聞聯播 第{idx}則：{title_text}",
                         link=item_url,
                         published=target_date,
                         summary=text[:280],
