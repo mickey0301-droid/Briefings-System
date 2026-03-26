@@ -611,10 +611,10 @@ def _render_expert_tab(
             f"{category_label} 關鍵字",
             value=_kw_default,
             height=80,
-            key=f"kw_editor_{tab_key}",
+            key=f"exp_kw_{tab_key}",
             label_visibility="collapsed",
         )
-        if st.button("儲存關鍵字", key=f"save_kw_{tab_key}", use_container_width=True):
+        if st.button("儲存關鍵字", key=f"exp_save_kw_{tab_key}", use_container_width=True):
             _cat_kw[category_label] = _kw_val.strip()
             save_category_keywords(_cat_kw)
             st.success("關鍵字已儲存。")
