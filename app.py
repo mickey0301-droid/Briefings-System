@@ -48,6 +48,7 @@ from utils.loaders import (
 )
 import os
 import google.generativeai as genai
+from utils.ai_briefing import load_ai_model, save_ai_model
 
 # Configure Gemini API before importing report_engine
 if "GOOGLE_API_KEY" in st.secrets:
@@ -1420,6 +1421,8 @@ elif selected_page == "Sources":
 
     tw_sources = [s for s in editable_sources if "自訂台灣媒體" in (s.get("category") or [])]
     intl_sources = [s for s in editable_sources if "自訂國際媒體" in (s.get("category") or [])]
+    think_tank_sources = [s for s in editable_sources if "自訂智庫" in (s.get("category") or [])]
+    magazine_sources = [s for s in editable_sources if "自訂雜誌" in (s.get("category") or [])]
     global_sources_ui = [s for s in all_sources if "全球媒體" in (s.get("category") or [])]
     cn_editable_sources = [s for s in editable_sources if "中共官媒" in (s.get("category") or [])]
 
@@ -1665,6 +1668,110 @@ elif selected_page == "Sources":
                 current = [x for x in current if x.get("name") not in del_intl]
                 _sync_notify(save_sources(current))
                 st.success(f"已刪除 {len(del_intl)} 筆。")
+                st.session_state["_src_version"] = _src_v + 1
+                st.rerun()
+
+        st.divider()
+
+        # ── 智庫 ──────────────────────────────────────────────────────────────
+        st.markdown("### 🏛️ 智庫")
+        st.caption(f"共 {len(think_tank_sources)} 筆")
+        tank_df = _build_source_editor_df(think_tank_sources, blank_rows=5)
+        st.caption("💡 填入「網域」後若 RSS URL 為空，系統會依「語言」自動生成 Google News RSS URL。")
+        edited_tank_df = st.data_editor(
+            tank_df,
+            num_rows="dynamic",
+            use_container_width=True,
+            height=360,
+            key=f"tank_sources_editor_{_src_v}",
+            column_config={
+                "name":     st.column_config.TextColumn("name"),
+                "type":     st.column_config.SelectboxColumn("type", options=["rss", "domain"]),
+                "domain":   st.column_config.TextColumn("網域（domain）", help="填入後若 RSS URL 為空則自動生成 Google News URL"),
+                "language": st.column_config.SelectboxColumn("語言", options=[""] + LOCALE_OPTIONS),
+                "url":      st.column_config.TextColumn("RSS URL"),
+                "category": st.column_config.TextColumn("category"),
+                "region":   st.column_config.TextColumn("region"),
+                "enabled":  st.column_config.CheckboxColumn("enabled", default=True),
+                "description": st.column_config.TextColumn("description"),
+            },
+        )
+        tc1, tc2 = st.columns(2)
+        with tc1:
+            if st.button("儲存智庫清單", key="save_tank_sources", use_container_width=True):
+                rows = _clean_batch_df(edited_tank_df)
+                current = load_sources(editable_only=True)
+                non_tank = [s for s in current if "自訂智庫" not in (s.get("category") or [])]
+                new_tank = []
+                for row in rows:
+                    item = editor_row_to_source(row)
+                    if item["name"]:
+                        if "自訂智庫" not in (item.get("category") or []):
+                            item["category"] = ["自訂智庫"]
+                        new_tank.append(item)
+                _sync_notify(save_sources(non_tank + new_tank))
+                st.success("智庫清單已儲存。")
+                st.session_state["_src_version"] = _src_v + 1
+                st.rerun()
+        with tc2:
+            del_tank = st.multiselect("刪除來源", options=[s["name"] for s in think_tank_sources], key="delete_tank_names")
+            if st.button("刪除選取", key="delete_tank_btn", use_container_width=True):
+                current = load_sources(editable_only=True)
+                current = [x for x in current if x.get("name") not in del_tank]
+                _sync_notify(save_sources(current))
+                st.success(f"已刪除 {len(del_tank)} 筆。")
+                st.session_state["_src_version"] = _src_v + 1
+                st.rerun()
+
+        st.divider()
+
+        # ── 雜誌 ──────────────────────────────────────────────────────────────
+        st.markdown("### 📰 雜誌")
+        st.caption(f"共 {len(magazine_sources)} 筆")
+        mag_df = _build_source_editor_df(magazine_sources, blank_rows=5)
+        st.caption("💡 填入「網域」後若 RSS URL 為空，系統會依「語言」自動生成 Google News RSS URL。")
+        edited_mag_df = st.data_editor(
+            mag_df,
+            num_rows="dynamic",
+            use_container_width=True,
+            height=360,
+            key=f"mag_sources_editor_{_src_v}",
+            column_config={
+                "name":     st.column_config.TextColumn("name"),
+                "type":     st.column_config.SelectboxColumn("type", options=["rss", "domain"]),
+                "domain":   st.column_config.TextColumn("網域（domain）", help="填入後若 RSS URL 為空則自動生成 Google News URL"),
+                "language": st.column_config.SelectboxColumn("語言", options=[""] + LOCALE_OPTIONS),
+                "url":      st.column_config.TextColumn("RSS URL"),
+                "category": st.column_config.TextColumn("category"),
+                "region":   st.column_config.TextColumn("region"),
+                "enabled":  st.column_config.CheckboxColumn("enabled", default=True),
+                "description": st.column_config.TextColumn("description"),
+            },
+        )
+        mc1, mc2 = st.columns(2)
+        with mc1:
+            if st.button("儲存雜誌清單", key="save_mag_sources", use_container_width=True):
+                rows = _clean_batch_df(edited_mag_df)
+                current = load_sources(editable_only=True)
+                non_mag = [s for s in current if "自訂雜誌" not in (s.get("category") or [])]
+                new_mag = []
+                for row in rows:
+                    item = editor_row_to_source(row)
+                    if item["name"]:
+                        if "自訂雜誌" not in (item.get("category") or []):
+                            item["category"] = ["自訂雜誌"]
+                        new_mag.append(item)
+                _sync_notify(save_sources(non_mag + new_mag))
+                st.success("雜誌清單已儲存。")
+                st.session_state["_src_version"] = _src_v + 1
+                st.rerun()
+        with mc2:
+            del_mag = st.multiselect("刪除來源", options=[s["name"] for s in magazine_sources], key="delete_mag_names")
+            if st.button("刪除選取", key="delete_mag_btn", use_container_width=True):
+                current = load_sources(editable_only=True)
+                current = [x for x in current if x.get("name") not in del_mag]
+                _sync_notify(save_sources(current))
+                st.success(f"已刪除 {len(del_mag)} 筆。")
                 st.session_state["_src_version"] = _src_v + 1
                 st.rerun()
 
@@ -1962,6 +2069,48 @@ elif selected_page == "Sources":
 # Formats
 # =========================================================
 elif selected_page == "Formats":
+
+    # ── AI 模型選擇 ──────────────────────────────────────────────────────────
+    st.markdown("### 🤖 AI 模型設定")
+    _AI_MODEL_OPTIONS = {
+        "GPT-4.1 Mini（OpenAI）":        "gpt-4.1-mini",
+        "GPT-4o Mini（OpenAI）":         "gpt-4o-mini",
+        "Gemini 2.0 Flash（Google）":    "gemini-2.0-flash",
+        "Gemini 1.5 Pro（Google）":      "gemini-1.5-pro",
+        "Claude Haiku 4.5（Anthropic）": "claude-haiku-4-5-20251001",
+        "Claude Sonnet 4.6（Anthropic）":"claude-sonnet-4-6",
+    }
+    _current_model = load_ai_model()
+    # Reverse lookup: model_id → display label
+    _current_label = next(
+        (lbl for lbl, mid in _AI_MODEL_OPTIONS.items() if mid == _current_model),
+        list(_AI_MODEL_OPTIONS.keys())[0],
+    )
+    _selected_label = st.selectbox(
+        "AI 模型",
+        options=list(_AI_MODEL_OPTIONS.keys()),
+        index=list(_AI_MODEL_OPTIONS.keys()).index(_current_label),
+        key="ai_model_selector",
+        help="選擇生成報告時使用的 AI 模型。不同模型需對應的 API Key 設定在 Streamlit secrets。",
+    )
+    _selected_model_id = _AI_MODEL_OPTIONS[_selected_label]
+    # Sync to session_state for immediate use
+    st.session_state["ai_model"] = _selected_model_id
+    if st.button("💾 儲存模型設定", key="save_ai_model_btn"):
+        save_ai_model(_selected_model_id)
+        st.success(f"已儲存：{_selected_label}")
+
+    _model_key_hints = {
+        "gpt":    "需在 Streamlit secrets 設定 `OPENAI_API_KEY`",
+        "gemini": "需在 Streamlit secrets 設定 `GOOGLE_API_KEY`",
+        "claude": "需在 Streamlit secrets 設定 `ANTHROPIC_API_KEY`",
+    }
+    for prefix, hint in _model_key_hints.items():
+        if _selected_model_id.startswith(prefix):
+            st.caption(f"ℹ️ {hint}")
+            break
+
+    st.divider()
 
     formats = load_formats()
     if not formats:

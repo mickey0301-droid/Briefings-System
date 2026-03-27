@@ -2298,6 +2298,11 @@ def _classify_items_to_sections(all_items: list, sections: list) -> dict:
     against each item's title + summary.  An item may appear in multiple sections.
     Title-matched items are sorted first within each bucket so that the most
     directly relevant articles lead each section.
+
+    Post-processing rule: regional 「國際要聞」 sub-sections (ids ending with _intl,
+    under 六、區域情勢) exclude any item that already matched 「三、台美中要聞」,
+    keeping regional international news free of Taiwan / US-China content.
+
     Returns: {section_id: [item, ...]}
     """
     # Each bucket entry is (title_matched: bool, item)
@@ -2324,6 +2329,26 @@ def _classify_items_to_sections(all_items: list, sections: list) -> dict:
     for sec_id, entries in raw_buckets.items():
         entries.sort(key=lambda x: 0 if x[0] else 1)
         result[sec_id] = [item for _, item in entries]
+
+    # ── 區域要聞過濾：六大區域「_intl」子節不出現台美中要聞文章 ────────────────
+    # IDs of the six regional "_intl" sub-sections under 六、區域情勢
+    _REGIONAL_INTL_IDS = {
+        "asia_pacific_intl", "west_asia_intl", "north_am_intl",
+        "latin_am_intl", "europe_intl", "africa_intl",
+    }
+    # Build a set of (url, title) keys for items already classified as tw_us_cn
+    tw_us_cn_keys = {
+        (i.get("url") or "", i.get("title") or "")
+        for i in result.get("tw_us_cn", [])
+    }
+    if tw_us_cn_keys:
+        for rid in _REGIONAL_INTL_IDS:
+            if rid in result:
+                result[rid] = [
+                    i for i in result[rid]
+                    if (i.get("url") or "", i.get("title") or "") not in tw_us_cn_keys
+                ]
+
     return result
 
 

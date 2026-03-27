@@ -1,51 +1,144 @@
+"""
+AI briefing generation — supports OpenAI, Google Gemini, and Anthropic Claude.
+
+Model preference is read (in priority order) from:
+  1. st.session_state["ai_model"]   (set via the UI model selector)
+  2. config/ai_model.json           (persisted between sessions)
+  3. Hard-coded default             (gpt-4.1-mini)
+
+Supported model strings:
+  OpenAI  : gpt-4o-mini, gpt-4.1-mini
+  Gemini  : gemini-2.0-flash, gemini-1.5-pro
+  Claude  : claude-haiku-4-5-20251001, claude-sonnet-4-6
+"""
 import os
-from openai import OpenAI
+import json
 
 
-def get_client():
+# ── Model config helpers ──────────────────────────────────────────────────────
 
-    api_key = os.getenv("OPENAI_API_KEY")
+_AI_MODEL_CONFIG_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "config", "ai_model.json"
+)
+_DEFAULT_MODEL = "gpt-4.1-mini"
 
+
+def _get_preferred_model() -> str:
+    """Return the user-selected AI model, falling back to config file then default."""
+    # 1. Streamlit session_state (set by UI selector)
+    try:
+        import streamlit as st
+        m = st.session_state.get("ai_model", "")
+        if m:
+            return m
+    except Exception:
+        pass
+    # 2. Persisted config file
+    try:
+        if os.path.exists(_AI_MODEL_CONFIG_PATH):
+            with open(_AI_MODEL_CONFIG_PATH, "r", encoding="utf-8") as f:
+                return json.load(f).get("model", _DEFAULT_MODEL)
+    except Exception:
+        pass
+    return _DEFAULT_MODEL
+
+
+def save_ai_model(model: str) -> None:
+    """Persist the selected AI model to config/ai_model.json."""
+    try:
+        os.makedirs(os.path.dirname(_AI_MODEL_CONFIG_PATH), exist_ok=True)
+        with open(_AI_MODEL_CONFIG_PATH, "w", encoding="utf-8") as f:
+            json.dump({"model": model}, f, ensure_ascii=False)
+    except Exception:
+        pass
+
+
+def load_ai_model() -> str:
+    """Load the persisted AI model name (or default)."""
+    try:
+        if os.path.exists(_AI_MODEL_CONFIG_PATH):
+            with open(_AI_MODEL_CONFIG_PATH, "r", encoding="utf-8") as f:
+                return json.load(f).get("model", _DEFAULT_MODEL)
+    except Exception:
+        pass
+    return _DEFAULT_MODEL
+
+
+# ── Provider dispatch ─────────────────────────────────────────────────────────
+
+def _call_llm(system_prompt: str, user_content: str, model: str | None = None) -> str:
+    """
+    Call the appropriate LLM provider based on the model name.
+    Falls back to _get_preferred_model() if model is None.
+    """
+    if model is None:
+        model = _get_preferred_model()
+
+    # ── Gemini ────────────────────────────────────────────────────────────────
+    if model.startswith("gemini"):
+        import google.generativeai as genai
+        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY", "")
+        if not api_key:
+            raise RuntimeError(
+                "未找到 GOOGLE_API_KEY。請在 Streamlit secrets 或環境變數設定。"
+            )
+        genai.configure(api_key=api_key)
+        gem_model = genai.GenerativeModel(
+            model_name=model,
+            system_instruction=system_prompt,
+        )
+        response = gem_model.generate_content(
+            user_content,
+            generation_config=genai.GenerationConfig(temperature=0.3),
+        )
+        return response.text
+
+    # ── Claude (Anthropic) ────────────────────────────────────────────────────
+    if model.startswith("claude"):
+        import anthropic
+        api_key = os.getenv("ANTHROPIC_API_KEY", "")
+        if not api_key:
+            raise RuntimeError(
+                "未找到 ANTHROPIC_API_KEY。請在 Streamlit secrets 或環境變數設定。"
+            )
+        client = anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model=model,
+            max_tokens=8192,
+            temperature=0.3,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_content}],
+        )
+        return message.content[0].text
+
+    # ── OpenAI (default) ──────────────────────────────────────────────────────
+    from openai import OpenAI
+    api_key = os.getenv("OPENAI_API_KEY", "")
     if not api_key:
         raise RuntimeError(
-            "未找到 OPENAI_API_KEY。\n\n請在系統環境變數設定：\nOPENAI_API_KEY=你的key"
+            "未找到 OPENAI_API_KEY。請在 Streamlit secrets 或環境變數設定。"
         )
-
-    return OpenAI(api_key=api_key)
-
-
-def generate_ai_briefing(prompt: str, language: str = "中文"):
-
-    client = get_client()
-
-    system_prompt = """
-You are a geopolitical intelligence analyst.
-
-Write a strategic intelligence briefing.
-
-Be analytical and structured.
-"""
-
-    if language == "English":
-        system_prompt = """
-You are a geopolitical intelligence analyst.
-
-Write a strategic intelligence briefing in English.
-"""
-
+    client = OpenAI(api_key=api_key)
     response = client.chat.completions.create(
-
-        model="gpt-4o-mini",
-
+        model=model,
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt},
+            {"role": "user", "content": user_content},
         ],
-
-        temperature=0.3
+        temperature=0.3,
     )
-
     return response.choices[0].message.content
+
+
+# ── Public API ────────────────────────────────────────────────────────────────
+
+def generate_ai_briefing(prompt: str, language: str = "中文") -> str:
+
+    system_prompt = "You are a geopolitical intelligence analyst.\n\nWrite a strategic intelligence briefing.\n\nBe analytical and structured."
+    if language == "English":
+        system_prompt = "You are a geopolitical intelligence analyst.\n\nWrite a strategic intelligence briefing in English."
+
+    return _call_llm(system_prompt, prompt)
 
 
 def generate_sub_briefing(prompt: str, group_name: str = "", language: str = "繁體中文") -> str:
@@ -56,8 +149,6 @@ def generate_sub_briefing(prompt: str, group_name: str = "", language: str = "�
     appropriate chapter based on their CONTENT.
     Citation codes [S1][S2]... MUST be preserved intact in the output.
     """
-    client = get_client()
-
     system_prompt = f"""You are a senior intelligence analyst preparing a structured sub-report based on articles from the [{group_name}] media source group.
 
 IMPORTANT FRAMING: [{group_name}] refers to the ORIGIN of the media sources, NOT a topic limitation.
@@ -123,15 +214,7 @@ Output structure (all eight chapters REQUIRED; distribute articles by content, n
 1. 國際要聞研析
 2. 台美中要聞研析"""
 
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.3,
-    )
-    return response.choices[0].message.content
+    return _call_llm(system_prompt, prompt)
 
 
 def generate_section_mini_report(
@@ -148,8 +231,6 @@ def generate_section_mini_report(
     section_label: short display label, e.g. "三、台美中要聞"
     news_block: formatted news items block (from _format_item_block)
     """
-    client = get_client()
-
     system_prompt = f"""You are a senior strategic intelligence analyst.
 
 Write a concise mini-report in {language} for the following section of a strategic intelligence briefing:
@@ -174,12 +255,4 @@ Requirements:
         f"News articles:\n{news_block}"
     )
 
-    response = client.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content},
-        ],
-        temperature=0.3,
-    )
-    return response.choices[0].message.content
+    return _call_llm(system_prompt, user_content)
