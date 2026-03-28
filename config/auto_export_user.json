@@ -989,7 +989,12 @@
       "multiphase_groups": []
     }
   ],
-  "drive_folders": [],
+  "drive_folders": [
+    {
+      "name": "",
+      "folder_id": ""
+    }
+  ],
   "default_output_targets": [
     "local"
   ],
