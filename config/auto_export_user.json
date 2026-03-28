@@ -108,7 +108,14 @@
         "Stockholm International Peace Research Institute",
         "Swedish Institute for International Affairs",
         "German Marshall Fund",
-        "RUSI"
+        "RUSI",
+        "新華社",
+        "中國外交部記者會",
+        "中國國防部記者會",
+        "國台辦",
+        "人民日報",
+        "新聞聯播",
+        "解放軍報"
       ],
       "selected_expert_categories": [],
       "selected_expert_names": [],
@@ -124,7 +131,10 @@
       "format_name": "default",
       "start_from": "2026-03-26 18:00",
       "report_mode": "segmented",
-      "multiphase_groups": []
+      "multiphase_groups": [],
+      "google_drive_folder_ids": [
+        "1BS4YCA936H33qc_nh-kJCaP_SpQn3eav"
+      ]
     },
     {
       "name": "Daily Briefing",
