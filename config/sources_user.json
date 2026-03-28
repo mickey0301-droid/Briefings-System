@@ -2296,5 +2296,617 @@
     "description": "",
     "readonly": false,
     "fixed": false
+  },
+  {
+    "name": "Foreign Affairs",
+    "name_sc": "",
+    "domain": "foreignaffairs.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aforeignaffairs.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Foreign Policy",
+    "name_sc": "",
+    "domain": "foreignpolicy.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aforeignpolicy.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "National Interest",
+    "name_sc": "",
+    "domain": "nationalinterest.org/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Anationalinterest.org&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Project Syndicate",
+    "name_sc": "",
+    "domain": "project-syndicate.org/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aroject-syndicate.org&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "The Atlantic",
+    "name_sc": "",
+    "domain": "theatlantic.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aeatlantic.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Time",
+    "name_sc": "",
+    "domain": "time.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aime.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "The Economist",
+    "name_sc": "",
+    "domain": "economist.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aeconomist.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "The Diplomat",
+    "name_sc": "",
+    "domain": "thediplomat.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aediplomat.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "American Interest",
+    "name_sc": "",
+    "domain": "the-american-interest.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Ae-american-interest.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "New Republic",
+    "name_sc": "",
+    "domain": "newrepublic.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Anewrepublic.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "New Yorker",
+    "name_sc": "",
+    "domain": "newyorker.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Anewyorker.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Newsweek",
+    "name_sc": "",
+    "domain": "newsweek.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Anewsweek.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Forbes",
+    "name_sc": "",
+    "domain": "forbes.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aforbes.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Harvard Business Review",
+    "name_sc": "",
+    "domain": "hbr.org/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Abr.org&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "The Nation",
+    "name_sc": "",
+    "domain": "thenation.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aenation.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "National Review",
+    "name_sc": "",
+    "domain": "nationalreview.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Anationalreview.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "American Conservative",
+    "name_sc": "",
+    "domain": "theamericanconservative.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aeamericanconservative.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "The Federalist",
+    "name_sc": "",
+    "domain": "thefederalist.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aefederalist.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Quartz",
+    "name_sc": "",
+    "domain": "qz.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aqz.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "The Dispatch",
+    "name_sc": "",
+    "domain": "thedispatch.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aedispatch.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "War on the Rocks",
+    "name_sc": "",
+    "domain": "warontherocks.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Awarontherocks.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Jane's Defence Weekly",
+    "name_sc": "",
+    "domain": "janes.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Ajanes.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Grid",
+    "name_sc": "",
+    "domain": "grid.news",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Agrid.news&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "American Thinker",
+    "name_sc": "",
+    "domain": "americanthinker.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aamericanthinker.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Defense News",
+    "name_sc": "",
+    "domain": "defensenews.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Adefensenews.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Military Times",
+    "name_sc": "",
+    "domain": "militarytimes.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Amilitarytimes.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Military.com",
+    "name_sc": "",
+    "domain": "military.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Amilitary.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "The Drive",
+    "name_sc": "",
+    "domain": "thedrive.com/the-war-zone",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aedrive.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "C4ISRNET",
+    "name_sc": "",
+    "domain": "c4isrnet.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Ac4isrnet.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Defense One",
+    "name_sc": "",
+    "domain": "defenseone.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Adefenseone.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "American Military News",
+    "name_sc": "",
+    "domain": "americanmilitarynews.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aamericanmilitarynews.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Naval News",
+    "name_sc": "",
+    "domain": "navalnews.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Anavalnews.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Army Times",
+    "name_sc": "",
+    "domain": "armytimes.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aarmytimes.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "FlightGlobal",
+    "name_sc": "",
+    "domain": "flightglobal.com/defence",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aflightglobal.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "1945",
+    "name_sc": "",
+    "domain": "19fortyfive.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3A19fortyfive.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Air Force Magazine",
+    "name_sc": "",
+    "domain": "airforcemag.com/",
+    "language": "",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aairforcemag.com&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    "category": [
+      "自訂雜誌"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
   }
 ]
