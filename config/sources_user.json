@@ -2296,5 +2296,957 @@
     "description": "",
     "readonly": false,
     "fixed": false
+  },
+  {
+    "name": "Center of Strategic and International Studies",
+    "name_sc": "",
+    "domain": "csis.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Acsis.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Brookings Institution",
+    "name_sc": "",
+    "domain": "brookings.edu/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Abrookings.edu&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Heritage Foundation",
+    "name_sc": "",
+    "domain": "heritage.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aeritage.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Hudson Institute",
+    "name_sc": "",
+    "domain": "hudson.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Audson.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Wilson Center",
+    "name_sc": "",
+    "domain": "wilsoncenter.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Awilsoncenter.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Center on Foreign Relations",
+    "name_sc": "",
+    "domain": "cfr.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Acfr.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "American Enterprise Institute",
+    "name_sc": "",
+    "domain": "aei.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aaei.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Responsible Statecraft",
+    "name_sc": "",
+    "domain": "responsiblestatecraft.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aresponsiblestatecraft.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Atlantic Council",
+    "name_sc": "",
+    "domain": "atlanticcouncil.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aatlanticcouncil.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "RAND Corporation",
+    "name_sc": "",
+    "domain": "rand.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Arand.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Stimson Center",
+    "name_sc": "",
+    "domain": "stimson.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aimson.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Peterson Institute of International Economics",
+    "name_sc": "",
+    "domain": "piie.com/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aiie.com&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Carnegie Endowment for International Peace",
+    "name_sc": "",
+    "domain": "carnegieendowment.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Acarnegieendowment.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "East-West Center",
+    "name_sc": "",
+    "domain": "eastwestcenter.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aeastwestcenter.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Asia Group",
+    "name_sc": "",
+    "domain": "theasiagroup.com/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aeasiagroup.com&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Foundation for Defense of Democracy",
+    "name_sc": "",
+    "domain": "fdd.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Afdd.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Jamestown Foundation",
+    "name_sc": "",
+    "domain": "jamestown.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Ajamestown.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Foreign Policy Research Institute",
+    "name_sc": "",
+    "domain": "fpri.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Afpri.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "National Bureau of Asian Research",
+    "name_sc": "",
+    "domain": "nbr.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Anbr.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Asia Society",
+    "name_sc": "",
+    "domain": "asiasociety.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aasiasociety.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Cato Institute",
+    "name_sc": "",
+    "domain": "cato.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Acato.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "East Asia Forum",
+    "name_sc": "",
+    "domain": "eastasiaforum.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aeastasiaforum.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Center for Security Policy",
+    "name_sc": "",
+    "domain": "centerforsecuritypolicy.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Acenterforsecuritypolicy.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Institute of World Politics",
+    "name_sc": "",
+    "domain": "iwp.edu/articles/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aiwp.edu&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "IIPS",
+    "name_sc": "",
+    "domain": "indopacificsecurity.org",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aindopacificsecurity.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Chicago Council on Global Affairs",
+    "name_sc": "",
+    "domain": "thechicagocouncil.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aechicagocouncil.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Foreign Policy Association",
+    "name_sc": "",
+    "domain": "fpa.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Afpa.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Washington State China Relations Council",
+    "name_sc": "",
+    "domain": "wscrc.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Awscrc.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Pacific Council on International Policy",
+    "name_sc": "",
+    "domain": "pacificcouncil.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aacificcouncil.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Institute for the Study of War",
+    "name_sc": "",
+    "domain": "understandingwar.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aunderstandingwar.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Institute for Policy Studies",
+    "name_sc": "",
+    "domain": "ips-dc.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aips-dc.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "International Institute for Strategic Studies",
+    "name_sc": "",
+    "domain": "iiss.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aiiss.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Political Studies Association",
+    "name_sc": "",
+    "domain": ".ac.uk/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3A.ac.uk&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "French Institute for International and Strategic Affairs",
+    "name_sc": "",
+    "domain": "iris-france.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Airis-france.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Institut Thomas More",
+    "name_sc": "",
+    "domain": "institut-thomas-more.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Ainstitut-thomas-more.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Foundation for Strategic Research",
+    "name_sc": "",
+    "domain": "frstrategie.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Afrstrategie.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "French Institute of International Relations",
+    "name_sc": "",
+    "domain": "ifri.org/en",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aifri.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Mercator Institute for China Studies",
+    "name_sc": "",
+    "domain": "merics.org/en/report",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Americs.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Clingendael Institute",
+    "name_sc": "",
+    "domain": "clingendael.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aclingendael.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "European Council on Foreign Relations",
+    "name_sc": "",
+    "domain": "ecfr.eu/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aecfr.eu&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "European Values Center for Security Policy",
+    "name_sc": "",
+    "domain": "europeanvalues.cz/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aeuropeanvalues.cz&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Institute of Developing Economies",
+    "name_sc": "",
+    "domain": "ide.go.jp/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aide.go.jp&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Japan Institute of International Affairs",
+    "name_sc": "",
+    "domain": "jiia.or.jp/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Ajiia.or.jp&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Sasakawa Peace Foundation",
+    "name_sc": "",
+    "domain": "spf.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Af.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "ISEAS-Yusof Ishak Institute",
+    "name_sc": "",
+    "domain": "iseas.edu.sg/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aiseas.edu.sg&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Singapore Institute of International Affairs",
+    "name_sc": "",
+    "domain": "siiaonline.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aiiaonline.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Observer Research Foundation",
+    "name_sc": "",
+    "domain": "orfonline.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aorfonline.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Institute for Defence Studies and Analyses",
+    "name_sc": "",
+    "domain": "idsa.in/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aidsa.in&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Vivekananda International Foundation",
+    "name_sc": "",
+    "domain": "vifindia.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Avifindia.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Gateway House",
+    "name_sc": "",
+    "domain": "gatewayhouse.in/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Agatewayhouse.in&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Australian Strategic Policy Institute",
+    "name_sc": "",
+    "domain": "aspi.org.au/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aaspi.org.au&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Lowy Institute",
+    "name_sc": "",
+    "domain": "lowyinstitute.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Alowyinstitute.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Stockholm International Peace Research Institute",
+    "name_sc": "",
+    "domain": "sipri.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aipri.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "Swedish Institute for International Affairs",
+    "name_sc": "",
+    "domain": "ui.se/english/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Aui.se&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "German Marshall Fund",
+    "name_sc": "",
+    "domain": "gmfus.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Agmfus.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
+  },
+  {
+    "name": "RUSI",
+    "name_sc": "",
+    "domain": "rusi.org/",
+    "language": "en-US",
+    "subsource": "",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=site%3Arusi.org&hl=en-US&gl=US&ceid=US:en",
+    "category": [
+      "自訂智庫"
+    ],
+    "region": "",
+    "enabled": true,
+    "description": "",
+    "readonly": false,
+    "fixed": false
   }
 ]
