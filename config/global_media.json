@@ -9,7 +9,7 @@
     "domain": "theaustralian.com.au",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.theaustralian.com.au/feed"
+    "rss": ""
   },
   {
     "name": "The Australian Financial Review",
@@ -21,7 +21,7 @@
     "domain": "afr.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.afr.com/rss"
+    "rss": ""
   },
   {
     "name": "Sydney Morning Herald",
@@ -33,7 +33,7 @@
     "domain": "smh.com.au",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.smh.com.au/rss/feed.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.smh.com.au/rss/world.xml"
     ]
@@ -48,7 +48,7 @@
     "domain": "theage.com.au",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.theage.com.au/rss/feed.xml"
+    "rss": ""
   },
   {
     "name": "The West Australian",
@@ -60,7 +60,7 @@
     "domain": "thewest.com.au",
     "priority": 2,
     "enabled": true,
-    "rss": "https://thewest.com.au/rss"
+    "rss": ""
   },
   {
     "name": "ABC (Australian Broadcasting Corporation)",
@@ -72,7 +72,7 @@
     "domain": "abc.net.au",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.abc.net.au/news/feed/45910/rss.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.abc.net.au/news/feed/51120/rss.xml"
     ]
@@ -87,7 +87,7 @@
     "domain": "sbs.com.au",
     "priority": 2,
     "enabled": true,
-    "rss": "https://news.sbs.co.kr/news/RSS.do"
+    "rss": ""
   },
   {
     "name": "Seven Network",
@@ -99,7 +99,7 @@
     "domain": "7news.com.au",
     "priority": 2,
     "enabled": true,
-    "rss": "https://7news.com.au/news.rss"
+    "rss": ""
   },
   {
     "name": "Nine Network",
@@ -111,7 +111,7 @@
     "domain": "9now.com.au",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.9news.com.au/feed"
+    "rss": ""
   },
   {
     "name": "Network Ten",
@@ -123,7 +123,7 @@
     "domain": "10play.com.au",
     "priority": 2,
     "enabled": true,
-    "rss": "https://10daily.com.au/feed"
+    "rss": ""
   },
   {
     "name": "The Daily Star",
@@ -135,7 +135,7 @@
     "domain": "thedailystar.net",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thedailystar.net/rss.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.thedailystar.net/news/world/rss.xml"
     ]
@@ -150,7 +150,7 @@
     "domain": "newagebd.net",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.newagebd.net/rss.xml"
+    "rss": ""
   },
   {
     "name": "Daily Sun",
@@ -162,7 +162,7 @@
     "domain": "daily-sun.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.daily-sun.com/rss"
+    "rss": ""
   },
   {
     "name": "Prothom Alo",
@@ -174,7 +174,7 @@
     "domain": "prothomalo.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.prothomalo.com/feed"
+    "rss": ""
   },
   {
     "name": "Bangladesh Television (BTV)",
@@ -222,7 +222,7 @@
     "domain": "kuenselonline.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://kuenselonline.com/feed/"
+    "rss": ""
   },
   {
     "name": "The Bhutanese",
@@ -234,7 +234,7 @@
     "domain": "thebhutanese.bt",
     "priority": 2,
     "enabled": true,
-    "rss": "https://thebhutanese.bt/feed/"
+    "rss": ""
   },
   {
     "name": "Borneo Bulletin",
@@ -246,7 +246,7 @@
     "domain": "borneobulletin.com.bn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://borneobulletin.com.bn/feed/"
+    "rss": ""
   },
   {
     "name": "Media Permata",
@@ -282,7 +282,7 @@
     "domain": "khmertimeskh.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.khmertimeskh.com/feed/"
+    "rss": ""
   },
   {
     "name": "The Phnom Penh Post",
@@ -294,7 +294,7 @@
     "domain": "phnompenhpost.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.phnompenhpost.com/rss.xml"
+    "rss": ""
   },
   {
     "name": "Cambodia Daily",
@@ -306,7 +306,7 @@
     "domain": "english.cambodiadaily.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://english.cambodiadaily.com/feed/"
+    "rss": ""
   },
   {
     "name": "Cook Islands News",
@@ -318,7 +318,7 @@
     "domain": "cookislandsnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.cookislandsnews.com/feed/"
+    "rss": ""
   },
   {
     "name": "Korean Central News Agency (KCNA)",
@@ -330,7 +330,7 @@
     "domain": "kcna.kp",
     "priority": 2,
     "enabled": true,
-    "rss": "https://kcna.kp/rss/"
+    "rss": ""
   },
   {
     "name": "Rodong Sinmun",
@@ -390,7 +390,7 @@
     "domain": "fijitimes.com.fj",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.fijitimes.com.fj/feed/"
+    "rss": ""
   },
   {
     "name": "Fiji Sun",
@@ -402,7 +402,7 @@
     "domain": "fijisun.com.fj",
     "priority": 2,
     "enabled": true,
-    "rss": "https://fijisun.com.fj/feed/"
+    "rss": ""
   },
   {
     "name": "Fiji Broadcasting Corporation (FBC)",
@@ -414,7 +414,7 @@
     "domain": "fbcnews.com.fj",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.fbcnews.com.fj/feed/"
+    "rss": ""
   },
   {
     "name": "Fiji TV",
@@ -438,7 +438,7 @@
     "domain": "timesofindia.indiatimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+    "rss": "",
     "rss_extra": [
       "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
       "https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms"
@@ -454,7 +454,7 @@
     "domain": "thehindu.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thehindu.com/feeder/default.rss",
+    "rss": "",
     "rss_extra": [
       "https://www.thehindu.com/news/international/feeder/default.rss"
     ]
@@ -469,7 +469,7 @@
     "domain": "hindustantimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.hindustantimes.com/feeds/rss/world-news/rssfeed.xml"
     ]
@@ -484,7 +484,7 @@
     "domain": "indianexpress.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://indianexpress.com/feed/",
+    "rss": "",
     "rss_extra": [
       "https://indianexpress.com/section/world/feed/"
     ]
@@ -499,7 +499,7 @@
     "domain": "ndtv.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.feedburner.com/ndtvnews-top-stories",
+    "rss": "",
     "rss_extra": [
       "https://www.ndtv.com/rss/feeds"
     ]
@@ -514,7 +514,7 @@
     "domain": "en.antaranews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://en.antaranews.com/rss/latest"
+    "rss": ""
   },
   {
     "name": "TVRI",
@@ -538,7 +538,7 @@
     "domain": "metrotvnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://metrotvnews.com/feed"
+    "rss": ""
   },
   {
     "name": "The Jakarta Post",
@@ -550,7 +550,7 @@
     "domain": "thejakartapost.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thejakartapost.com/feed",
+    "rss": "",
     "rss_extra": [
       "https://www.thejakartapost.com/news/feeds.rss"
     ]
@@ -565,7 +565,7 @@
     "domain": "yomiuri.co.jp",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.yomiuri.co.jp/rss/"
+    "rss": ""
   },
   {
     "name": "Asahi Shimbun",
@@ -577,7 +577,7 @@
     "domain": "asahi.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.asahi.com/rss/asahi/newsheadlines.rdf"
+    "rss": ""
   },
   {
     "name": "Mainichi Shimbun",
@@ -589,7 +589,7 @@
     "domain": "mainichi.jp",
     "priority": 2,
     "enabled": true,
-    "rss": "https://mainichi.jp/rss/etc/english.rss"
+    "rss": ""
   },
   {
     "name": "Nikkei",
@@ -601,7 +601,7 @@
     "domain": "nikkei.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nikkei.com/rss/"
+    "rss": ""
   },
   {
     "name": "Sankei Shimbun",
@@ -613,7 +613,7 @@
     "domain": "sankei.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.sankei.com/rss/all.xml"
+    "rss": ""
   },
   {
     "name": "NHK",
@@ -625,7 +625,7 @@
     "domain": "nhk.or.jp",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www3.nhk.or.jp/rss/news/cat0.xml",
+    "rss": "",
     "rss_extra": [
       "https://www3.nhk.or.jp/nhkworld/en/news/feeds/"
     ]
@@ -640,7 +640,7 @@
     "domain": "tbs.co.jp",
     "priority": 2,
     "enabled": true,
-    "rss": "https://news.tbs.co.jp/rss/news3572380_rss.xml"
+    "rss": ""
   },
   {
     "name": "Nippon TV (NTV)",
@@ -652,7 +652,7 @@
     "domain": "ntv.co.jp",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.news24.jp/rss/news.xml"
+    "rss": ""
   },
   {
     "name": "Fuji TV",
@@ -664,7 +664,7 @@
     "domain": "fujitv.co.jp",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.fnn.jp/rss/"
+    "rss": ""
   },
   {
     "name": "TV Asahi",
@@ -676,7 +676,7 @@
     "domain": "tv-asahi.co.jp",
     "priority": 2,
     "enabled": true,
-    "rss": "https://news.tv-asahi.co.jp/rss/"
+    "rss": ""
   },
   {
     "name": "TV Tokyo",
@@ -700,7 +700,7 @@
     "domain": "islandsbusiness.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://islandsbusiness.com/feed/"
+    "rss": ""
   },
   {
     "name": "Pasaxon (People's Daily)",
@@ -724,7 +724,7 @@
     "domain": "vientianetimes.org.la",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.vientianetimes.org.la/feed"
+    "rss": ""
   },
   {
     "name": "Sin Chew Daily",
@@ -736,7 +736,7 @@
     "domain": "sinchew.com.my",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.sinchew.com.my/feed/"
+    "rss": ""
   },
   {
     "name": "China Press",
@@ -748,7 +748,7 @@
     "domain": "chinapress.com.my",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.chinapress.com.my/feed/"
+    "rss": ""
   },
   {
     "name": "Nanyang Siang Pau",
@@ -760,7 +760,7 @@
     "domain": "nanyang.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nanyang.com/rss"
+    "rss": ""
   },
   {
     "name": "The Star",
@@ -772,7 +772,7 @@
     "domain": "thestar.com.my",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thestar.com.my/rss/News/Nation",
+    "rss": "",
     "rss_extra": [
       "https://www.thestar.com.my/rss/News/World",
       "https://www.thestar.com.my/rss/Business"
@@ -788,7 +788,7 @@
     "domain": "nst.com.my",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nst.com.my/rss"
+    "rss": ""
   },
   {
     "name": "Bernama",
@@ -800,7 +800,7 @@
     "domain": "bernama.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.bernama.com/en/rss/index.php"
+    "rss": ""
   },
   {
     "name": "Astro",
@@ -836,7 +836,7 @@
     "domain": "marshallislandsjournal.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://marshallislandsjournal.com/feed/"
+    "rss": ""
   },
   {
     "name": "The Kaselehlie Press",
@@ -848,7 +848,7 @@
     "domain": "kaselehlie.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.kaselehlie.com/feed/"
+    "rss": ""
   },
   {
     "name": "Global New Light of Myanmar",
@@ -860,7 +860,7 @@
     "domain": "gnlm.com.mm",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.gnlm.com.mm/feed/"
+    "rss": ""
   },
   {
     "name": "Eleven Daily",
@@ -872,7 +872,7 @@
     "domain": "elevenmyanmar.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.elevenmyanmar.com/rss.xml"
+    "rss": ""
   },
   {
     "name": "Myanmar Radio and Television (MRTV)",
@@ -896,7 +896,7 @@
     "domain": "irrawaddy.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.irrawaddy.com/feed",
+    "rss": "",
     "rss_extra": [
       "https://www.irrawaddy.com/news/burma/feed"
     ]
@@ -911,7 +911,7 @@
     "domain": "dvb.no",
     "priority": 2,
     "enabled": true,
-    "rss": "https://english.dvb.no/feed/"
+    "rss": ""
   },
   {
     "name": "Mizzima",
@@ -923,7 +923,7 @@
     "domain": "mizzima.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://mizzima.com/rss.xml"
+    "rss": ""
   },
   {
     "name": "The Kathmandu Post",
@@ -935,7 +935,7 @@
     "domain": "kathmandupost.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://kathmandupost.com/rss"
+    "rss": ""
   },
   {
     "name": "The Rising Nepal",
@@ -947,7 +947,7 @@
     "domain": "risingnepaldaily.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://risingnepaldaily.com/feed/"
+    "rss": ""
   },
   {
     "name": "Nepal Television Corporation (NTV)",
@@ -971,7 +971,7 @@
     "domain": "tvnz.co.nz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.tvnz.co.nz/content/tvnz/rss.rss"
+    "rss": ""
   },
   {
     "name": "New Zealand Herald",
@@ -983,7 +983,7 @@
     "domain": "nzherald.co.nz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nzherald.co.nz/arc/outboundfeeds/rss/section/nz-news/",
+    "rss": "",
     "rss_extra": [
       "https://www.nzherald.co.nz/arc/outboundfeeds/rss/section/world/"
     ]
@@ -998,7 +998,7 @@
     "domain": "thepost.co.nz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thepost.co.nz/rss/feed.xml"
+    "rss": ""
   },
   {
     "name": "Radio New Zealand (RNZ)",
@@ -1010,7 +1010,7 @@
     "domain": "rnz.co.nz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rnz.co.nz/rss/news.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.rnz.co.nz/rss/national.xml",
       "https://www.rnz.co.nz/rss/world.xml"
@@ -1038,7 +1038,7 @@
     "domain": "islandtimes.org",
     "priority": 2,
     "enabled": true,
-    "rss": "https://islandtimes.org/feed/"
+    "rss": ""
   },
   {
     "name": "The National",
@@ -1050,7 +1050,7 @@
     "domain": "thenational.com.pg",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thenationalnews.com/feed",
+    "rss": "",
     "rss_extra": [
       "https://www.thenationalnews.com/world/feed"
     ]
@@ -1065,7 +1065,7 @@
     "domain": "postcourier.com.pg",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.postcourier.com.pg/feed/"
+    "rss": ""
   },
   {
     "name": "NBC (National Broadcasting Corporation)",
@@ -1089,7 +1089,7 @@
     "domain": "manilatimes.net",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.manilatimes.net/feed"
+    "rss": ""
   },
   {
     "name": "Manila Bulletin",
@@ -1101,7 +1101,7 @@
     "domain": "mb.com.ph",
     "priority": 2,
     "enabled": true,
-    "rss": "https://mb.com.ph/feed/"
+    "rss": ""
   },
   {
     "name": "Philippine Daily Inquirer",
@@ -1113,7 +1113,7 @@
     "domain": "newsinfo.inquirer.net",
     "priority": 2,
     "enabled": true,
-    "rss": "https://newsinfo.inquirer.net/feed",
+    "rss": "",
     "rss_extra": [
       "https://opinion.inquirer.net/feed"
     ]
@@ -1128,7 +1128,7 @@
     "domain": "philstar.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.philstar.com/rss/headlines"
+    "rss": ""
   },
   {
     "name": "BusinessWorld",
@@ -1140,7 +1140,7 @@
     "domain": "bworldonline.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.bworldonline.com/feed/"
+    "rss": ""
   },
   {
     "name": "Yonhap News Agency",
@@ -1152,7 +1152,7 @@
     "domain": "en.yna.co.kr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://en.yna.co.kr/RSS/news.xml",
+    "rss": "",
     "rss_extra": [
       "https://en.yna.co.kr/RSS/politics.xml",
       "https://en.yna.co.kr/RSS/economy.xml"
@@ -1168,7 +1168,7 @@
     "domain": "chosun.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.chosun.com/arc/outboundfeeds/rss/"
+    "rss": ""
   },
   {
     "name": "Dong-A Ilbo",
@@ -1180,7 +1180,7 @@
     "domain": "donga.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.donga.com/news/rss"
+    "rss": ""
   },
   {
     "name": "JoongAng Ilbo",
@@ -1192,7 +1192,7 @@
     "domain": "joongang.co.kr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.joongang.co.kr/feed/rss"
+    "rss": ""
   },
   {
     "name": "Korea Times",
@@ -1204,7 +1204,7 @@
     "domain": "koreatimes.co.kr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.koreatimes.co.kr/www/rss/rss.xml"
+    "rss": ""
   },
   {
     "name": "Korea Herald",
@@ -1216,7 +1216,7 @@
     "domain": "koreaherald.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.koreaherald.com/rss_3_00.xml"
+    "rss": ""
   },
   {
     "name": "KBS",
@@ -1228,7 +1228,7 @@
     "domain": "kbs.co.kr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://world.kbs.co.kr/service/rss_feed.htm?lang=e"
+    "rss": ""
   },
   {
     "name": "MBC",
@@ -1252,7 +1252,7 @@
     "domain": "sbs.co.kr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://news.sbs.co.kr/news/RSS.do"
+    "rss": ""
   },
   {
     "name": "YTN",
@@ -1264,7 +1264,7 @@
     "domain": "ytn.co.kr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.ytn.co.kr/feed/rss"
+    "rss": ""
   },
   {
     "name": "JTBC",
@@ -1276,7 +1276,7 @@
     "domain": "jtbc.co.kr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://news.jtbc.co.kr/rss/NewsRSS.aspx"
+    "rss": ""
   },
   {
     "name": "Arirang TV",
@@ -1288,7 +1288,7 @@
     "domain": "arirang.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.arirang.com/rss/News.rss"
+    "rss": ""
   },
   {
     "name": "Samoa Observer",
@@ -1300,7 +1300,7 @@
     "domain": "samoaobserver.ws",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.samoaobserver.ws/feed/"
+    "rss": ""
   },
   {
     "name": "The Straits Times",
@@ -1312,7 +1312,7 @@
     "domain": "straitstimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.straitstimes.com/news/singapore/rss.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.straitstimes.com/news/world/rss.xml"
     ]
@@ -1327,7 +1327,7 @@
     "domain": "zaobao.com.sg",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.zaobao.com.sg/rss/realtime"
+    "rss": ""
   },
   {
     "name": "Channel NewsAsia (CNA)",
@@ -1339,7 +1339,7 @@
     "domain": "channelnewsasia.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml",
+    "rss": "",
     "rss_extra": [
       "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml&category=10416"
     ]
@@ -1366,7 +1366,7 @@
     "domain": "solomonstarnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.solomonstarnews.com/feed/"
+    "rss": ""
   },
   {
     "name": "Sri Lanka Broadcasting Corporation (SLBC)",
@@ -1390,7 +1390,7 @@
     "domain": "dailymirror.lk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.dailymirror.lk/rss"
+    "rss": ""
   },
   {
     "name": "Bangkok Post",
@@ -1402,7 +1402,7 @@
     "domain": "bangkokpost.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.bangkokpost.com/rss/data/topstories.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.bangkokpost.com/rss/data/world.xml",
       "https://www.bangkokpost.com/rss/data/business.xml"
@@ -1418,7 +1418,7 @@
     "domain": "thairath.co.th",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thairath.co.th/rss/news.xml"
+    "rss": ""
   },
   {
     "name": "Matichon",
@@ -1430,7 +1430,7 @@
     "domain": "matichon.co.th",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.matichon.co.th/feed"
+    "rss": ""
   },
   {
     "name": "Khaosod English",
@@ -1442,7 +1442,7 @@
     "domain": "khaosodenglish.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.khaosodenglish.com/feed/"
+    "rss": ""
   },
   {
     "name": "Thai PBS",
@@ -1454,7 +1454,7 @@
     "domain": "thaipbs.or.th",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thaipbs.or.th/news/rss"
+    "rss": ""
   },
   {
     "name": "MCOT",
@@ -1466,7 +1466,7 @@
     "domain": "mcot.net",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.mcot.net/feed"
+    "rss": ""
   },
   {
     "name": "Tonga Broadcasting Commission",
@@ -1490,7 +1490,7 @@
     "domain": "matangitonga.to",
     "priority": 2,
     "enabled": true,
-    "rss": "https://matangitonga.to/rss.xml"
+    "rss": ""
   },
   {
     "name": "Daily Post (Vanuatu)",
@@ -1502,7 +1502,7 @@
     "domain": "dailypost.vu",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.dailypost.vu/feed"
+    "rss": ""
   },
   {
     "name": "VBTC",
@@ -1526,7 +1526,7 @@
     "domain": "vtv.vn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://vtv.vn/rss"
+    "rss": ""
   },
   {
     "name": "Nhan Dan",
@@ -1538,7 +1538,7 @@
     "domain": "en.nhandan.vn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://en.nhandan.vn/rss"
+    "rss": ""
   },
   {
     "name": "VnExpress",
@@ -1550,7 +1550,7 @@
     "domain": "vnexpress.net",
     "priority": 2,
     "enabled": true,
-    "rss": "https://vnexpress.net/rss/tin-moi-nhat.rss",
+    "rss": "",
     "rss_extra": [
       "https://e.vnexpress.net/rss/news.rss"
     ]
@@ -1565,7 +1565,7 @@
     "domain": "vietnamnews.vn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://vietnamnews.vn/rss"
+    "rss": ""
   },
   {
     "name": "National Television Afghanistan (TOLOnews)",
@@ -1577,7 +1577,7 @@
     "domain": "tolonews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://tolonews.com/rss"
+    "rss": ""
   },
   {
     "name": "Bakhtar News Agency",
@@ -1613,7 +1613,7 @@
     "domain": "asbarez.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://asbarez.com/feed/"
+    "rss": ""
   },
   {
     "name": "Echo",
@@ -1625,7 +1625,7 @@
     "domain": "echo.az",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.echo.az/rss.xml"
+    "rss": ""
   },
   {
     "name": "Azadliq",
@@ -1637,7 +1637,7 @@
     "domain": "azadliq.info",
     "priority": 2,
     "enabled": true,
-    "rss": "https://azadliq.info/feed/"
+    "rss": ""
   },
   {
     "name": "Gulf Daily News",
@@ -1649,7 +1649,7 @@
     "domain": "gdnonline.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.gdnonline.com/feed.php"
+    "rss": ""
   },
   {
     "name": "The Daily Tribune",
@@ -1661,7 +1661,7 @@
     "domain": "dt.bh",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.dt.bh/feed/"
+    "rss": ""
   },
   {
     "name": "Belarus National State TV",
@@ -1685,7 +1685,7 @@
     "domain": "eng.belta.by",
     "priority": 2,
     "enabled": true,
-    "rss": "https://eng.belta.by/rss/"
+    "rss": ""
   },
   {
     "name": "Georgia Today",
@@ -1697,7 +1697,7 @@
     "domain": "georgiatoday.ge",
     "priority": 2,
     "enabled": true,
-    "rss": "https://georgiatoday.ge/feed/"
+    "rss": ""
   },
   {
     "name": "Interpressnews",
@@ -1709,7 +1709,7 @@
     "domain": "interpressnews.ge",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.interpressnews.ge/ka/rss.xml"
+    "rss": ""
   },
   {
     "name": "Tehran Times",
@@ -1721,7 +1721,7 @@
     "domain": "tehrantimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.tehrantimes.com/rss"
+    "rss": ""
   },
   {
     "name": "Iran Daily",
@@ -1733,7 +1733,7 @@
     "domain": "iran-daily.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.iran-daily.com/rss"
+    "rss": ""
   },
   {
     "name": "IRNA (Islamic Republic News Agency)",
@@ -1745,7 +1745,7 @@
     "domain": "en.irna.ir",
     "priority": 2,
     "enabled": true,
-    "rss": "https://en.irna.ir/rss"
+    "rss": ""
   },
   {
     "name": "Al-Sabah",
@@ -1757,7 +1757,7 @@
     "domain": "alsabaah.iq",
     "priority": 2,
     "enabled": true,
-    "rss": "https://alsabaah.iq/rss.php"
+    "rss": ""
   },
   {
     "name": "Al-Mada",
@@ -1781,7 +1781,7 @@
     "domain": "ynet.co.il",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.ynet.co.il/Integration/StoryRss2.xml"
+    "rss": ""
   },
   {
     "name": "The Jerusalem Post",
@@ -1793,7 +1793,7 @@
     "domain": "jpost.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.jpost.com/rss/rssfeedsfrontpage.aspx",
+    "rss": "",
     "rss_extra": [
       "https://www.jpost.com/rss/rssfeedsisrael.aspx",
       "https://www.jpost.com/rss/rssfeedsmiddleeast.aspx"
@@ -1809,7 +1809,7 @@
     "domain": "haaretz.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.haaretz.com/cmlink/1.628765"
+    "rss": ""
   },
   {
     "name": "Israel Hayom",
@@ -1821,7 +1821,7 @@
     "domain": "israelhayom.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.israelhayom.com/feed/"
+    "rss": ""
   },
   {
     "name": "The Jordan Times",
@@ -1833,7 +1833,7 @@
     "domain": "jordantimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.jordantimes.com/rss.xml"
+    "rss": ""
   },
   {
     "name": "Al Rai",
@@ -1869,7 +1869,7 @@
     "domain": "inform.kz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.inform.kz/en/rss"
+    "rss": ""
   },
   {
     "name": "Khabar TV",
@@ -1893,7 +1893,7 @@
     "domain": "kuwaittimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.kuwaittimes.com/feed/"
+    "rss": ""
   },
   {
     "name": "Arab Times",
@@ -1905,7 +1905,7 @@
     "domain": "arabtimesonline.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.arabtimesonline.com/feed/"
+    "rss": ""
   },
   {
     "name": "Kabar (Kyrgyz National News Agency)",
@@ -1917,7 +1917,7 @@
     "domain": "kabar.kg",
     "priority": 2,
     "enabled": true,
-    "rss": "https://kabar.kg/eng/rss/"
+    "rss": ""
   },
   {
     "name": "The Daily Star Lebanon",
@@ -1941,7 +1941,7 @@
     "domain": "lorientlejour.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.lorientlejour.com/rss"
+    "rss": ""
   },
   {
     "name": "National News Agency Lebanon",
@@ -1977,7 +1977,7 @@
     "domain": "protv.md",
     "priority": 2,
     "enabled": true,
-    "rss": "https://protv.md/rss"
+    "rss": ""
   },
   {
     "name": "Montsame (Mongolian News Agency)",
@@ -1989,7 +1989,7 @@
     "domain": "montsame.mn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://montsame.mn/en/rss"
+    "rss": ""
   },
   {
     "name": "UB Post",
@@ -2001,7 +2001,7 @@
     "domain": "theubposts.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://theubposts.com/feed/"
+    "rss": ""
   },
   {
     "name": "MNB (Mongolian National Broadcaster)",
@@ -2025,7 +2025,7 @@
     "domain": "omannews.gov.om",
     "priority": 2,
     "enabled": true,
-    "rss": "https://omannews.gov.om/rss"
+    "rss": ""
   },
   {
     "name": "Oman Daily Observer",
@@ -2037,7 +2037,7 @@
     "domain": "omanobserver.om",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.omanobserver.om/rss"
+    "rss": ""
   },
   {
     "name": "Times of Oman",
@@ -2049,7 +2049,7 @@
     "domain": "timesofoman.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://timesofoman.com/rss"
+    "rss": ""
   },
   {
     "name": "Dawn",
@@ -2061,7 +2061,7 @@
     "domain": "dawn.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.dawn.com/feeds/home",
+    "rss": "",
     "rss_extra": [
       "https://www.dawn.com/feeds/world-news",
       "https://www.dawn.com/feeds/pakistan"
@@ -2077,7 +2077,7 @@
     "domain": "thenews.com.pk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thenews.com.pk/rss/1/1"
+    "rss": ""
   },
   {
     "name": "Pakistan Television Corporation (PTV)",
@@ -2101,7 +2101,7 @@
     "domain": "aljazeera.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.aljazeera.com/xml/rss/all.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.aljazeera.com/xml/rss/AJEnglish.xml"
     ]
@@ -2128,7 +2128,7 @@
     "domain": "thepeninsulaqatar.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://thepeninsulaqatar.com/feed/"
+    "rss": ""
   },
   {
     "name": "TASS (ITAR-TASS)",
@@ -2140,7 +2140,7 @@
     "domain": "tass.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://tass.com/rss/v2.xml"
+    "rss": ""
   },
   {
     "name": "Interfax",
@@ -2152,7 +2152,7 @@
     "domain": "interfax.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.interfax.com/newsinf.asp?type=rss"
+    "rss": ""
   },
   {
     "name": "RT (Russia Today)",
@@ -2164,7 +2164,7 @@
     "domain": "rt.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rt.com/rss/news/"
+    "rss": ""
   },
   {
     "name": "Channel One Russia",
@@ -2188,7 +2188,7 @@
     "domain": "moscowtimes.ru",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.moscowtimes.ru/rss/"
+    "rss": ""
   },
   {
     "name": "Kommersant",
@@ -2200,7 +2200,7 @@
     "domain": "kommersant.ru",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.kommersant.ru/RSS/main.xml"
+    "rss": ""
   },
   {
     "name": "Saudi Press Agency (SPA)",
@@ -2212,7 +2212,7 @@
     "domain": "spa.gov.sa",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.spa.gov.sa/rss"
+    "rss": ""
   },
   {
     "name": "Arab News",
@@ -2224,7 +2224,7 @@
     "domain": "arabnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.arabnews.com/rss.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.arabnews.com/taxonomy/term/2/feed"
     ]
@@ -2239,7 +2239,7 @@
     "domain": "saudigazette.com.sa",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.saudigazette.com.sa/rss"
+    "rss": ""
   },
   {
     "name": "Asharq Al-Awsat",
@@ -2251,7 +2251,7 @@
     "domain": "english.aawsat.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://english.aawsat.com/rss.xml"
+    "rss": ""
   },
   {
     "name": "Syria TV",
@@ -2275,7 +2275,7 @@
     "domain": "sana.sy",
     "priority": 2,
     "enabled": true,
-    "rss": "https://sana.sy/en/?feed=rss2"
+    "rss": ""
   },
   {
     "name": "Khovar (Tajik State News Agency)",
@@ -2299,7 +2299,7 @@
     "domain": "asiaplustj.info",
     "priority": 2,
     "enabled": true,
-    "rss": "https://asiaplustj.info/en/rss"
+    "rss": ""
   },
   {
     "name": "Anadolu Agency",
@@ -2311,7 +2311,7 @@
     "domain": "aa.com.tr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.aa.com.tr/en/rss/default?cat=breaking-news",
+    "rss": "",
     "rss_extra": [
       "https://www.aa.com.tr/en/rss/default?cat=world"
     ]
@@ -2326,7 +2326,7 @@
     "domain": "hurriyetdailynews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.hurriyetdailynews.com/rss"
+    "rss": ""
   },
   {
     "name": "Daily Sabah",
@@ -2338,7 +2338,7 @@
     "domain": "dailysabah.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.dailysabah.com/feeds/rss",
+    "rss": "",
     "rss_extra": [
       "https://www.dailysabah.com/turkey/feed"
     ]
@@ -2353,7 +2353,7 @@
     "domain": "milliyet.com.tr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.milliyet.com.tr/rss/"
+    "rss": ""
   },
   {
     "name": "TRT World",
@@ -2365,7 +2365,7 @@
     "domain": "trtworld.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.trtworld.com/rss"
+    "rss": ""
   },
   {
     "name": "WAM (Emirates News Agency)",
@@ -2377,7 +2377,7 @@
     "domain": "wam.ae",
     "priority": 2,
     "enabled": true,
-    "rss": "https://wam.ae/en/feed"
+    "rss": ""
   },
   {
     "name": "Gulf News",
@@ -2389,7 +2389,7 @@
     "domain": "gulfnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://gulfnews.com/cmlink/rss-home",
+    "rss": "",
     "rss_extra": [
       "https://gulfnews.com/cmlink/rss-world"
     ]
@@ -2404,7 +2404,7 @@
     "domain": "thenationalnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thenationalnews.com/feed",
+    "rss": "",
     "rss_extra": [
       "https://www.thenationalnews.com/world/feed"
     ]
@@ -2419,7 +2419,7 @@
     "domain": "khaleejtimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.khaleejtimes.com/rss"
+    "rss": ""
   },
   {
     "name": "UzA (Uzbekistan National News Agency)",
@@ -2431,7 +2431,7 @@
     "domain": "uza.uz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://uza.uz/en/rss"
+    "rss": ""
   },
   {
     "name": "Uzbekistan National TV",
@@ -2455,7 +2455,7 @@
     "domain": "yementimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.yementimes.com/rss"
+    "rss": ""
   },
   {
     "name": "Al-Ayyam",
@@ -2479,7 +2479,7 @@
     "domain": "theglobeandmail.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.theglobeandmail.com/arc/outboundfeeds/rss/",
+    "rss": "",
     "rss_extra": [
       "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/canada/"
     ]
@@ -2494,7 +2494,7 @@
     "domain": "nationalpost.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://nationalpost.com/feed/",
+    "rss": "",
     "rss_extra": [
       "https://nationalpost.com/category/news/feed/"
     ]
@@ -2509,7 +2509,7 @@
     "domain": "thestar.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thestar.com/content/thestar/feed.RSSManagerServlet.articles.topstories.rss",
+    "rss": "",
     "rss_extra": [
       "https://www.thestar.com/content/thestar/feed.RSSManagerServlet.articles.world.rss"
     ]
@@ -2524,7 +2524,7 @@
     "domain": "cbc.ca",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.cbc.ca/cmlink/rss-topstories",
+    "rss": "",
     "rss_extra": [
       "https://www.cbc.ca/cmlink/rss-canada",
       "https://www.cbc.ca/cmlink/rss-world"
@@ -2540,7 +2540,7 @@
     "domain": "ctvnews.ca",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.ctvnews.ca/rss/ctvnews-ca-top-stories-public-rss-1.822009"
+    "rss": ""
   },
   {
     "name": "The New York Times",
@@ -2552,7 +2552,7 @@
     "domain": "nytimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+    "rss": "",
     "rss_extra": [
       "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
       "https://rss.nytimes.com/services/xml/rss/nyt/US.xml",
@@ -2569,7 +2569,7 @@
     "domain": "wsj.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.a.dj.com/rss/RSSWorldNews.xml",
+    "rss": "",
     "rss_extra": [
       "https://feeds.a.dj.com/rss/RSSMarketsMain.xml",
       "https://feeds.a.dj.com/rss/RSSWSJD.xml"
@@ -2585,7 +2585,7 @@
     "domain": "usatoday.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://rssfeeds.usatoday.com/usatoday-NewsTopStories",
+    "rss": "",
     "rss_extra": [
       "https://rssfeeds.usatoday.com/usatoday-WorldNews"
     ]
@@ -2600,7 +2600,7 @@
     "domain": "washingtonpost.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.washingtonpost.com/rss/national",
+    "rss": "",
     "rss_extra": [
       "https://feeds.washingtonpost.com/rss/world",
       "https://feeds.washingtonpost.com/rss/business"
@@ -2616,7 +2616,7 @@
     "domain": "latimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.latimes.com/world-nation/rss2.0.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.latimes.com/california/rss2.0.xml"
     ]
@@ -2631,7 +2631,7 @@
     "domain": "cnn.com",
     "priority": 2,
     "enabled": true,
-    "rss": "http://rss.cnn.com/rss/edition.rss",
+    "rss": "",
     "rss_extra": [
       "http://rss.cnn.com/rss/edition_world.rss",
       "http://rss.cnn.com/rss/edition_us.rss"
@@ -2647,7 +2647,7 @@
     "domain": "foxnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://moxie.foxnews.com/google-publisher/latest.xml",
+    "rss": "",
     "rss_extra": [
       "https://moxie.foxnews.com/google-publisher/world.xml"
     ]
@@ -2662,7 +2662,7 @@
     "domain": "nbcnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.nbcnews.com/nbcnews/public/news"
+    "rss": ""
   },
   {
     "name": "AP (Associated Press)",
@@ -2674,7 +2674,7 @@
     "domain": "apnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.apnews.com/apf-topnews",
+    "rss": "",
     "rss_extra": [
       "https://feeds.apnews.com/apf-intlnews",
       "https://feeds.apnews.com/apf-business"
@@ -2690,7 +2690,7 @@
     "domain": "bloomberg.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.bloomberg.com/markets/news.rss",
+    "rss": "",
     "rss_extra": [
       "https://feeds.bloomberg.com/technology/news.rss"
     ]
@@ -2705,7 +2705,7 @@
     "domain": "clarin.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.clarin.com/rss/lo-ultimo/"
+    "rss": ""
   },
   {
     "name": "La Nación",
@@ -2717,7 +2717,7 @@
     "domain": "lanacion.com.ar",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.lanacion.com.ar/arc/outboundfeeds/rss/"
+    "rss": ""
   },
   {
     "name": "Infobae",
@@ -2729,7 +2729,7 @@
     "domain": "infobae.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.infobae.com/feeds/rss/"
+    "rss": ""
   },
   {
     "name": "Folha de São Paulo",
@@ -2741,7 +2741,7 @@
     "domain": "folha.uol.com.br",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.folha.uol.com.br/folha/rss091.xml"
+    "rss": ""
   },
   {
     "name": "O Estado de São Paulo",
@@ -2753,7 +2753,7 @@
     "domain": "estadao.com.br",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.estadao.com.br/rss/ultimas.xml"
+    "rss": ""
   },
   {
     "name": "O Globo",
@@ -2765,7 +2765,7 @@
     "domain": "oglobo.globo.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://oglobo.globo.com/rss.xml"
+    "rss": ""
   },
   {
     "name": "TV Globo",
@@ -2777,7 +2777,7 @@
     "domain": "g1.globo.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://g1.globo.com/rss/g1/"
+    "rss": ""
   },
   {
     "name": "El Mercurio",
@@ -2789,7 +2789,7 @@
     "domain": "emol.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.emol.com/rss/"
+    "rss": ""
   },
   {
     "name": "La Tercera",
@@ -2801,7 +2801,7 @@
     "domain": "latercera.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.latercera.com/feed/"
+    "rss": ""
   },
   {
     "name": "CNN Chile",
@@ -2813,7 +2813,7 @@
     "domain": "cnnchile.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.cnnchile.com/feed/"
+    "rss": ""
   },
   {
     "name": "El Tiempo",
@@ -2825,7 +2825,7 @@
     "domain": "eltiempo.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.eltiempo.com/rss/"
+    "rss": ""
   },
   {
     "name": "El Espectador",
@@ -2837,7 +2837,7 @@
     "domain": "elespectador.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.elespectador.com/rss/"
+    "rss": ""
   },
   {
     "name": "Caracol Radio",
@@ -2849,7 +2849,7 @@
     "domain": "caracol.com.co",
     "priority": 2,
     "enabled": true,
-    "rss": "https://caracol.com.co/feed/"
+    "rss": ""
   },
   {
     "name": "La Nación (Costa Rica)",
@@ -2861,7 +2861,7 @@
     "domain": "nacion.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nacion.com/feed/"
+    "rss": ""
   },
   {
     "name": "Prensa Latina",
@@ -2873,7 +2873,7 @@
     "domain": "prensa-latina.cu",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.prensa-latina.cu/rss/index.php"
+    "rss": ""
   },
   {
     "name": "Granma",
@@ -2885,7 +2885,7 @@
     "domain": "granma.cu",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.granma.cu/feed.rss"
+    "rss": ""
   },
   {
     "name": "El Universo",
@@ -2897,7 +2897,7 @@
     "domain": "eluniverso.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.eluniverso.com/rss/"
+    "rss": ""
   },
   {
     "name": "Teleamazonas",
@@ -2909,7 +2909,7 @@
     "domain": "teleamazonas.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.teleamazonas.com/feed/"
+    "rss": ""
   },
   {
     "name": "La Prensa Gráfica",
@@ -2921,7 +2921,7 @@
     "domain": "laprensagrafica.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.laprensagrafica.com/feed/"
+    "rss": ""
   },
   {
     "name": "El Diario de Hoy",
@@ -2933,7 +2933,7 @@
     "domain": "elsalvador.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.elsalvador.com/feed/"
+    "rss": ""
   },
   {
     "name": "Prensa Libre",
@@ -2945,7 +2945,7 @@
     "domain": "prensalibre.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.prensalibre.com/feed/"
+    "rss": ""
   },
   {
     "name": "Le Nouvelliste",
@@ -2969,7 +2969,7 @@
     "domain": "laprensa.hn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.laprensa.hn/feed/"
+    "rss": ""
   },
   {
     "name": "El Heraldo",
@@ -2981,7 +2981,7 @@
     "domain": "elheraldo.hn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.elheraldo.hn/feed/"
+    "rss": ""
   },
   {
     "name": "Reforma",
@@ -3005,7 +3005,7 @@
     "domain": "eluniversal.com.mx",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.eluniversal.com.mx/rss.xml"
+    "rss": ""
   },
   {
     "name": "Televisa",
@@ -3017,7 +3017,7 @@
     "domain": "televisa.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://noticieros.televisa.com/rss/"
+    "rss": ""
   },
   {
     "name": "Proceso",
@@ -3029,7 +3029,7 @@
     "domain": "proceso.com.mx",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.proceso.com.mx/feed/"
+    "rss": ""
   },
   {
     "name": "La Prensa (Nicaragua)",
@@ -3041,7 +3041,7 @@
     "domain": "laprensa.com.ni",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.laprensa.com.ni/feed/"
+    "rss": ""
   },
   {
     "name": "La Prensa (Panama)",
@@ -3053,7 +3053,7 @@
     "domain": "prensa.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.prensa.com/feed/"
+    "rss": ""
   },
   {
     "name": "ABC Color",
@@ -3065,7 +3065,7 @@
     "domain": "abc.com.py",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.abc.com.py/arc/outboundfeeds/rss/"
+    "rss": ""
   },
   {
     "name": "El Comercio (Peru)",
@@ -3077,7 +3077,7 @@
     "domain": "elcomercio.pe",
     "priority": 2,
     "enabled": true,
-    "rss": "https://elcomercio.pe/arc/outboundfeeds/rss/"
+    "rss": ""
   },
   {
     "name": "La República (Peru)",
@@ -3089,7 +3089,7 @@
     "domain": "larepublica.pe",
     "priority": 2,
     "enabled": true,
-    "rss": "https://larepublica.pe/feed/"
+    "rss": ""
   },
   {
     "name": "Trinidad and Tobago Express",
@@ -3101,7 +3101,7 @@
     "domain": "trinidadexpress.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.trinidadexpress.com/feed/"
+    "rss": ""
   },
   {
     "name": "CCN TV6",
@@ -3125,7 +3125,7 @@
     "domain": "elpais.com.uy",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.elpais.com.uy/rss"
+    "rss": ""
   },
   {
     "name": "El Nacional",
@@ -3137,7 +3137,7 @@
     "domain": "elnacional.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.elnacional.com/feed/"
+    "rss": ""
   },
   {
     "name": "Venezolana de Televisión (VTV)",
@@ -3161,7 +3161,7 @@
     "domain": "antiguaobserver.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://antiguaobserver.com/feed/"
+    "rss": ""
   },
   {
     "name": "Nassau Guardian",
@@ -3173,7 +3173,7 @@
     "domain": "thenassauguardian.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thenassauguardian.com/feed/"
+    "rss": ""
   },
   {
     "name": "The Tribune (Bahamas)",
@@ -3185,7 +3185,7 @@
     "domain": "tribune242.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.tribune242.com/feed/"
+    "rss": ""
   },
   {
     "name": "Nation News Barbados",
@@ -3197,7 +3197,7 @@
     "domain": "nationnews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nationnews.com/feed/"
+    "rss": ""
   },
   {
     "name": "Amandala",
@@ -3209,7 +3209,7 @@
     "domain": "amandala.com.bz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://amandala.com.bz/news/feed/"
+    "rss": ""
   },
   {
     "name": "Listín Diario",
@@ -3221,7 +3221,7 @@
     "domain": "listindiario.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://listindiario.com/feed"
+    "rss": ""
   },
   {
     "name": "Stabroek News",
@@ -3233,7 +3233,7 @@
     "domain": "stabroeknews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.stabroeknews.com/feed/"
+    "rss": ""
   },
   {
     "name": "Kaieteur News",
@@ -3245,7 +3245,7 @@
     "domain": "kaieteurnewsonline.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.kaieteurnewsonline.com/feed/"
+    "rss": ""
   },
   {
     "name": "Jamaica Gleaner",
@@ -3257,7 +3257,7 @@
     "domain": "jamaica-gleaner.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://jamaica-gleaner.com/feed/"
+    "rss": ""
   },
   {
     "name": "La Razón (Bolivia)",
@@ -3281,7 +3281,7 @@
     "domain": "nowgrenada.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nowgrenada.com/feed/"
+    "rss": ""
   },
   {
     "name": "The Searchlight",
@@ -3293,7 +3293,7 @@
     "domain": "searchlight.vc",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.searchlight.vc/feed/"
+    "rss": ""
   },
   {
     "name": "De Ware Tijd",
@@ -3317,7 +3317,7 @@
     "domain": "albaniandailynews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.albaniandailynews.com/feed/"
+    "rss": ""
   },
   {
     "name": "RTSH (Albanian Radio-Television)",
@@ -3341,7 +3341,7 @@
     "domain": "diariandorra.ad",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.diariandorra.ad/feed/"
+    "rss": ""
   },
   {
     "name": "Die Presse",
@@ -3353,7 +3353,7 @@
     "domain": "diepresse.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.diepresse.com/rss/home"
+    "rss": ""
   },
   {
     "name": "Der Standard",
@@ -3365,7 +3365,7 @@
     "domain": "derstandard.at",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.derstandard.at/rss"
+    "rss": ""
   },
   {
     "name": "ORF",
@@ -3377,7 +3377,7 @@
     "domain": "orf.at",
     "priority": 2,
     "enabled": true,
-    "rss": "https://rss.orf.at/news.xml"
+    "rss": ""
   },
   {
     "name": "RTBF",
@@ -3389,7 +3389,7 @@
     "domain": "rtbf.be",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rtbf.be/feed/"
+    "rss": ""
   },
   {
     "name": "VRT (Vlaamse Radio- en Televisieomroeporganisatie)",
@@ -3401,7 +3401,7 @@
     "domain": "vrt.be",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.vrt.be/vrtnieuws/nl.rss.xml"
+    "rss": ""
   },
   {
     "name": "De Standaard",
@@ -3413,7 +3413,7 @@
     "domain": "standaard.be",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.standaard.be/rss/section/GENERAL"
+    "rss": ""
   },
   {
     "name": "Klix.ba",
@@ -3425,7 +3425,7 @@
     "domain": "klix.ba",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.klix.ba/rss"
+    "rss": ""
   },
   {
     "name": "N1 Bosnia",
@@ -3437,7 +3437,7 @@
     "domain": "n1info.ba",
     "priority": 2,
     "enabled": true,
-    "rss": "https://n1info.ba/feed/"
+    "rss": ""
   },
   {
     "name": "Bulgarian National Television (BNT)",
@@ -3461,7 +3461,7 @@
     "domain": "bta.bg",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.bta.bg/en/rss.xml"
+    "rss": ""
   },
   {
     "name": "HTV (Croatian Radiotelevision)",
@@ -3473,7 +3473,7 @@
     "domain": "hrt.hr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.hrt.hr/rss/vijesti/"
+    "rss": ""
   },
   {
     "name": "HINA (Croatian News Agency)",
@@ -3485,7 +3485,7 @@
     "domain": "hina.hr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.hina.hr/rss"
+    "rss": ""
   },
   {
     "name": "Cyprus Mail",
@@ -3497,7 +3497,7 @@
     "domain": "cyprus-mail.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://cyprus-mail.com/feed/"
+    "rss": ""
   },
   {
     "name": "Sigma TV",
@@ -3521,7 +3521,7 @@
     "domain": "ceskatelevize.cz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://ct24.ceskatelevize.cz/rss"
+    "rss": ""
   },
   {
     "name": "TV Nova",
@@ -3533,7 +3533,7 @@
     "domain": "nova.cz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://tv.nova.cz/rss"
+    "rss": ""
   },
   {
     "name": "MF Dnes",
@@ -3545,7 +3545,7 @@
     "domain": "idnes.cz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.idnes.cz/zpravy/archiv/rss.aspx?c=2009_01"
+    "rss": ""
   },
   {
     "name": "DR (Danish Broadcasting Corporation)",
@@ -3557,7 +3557,7 @@
     "domain": "dr.dk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.dr.dk/nyheder/service/feeds/alle"
+    "rss": ""
   },
   {
     "name": "Jyllands-Posten",
@@ -3569,7 +3569,7 @@
     "domain": "jyllands-posten.dk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://jyllands-posten.dk/feed/"
+    "rss": ""
   },
   {
     "name": "Politiken",
@@ -3581,7 +3581,7 @@
     "domain": "politiken.dk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://politiken.dk/rss/"
+    "rss": ""
   },
   {
     "name": "ERR (Estonian Public Broadcasting)",
@@ -3593,7 +3593,7 @@
     "domain": "err.ee",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.err.ee/rss"
+    "rss": ""
   },
   {
     "name": "YLE (Finnish Broadcasting Company)",
@@ -3605,7 +3605,7 @@
     "domain": "yle.fi",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.yle.fi/uutiset/v1/majorHeadlines/YLE_UUTISET.rss",
+    "rss": "",
     "rss_extra": [
       "https://feeds.yle.fi/uutiset/v1/majorHeadlines/YLE_NOVOSTI.rss"
     ]
@@ -3620,7 +3620,7 @@
     "domain": "hs.fi",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.hs.fi/rss/tuoreimmat.xml"
+    "rss": ""
   },
   {
     "name": "Le Monde",
@@ -3632,7 +3632,7 @@
     "domain": "lemonde.fr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.lemonde.fr/rss/une.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.lemonde.fr/international/rss_full.xml"
     ]
@@ -3647,7 +3647,7 @@
     "domain": "lefigaro.fr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.lefigaro.fr/rss/figaro_actualites.xml"
+    "rss": ""
   },
   {
     "name": "France 24",
@@ -3659,7 +3659,7 @@
     "domain": "france24.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.france24.com/en/rss",
+    "rss": "",
     "rss_extra": [
       "https://www.france24.com/fr/rss"
     ]
@@ -3674,7 +3674,7 @@
     "domain": "afp.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.afp.com/en/latest-news/feed"
+    "rss": ""
   },
   {
     "name": "Der Spiegel",
@@ -3686,7 +3686,7 @@
     "domain": "spiegel.de",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.spiegel.de/international/index.rss"
+    "rss": ""
   },
   {
     "name": "Frankfurter Allgemeine Zeitung (FAZ)",
@@ -3698,7 +3698,7 @@
     "domain": "faz.net",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.faz.net/rss/aktuell/"
+    "rss": ""
   },
   {
     "name": "Süddeutsche Zeitung",
@@ -3710,7 +3710,7 @@
     "domain": "sueddeutsche.de",
     "priority": 2,
     "enabled": true,
-    "rss": "https://rss.sueddeutsche.de/rss/TopThemen"
+    "rss": ""
   },
   {
     "name": "Die Welt",
@@ -3722,7 +3722,7 @@
     "domain": "welt.de",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.welt.de/feeds/latest.rss"
+    "rss": ""
   },
   {
     "name": "ARD (Das Erste)",
@@ -3734,7 +3734,7 @@
     "domain": "ard.de",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.tagesschau.de/xml/rss2/"
+    "rss": ""
   },
   {
     "name": "ZDF",
@@ -3746,7 +3746,7 @@
     "domain": "zdf.de",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.zdf.de/rss/zdf/nachrichten"
+    "rss": ""
   },
   {
     "name": "Deutsche Welle (DW)",
@@ -3758,7 +3758,7 @@
     "domain": "dw.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://rss.dw.com/rdf/rss-en-all",
+    "rss": "",
     "rss_extra": [
       "https://rss.dw.com/rdf/rss-zh-all"
     ]
@@ -3773,7 +3773,7 @@
     "domain": "ert.gr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.ert.gr/feed/"
+    "rss": ""
   },
   {
     "name": "Kathimerini",
@@ -3785,7 +3785,7 @@
     "domain": "ekathimerini.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.ekathimerini.com/feed/",
+    "rss": "",
     "rss_extra": [
       "https://www.kathimerini.gr/feed/"
     ]
@@ -3800,7 +3800,7 @@
     "domain": "skai.gr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.skai.gr/feed/"
+    "rss": ""
   },
   {
     "name": "L'Osservatore Romano",
@@ -3824,7 +3824,7 @@
     "domain": "vaticannews.va",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.vaticannews.va/en.rss.xml"
+    "rss": ""
   },
   {
     "name": "HVG",
@@ -3836,7 +3836,7 @@
     "domain": "hvg.hu",
     "priority": 2,
     "enabled": true,
-    "rss": "https://hvg.hu/rss/friss"
+    "rss": ""
   },
   {
     "name": "Telex.hu",
@@ -3848,7 +3848,7 @@
     "domain": "telex.hu",
     "priority": 2,
     "enabled": true,
-    "rss": "https://telex.hu/rss"
+    "rss": ""
   },
   {
     "name": "RÚV (Icelandic National Broadcasting Service)",
@@ -3860,7 +3860,7 @@
     "domain": "ruv.is",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.ruv.is/feed/rss"
+    "rss": ""
   },
   {
     "name": "Morgunbladid",
@@ -3872,7 +3872,7 @@
     "domain": "mbl.is",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.mbl.is/feeds/og/"
+    "rss": ""
   },
   {
     "name": "RTÉ (Raidió Teilifís Éireann)",
@@ -3884,7 +3884,7 @@
     "domain": "rte.ie",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rte.ie/news/rss/news-headlines.xml"
+    "rss": ""
   },
   {
     "name": "The Irish Times",
@@ -3896,7 +3896,7 @@
     "domain": "irishtimes.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.irishtimes.com/cmlink/news-1.1319192",
+    "rss": "",
     "rss_extra": [
       "https://www.irishtimes.com/cmlink/world-1.1319194"
     ]
@@ -3911,7 +3911,7 @@
     "domain": "independent.ie",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.independent.ie/feed/"
+    "rss": ""
   },
   {
     "name": "Corriere della Sera",
@@ -3923,7 +3923,7 @@
     "domain": "corriere.it",
     "priority": 2,
     "enabled": true,
-    "rss": "https://xml2.corriereobjects.it/rss/homepage.xml"
+    "rss": ""
   },
   {
     "name": "La Repubblica",
@@ -3935,7 +3935,7 @@
     "domain": "repubblica.it",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.repubblica.it/rss/homepage/rss2.0.xml"
+    "rss": ""
   },
   {
     "name": "RAI",
@@ -3947,7 +3947,7 @@
     "domain": "rai.it",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rainews.it/rss.html"
+    "rss": ""
   },
   {
     "name": "ANSA",
@@ -3959,7 +3959,7 @@
     "domain": "ansa.it",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.ansa.it/sito/notizie/topnews/topnews_rss.xml"
+    "rss": ""
   },
   {
     "name": "RTK (Radio Television of Kosovo)",
@@ -3983,7 +3983,7 @@
     "domain": "lsm.lv",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.lsm.lv/rss/"
+    "rss": ""
   },
   {
     "name": "LETA (Latvian News Agency)",
@@ -4007,7 +4007,7 @@
     "domain": "volksblatt.li",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.volksblatt.li/feed/"
+    "rss": ""
   },
   {
     "name": "LRT (Lithuanian National Radio and Television)",
@@ -4019,7 +4019,7 @@
     "domain": "lrt.lt",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.lrt.lt/rss/news"
+    "rss": ""
   },
   {
     "name": "Delfi Lithuania",
@@ -4031,7 +4031,7 @@
     "domain": "delfi.lt",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.delfi.lt/rss/feeds/news.xml"
+    "rss": ""
   },
   {
     "name": "Luxemburger Wort",
@@ -4043,7 +4043,7 @@
     "domain": "wort.lu",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.wort.lu/fr/rss/"
+    "rss": ""
   },
   {
     "name": "Luxembourg Times",
@@ -4055,7 +4055,7 @@
     "domain": "luxtimes.lu",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.luxtimes.lu/rss"
+    "rss": ""
   },
   {
     "name": "Times of Malta",
@@ -4067,7 +4067,7 @@
     "domain": "timesofmalta.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://timesofmalta.com/feed/rss"
+    "rss": ""
   },
   {
     "name": "Monaco Info",
@@ -4103,7 +4103,7 @@
     "domain": "vijesti.me",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.vijesti.me/rss"
+    "rss": ""
   },
   {
     "name": "De Telegraaf",
@@ -4115,7 +4115,7 @@
     "domain": "telegraaf.nl",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.telegraaf.nl/rss"
+    "rss": ""
   },
   {
     "name": "NOS (Dutch Public Broadcasting)",
@@ -4127,7 +4127,7 @@
     "domain": "nos.nl",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.nos.nl/nosnieuwsalgemeen"
+    "rss": ""
   },
   {
     "name": "MRT (Macedonian Radio-Television)",
@@ -4139,7 +4139,7 @@
     "domain": "mrt.com.mk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://mrt.com.mk/feed/"
+    "rss": ""
   },
   {
     "name": "NRK (Norwegian Broadcasting Corporation)",
@@ -4151,7 +4151,7 @@
     "domain": "nrk.no",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nrk.no/toppsaker.rss",
+    "rss": "",
     "rss_extra": [
       "https://www.nrk.no/rss/"
     ]
@@ -4166,7 +4166,7 @@
     "domain": "aftenposten.no",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.aftenposten.no/rss/"
+    "rss": ""
   },
   {
     "name": "Gazeta Wyborcza",
@@ -4178,7 +4178,7 @@
     "domain": "wyborcza.pl",
     "priority": 2,
     "enabled": true,
-    "rss": "https://wyborcza.pl/feeds.rss"
+    "rss": ""
   },
   {
     "name": "TVN24",
@@ -4190,7 +4190,7 @@
     "domain": "tvn24.pl",
     "priority": 2,
     "enabled": true,
-    "rss": "https://tvn24.pl/najnowsze.xml"
+    "rss": ""
   },
   {
     "name": "TVP (Polish Television)",
@@ -4202,7 +4202,7 @@
     "domain": "tvp.pl",
     "priority": 2,
     "enabled": true,
-    "rss": "https://wiadomosci.tvp.pl/rss"
+    "rss": ""
   },
   {
     "name": "RTP (Rádio e Televisão de Portugal)",
@@ -4214,7 +4214,7 @@
     "domain": "rtp.pt",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rtp.pt/noticias/rss/"
+    "rss": ""
   },
   {
     "name": "Público",
@@ -4226,7 +4226,7 @@
     "domain": "publico.pt",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.publico.pt/api/rss"
+    "rss": ""
   },
   {
     "name": "Correio da Manhã",
@@ -4238,7 +4238,7 @@
     "domain": "cmjornal.pt",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.cmjornal.pt/rss"
+    "rss": ""
   },
   {
     "name": "TVR (Romanian Television)",
@@ -4262,7 +4262,7 @@
     "domain": "agerpres.ro",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.agerpres.ro/feed"
+    "rss": ""
   },
   {
     "name": "RTS (Radio Television of Serbia)",
@@ -4274,7 +4274,7 @@
     "domain": "rts.rs",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rts.rs/rss.xml"
+    "rss": ""
   },
   {
     "name": "Politika",
@@ -4286,7 +4286,7 @@
     "domain": "politika.rs",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.politika.rs/rss/politika.xml"
+    "rss": ""
   },
   {
     "name": "RTVS (Radio and Television of Slovakia)",
@@ -4310,7 +4310,7 @@
     "domain": "spectator.sme.sk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://spectator.sme.sk/rss/rss.html"
+    "rss": ""
   },
   {
     "name": "RTV Slovenia",
@@ -4322,7 +4322,7 @@
     "domain": "rtvslo.si",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rtvslo.si/feeds/news.rss"
+    "rss": ""
   },
   {
     "name": "STA (Slovenian Press Agency)",
@@ -4334,7 +4334,7 @@
     "domain": "sta.si",
     "priority": 2,
     "enabled": true,
-    "rss": "https://english.sta.si/feed"
+    "rss": ""
   },
   {
     "name": "El País",
@@ -4346,7 +4346,7 @@
     "domain": "elpais.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada",
+    "rss": "",
     "rss_extra": [
       "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/internacional/portada"
     ]
@@ -4361,7 +4361,7 @@
     "domain": "elmundo.es",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.elmundo.es/rss/portada.xml"
+    "rss": ""
   },
   {
     "name": "TVE (Television Española)",
@@ -4373,7 +4373,7 @@
     "domain": "rtve.es",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rtve.es/api/news.rss"
+    "rss": ""
   },
   {
     "name": "La Vanguardia",
@@ -4385,7 +4385,7 @@
     "domain": "lavanguardia.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.lavanguardia.com/rss/home.xml"
+    "rss": ""
   },
   {
     "name": "SVT (Swedish Television)",
@@ -4397,7 +4397,7 @@
     "domain": "svt.se",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.svt.se/nyheter/rss.xml"
+    "rss": ""
   },
   {
     "name": "Dagens Nyheter",
@@ -4409,7 +4409,7 @@
     "domain": "dn.se",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.dn.se/rss/"
+    "rss": ""
   },
   {
     "name": "Svenska Dagbladet",
@@ -4421,7 +4421,7 @@
     "domain": "svd.se",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.svd.se/?service=rss"
+    "rss": ""
   },
   {
     "name": "Neue Zürcher Zeitung (NZZ)",
@@ -4433,7 +4433,7 @@
     "domain": "nzz.ch",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nzz.ch/nachrichten.rss"
+    "rss": ""
   },
   {
     "name": "SRF (Swiss Radio and Television)",
@@ -4445,7 +4445,7 @@
     "domain": "srf.ch",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.srf.ch/news/bnf/rss/1646"
+    "rss": ""
   },
   {
     "name": "Le Temps",
@@ -4457,7 +4457,7 @@
     "domain": "letemps.ch",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.letemps.ch/rss"
+    "rss": ""
   },
   {
     "name": "Ukrinform",
@@ -4469,7 +4469,7 @@
     "domain": "ukrinform.net",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.ukrinform.net/rss/block-lastnews",
+    "rss": "",
     "rss_extra": [
       "https://www.ukrinform.net/rss/block-worldnews"
     ]
@@ -4484,7 +4484,7 @@
     "domain": "kyivpost.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.kyivpost.com/rss"
+    "rss": ""
   },
   {
     "name": "1+1 TV",
@@ -4496,7 +4496,7 @@
     "domain": "1plus1.ua",
     "priority": 2,
     "enabled": true,
-    "rss": "https://1plus1.ua/rss"
+    "rss": ""
   },
   {
     "name": "BBC",
@@ -4508,7 +4508,7 @@
     "domain": "bbc.co.uk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.bbci.co.uk/news/rss.xml",
+    "rss": "",
     "rss_extra": [
       "https://feeds.bbci.co.uk/news/world/rss.xml",
       "https://feeds.bbci.co.uk/news/business/rss.xml",
@@ -4526,7 +4526,7 @@
     "domain": "ft.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.ft.com/rss/home/uk",
+    "rss": "",
     "rss_extra": [
       "https://www.ft.com/rss/home/world"
     ]
@@ -4541,7 +4541,7 @@
     "domain": "thetimes.co.uk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thetimes.co.uk/edition/news/world"
+    "rss": ""
   },
   {
     "name": "The Guardian",
@@ -4553,7 +4553,7 @@
     "domain": "theguardian.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.theguardian.com/world/rss",
+    "rss": "",
     "rss_extra": [
       "https://www.theguardian.com/uk/rss",
       "https://www.theguardian.com/business/rss"
@@ -4569,7 +4569,7 @@
     "domain": "telegraph.co.uk",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.telegraph.co.uk/rss.xml",
+    "rss": "",
     "rss_extra": [
       "https://www.telegraph.co.uk/news/rss.xml"
     ]
@@ -4584,7 +4584,7 @@
     "domain": "reuters.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.reuters.com/reuters/topNews",
+    "rss": "",
     "rss_extra": [
       "https://feeds.reuters.com/reuters/worldNews",
       "https://feeds.reuters.com/reuters/businessNews"
@@ -4600,7 +4600,7 @@
     "domain": "news.sky.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.skynews.com/feeds/rss/home.xml"
+    "rss": ""
   },
   {
     "name": "ENTV (Enterprise Nationale de Television)",
@@ -4624,7 +4624,7 @@
     "domain": "elkhabar.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.elkhabar.com/press/feed/"
+    "rss": ""
   },
   {
     "name": "Jornal de Angola",
@@ -4660,7 +4660,7 @@
     "domain": "mmegi.bw",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.mmegi.bw/feed/"
+    "rss": ""
   },
   {
     "name": "Botswana TV (BTV)",
@@ -4684,7 +4684,7 @@
     "domain": "sidwaya.info",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.sidwaya.info/feed/"
+    "rss": ""
   },
   {
     "name": "RTNB (Radio Television Nationale du Burundi)",
@@ -4720,7 +4720,7 @@
     "domain": "cameroon-tribune.cm",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.cameroon-tribune.cm/feed/"
+    "rss": ""
   },
   {
     "name": "A Semana",
@@ -4744,7 +4744,7 @@
     "domain": "alwatwan.net",
     "priority": 2,
     "enabled": true,
-    "rss": "https://alwatwan.net/feed/"
+    "rss": ""
   },
   {
     "name": "RTD (Radio-Télévision de Djibouti)",
@@ -4768,7 +4768,7 @@
     "domain": "rfi.fr",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.rfi.fr/fr/rss",
+    "rss": "",
     "rss_extra": [
       "https://www.rfi.fr/en/rss"
     ]
@@ -4795,7 +4795,7 @@
     "domain": "english.ahram.org.eg",
     "priority": 2,
     "enabled": true,
-    "rss": "https://english.ahram.org.eg/RSSFeeds/1.aspx"
+    "rss": ""
   },
   {
     "name": "MENA (Middle East News Agency)",
@@ -4819,7 +4819,7 @@
     "domain": "almasryalyoum.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.almasryalyoum.com/rss/rssfeeds/1.xml"
+    "rss": ""
   },
   {
     "name": "Eri-TV",
@@ -4855,7 +4855,7 @@
     "domain": "thereporterethiopia.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thereporterethiopia.com/feed/"
+    "rss": ""
   },
   {
     "name": "Gabon 24",
@@ -4867,7 +4867,7 @@
     "domain": "gabon24.info",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.gabon24.info/feed/"
+    "rss": ""
   },
   {
     "name": "The Daily Observer (Gambia)",
@@ -4879,7 +4879,7 @@
     "domain": "observer.gm",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.observer.gm/feed/"
+    "rss": ""
   },
   {
     "name": "GBC (Ghana Broadcasting Corporation)",
@@ -4891,7 +4891,7 @@
     "domain": "gbcghana.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://gbcghana.com/feed/"
+    "rss": ""
   },
   {
     "name": "Daily Graphic",
@@ -4903,7 +4903,7 @@
     "domain": "graphic.com.gh",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.graphic.com.gh/feed/"
+    "rss": ""
   },
   {
     "name": "RTG (Radio Télévision Guinéenne)",
@@ -4927,7 +4927,7 @@
     "domain": "nation.africa",
     "priority": 2,
     "enabled": true,
-    "rss": "https://nation.africa/feed"
+    "rss": ""
   },
   {
     "name": "The Standard (Kenya)",
@@ -4939,7 +4939,7 @@
     "domain": "standardmedia.co.ke",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.standardmedia.co.ke/rss/latest-news"
+    "rss": ""
   },
   {
     "name": "KBC (Kenya Broadcasting Corporation)",
@@ -4951,7 +4951,7 @@
     "domain": "kbc.co.ke",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.kbc.co.ke/feed/"
+    "rss": ""
   },
   {
     "name": "Citizen TV Kenya",
@@ -4963,7 +4963,7 @@
     "domain": "citizentv.co.ke",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.citizentv.co.ke/feed/"
+    "rss": ""
   },
   {
     "name": "Public Eye",
@@ -4975,7 +4975,7 @@
     "domain": "publiceyenews.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.publiceyenews.com/feed/"
+    "rss": ""
   },
   {
     "name": "FrontPage Africa",
@@ -4987,7 +4987,7 @@
     "domain": "frontpageafricaonline.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://frontpageafricaonline.com/feed/"
+    "rss": ""
   },
   {
     "name": "Libya TV",
@@ -5023,7 +5023,7 @@
     "domain": "mwnation.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://mwnation.com/feed/"
+    "rss": ""
   },
   {
     "name": "MBC (Malawi Broadcasting Corporation)",
@@ -5059,7 +5059,7 @@
     "domain": "lexpress.mu",
     "priority": 2,
     "enabled": true,
-    "rss": "https://lexpress.mu/feed"
+    "rss": ""
   },
   {
     "name": "MBC (Mauritius Broadcasting Corporation)",
@@ -5095,7 +5095,7 @@
     "domain": "lematin.ma",
     "priority": 2,
     "enabled": true,
-    "rss": "https://lematin.ma/feed/"
+    "rss": ""
   },
   {
     "name": "TVM (Televisao de Mocambique)",
@@ -5119,7 +5119,7 @@
     "domain": "namibian.com.na",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.namibian.com.na/feed/"
+    "rss": ""
   },
   {
     "name": "NBC (Namibia Broadcasting Corporation)",
@@ -5143,7 +5143,7 @@
     "domain": "channelstv.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.channelstv.com/feed/"
+    "rss": ""
   },
   {
     "name": "The Punch",
@@ -5155,7 +5155,7 @@
     "domain": "punchng.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://punchng.com/feed/"
+    "rss": ""
   },
   {
     "name": "Vanguard (Nigeria)",
@@ -5167,7 +5167,7 @@
     "domain": "vanguardngr.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.vanguardngr.com/feed/"
+    "rss": ""
   },
   {
     "name": "NAN (News Agency of Nigeria)",
@@ -5179,7 +5179,7 @@
     "domain": "nannews.ng",
     "priority": 2,
     "enabled": true,
-    "rss": "https://nannews.ng/feed/"
+    "rss": ""
   },
   {
     "name": "The New Times Rwanda",
@@ -5191,7 +5191,7 @@
     "domain": "newtimes.co.rw",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.newtimes.co.rw/feed"
+    "rss": ""
   },
   {
     "name": "Rwanda Broadcasting Agency (RBA)",
@@ -5227,7 +5227,7 @@
     "domain": "lesoleil.sn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.lesoleil.sn/feed/"
+    "rss": ""
   },
   {
     "name": "Seychelles Nation",
@@ -5239,7 +5239,7 @@
     "domain": "nation.sc",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.nation.sc/feed"
+    "rss": ""
   },
   {
     "name": "SBC (Seychelles Broadcasting Corporation)",
@@ -5263,7 +5263,7 @@
     "domain": "goobjoog.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://goobjoog.com/english/feed/"
+    "rss": ""
   },
   {
     "name": "SABC (South African Broadcasting Corporation)",
@@ -5275,7 +5275,7 @@
     "domain": "sabc.co.za",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.sabcnews.com/sabcnews/feed/"
+    "rss": ""
   },
   {
     "name": "News24",
@@ -5287,7 +5287,7 @@
     "domain": "news24.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://feeds.news24.com/articles/news24/TopStories/rss"
+    "rss": ""
   },
   {
     "name": "Mail and Guardian",
@@ -5299,7 +5299,7 @@
     "domain": "mg.co.za",
     "priority": 2,
     "enabled": true,
-    "rss": "https://mg.co.za/feed/"
+    "rss": ""
   },
   {
     "name": "Business Day (South Africa)",
@@ -5311,7 +5311,7 @@
     "domain": "businesslive.co.za",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.businesslive.co.za/feed/"
+    "rss": ""
   },
   {
     "name": "Eye Radio",
@@ -5323,7 +5323,7 @@
     "domain": "eyeradio.org",
     "priority": 2,
     "enabled": true,
-    "rss": "https://eyeradio.org/feed/"
+    "rss": ""
   },
   {
     "name": "Sudan Tribune",
@@ -5335,7 +5335,7 @@
     "domain": "sudantribune.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://sudantribune.com/feed/"
+    "rss": ""
   },
   {
     "name": "Times of Eswatini",
@@ -5347,7 +5347,7 @@
     "domain": "times.co.sz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.times.co.sz/feed/"
+    "rss": ""
   },
   {
     "name": "The Citizen (Tanzania)",
@@ -5359,7 +5359,7 @@
     "domain": "thecitizen.co.tz",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.thecitizen.co.tz/feed/"
+    "rss": ""
   },
   {
     "name": "TBC (Tanzania Broadcasting Corporation)",
@@ -5395,7 +5395,7 @@
     "domain": "tap.info.tn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.tap.info.tn/fr/portal-accueil/feed"
+    "rss": ""
   },
   {
     "name": "La Presse de Tunisie",
@@ -5407,7 +5407,7 @@
     "domain": "lapresse.tn",
     "priority": 2,
     "enabled": true,
-    "rss": "https://lapresse.tn/feed/"
+    "rss": ""
   },
   {
     "name": "New Vision (Uganda)",
@@ -5419,7 +5419,7 @@
     "domain": "newvision.co.ug",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.newvision.co.ug/rss"
+    "rss": ""
   },
   {
     "name": "Daily Monitor (Uganda)",
@@ -5431,7 +5431,7 @@
     "domain": "monitor.co.ug",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.monitor.co.ug/feed"
+    "rss": ""
   },
   {
     "name": "Zambia Daily Mail",
@@ -5443,7 +5443,7 @@
     "domain": "daily-mail.co.zm",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.daily-mail.co.zm/feed/"
+    "rss": ""
   },
   {
     "name": "ZNBC (Zambia National Broadcasting Corporation)",
@@ -5479,7 +5479,7 @@
     "domain": "herald.co.zw",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.herald.co.zw/feed/"
+    "rss": ""
   },
   {
     "name": "Zimbabwe Independent",
@@ -5491,7 +5491,7 @@
     "domain": "theindependent.co.zw",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.theindependent.co.zw/feed/"
+    "rss": ""
   },
   {
     "name": "RTI (Radiodiffusion-Télévision Ivoirienne)",
@@ -5515,7 +5515,7 @@
     "domain": "fratmat.info",
     "priority": 2,
     "enabled": true,
-    "rss": "https://www.fratmat.info/feed/"
+    "rss": ""
   },
   {
     "name": "TVS (Televisão de São Tomé e Príncipe)",
@@ -5539,7 +5539,7 @@
     "domain": "awoko.org",
     "priority": 2,
     "enabled": true,
-    "rss": "https://awoko.org/feed/"
+    "rss": ""
   },
   {
     "name": "Le Sahel (Niger)",
@@ -5587,6 +5587,6 @@
     "domain": "somalilandstandard.com",
     "priority": 2,
     "enabled": true,
-    "rss": "https://somalilandstandard.com/feed/"
+    "rss": ""
   }
 ]
