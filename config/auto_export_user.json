@@ -1014,8 +1014,11 @@
     }
   ],
   "default_output_targets": [
-    "local"
+    "google_drive"
   ],
-  "default_drive_folder_id": "",
-  "default_local_folder": "outputs"
+  "default_drive_folder_id": "1-SMINl1iid5uomKQJTKLvabZo3K6-tzY",
+  "default_local_folder": "outputs",
+  "default_drive_folder_ids": [
+    "1-SMINl1iid5uomKQJTKLvabZo3K6-tzY"
+  ]
 }
