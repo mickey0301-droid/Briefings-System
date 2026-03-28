@@ -1852,6 +1852,66 @@ MULTIPHASE_GROUP_OPTIONS = [
 # Segmented-report constants & helpers
 # =====================================================
 
+# ── 各區域的台灣標準國名清單（供 AI prompt 使用）──────────────────────────────
+_REGION_COUNTRY_HINTS: dict[str, str] = {
+    "asia_pacific": (
+        "MANDATORY — Country names for this region: Use the following Taiwan-standard names strictly. "
+        "亞太地區 includes: 澳大利亞（澳洲）、孟加拉、不丹、汶萊、柬埔寨、庫克群島、朝鮮（北韓）、東帝汶、斐濟、"
+        "印度、印尼、日本、吉里巴斯、寮國、馬來西亞、馬爾地夫、馬紹爾群島、密克羅尼西亞、緬甸、諾魯、尼泊爾、"
+        "紐西蘭、紐埃、帛琉、巴布亞紐幾內亞（巴紐）、菲律賓、韓國（南韓）、薩摩亞、新加坡、索羅門群島、"
+        "斯里蘭卡、泰國、東加、吐瓦魯、萬那杜、越南。"
+        "Always use the Taiwan-standard name listed above; NEVER use PRC simplified variants."
+    ),
+    "west_asia": (
+        "MANDATORY — Country names for this region: Use the following Taiwan-standard names strictly. "
+        "亞西地區 includes: 阿富汗、亞美尼亞、亞塞拜然、巴林、白俄羅斯、喬治亞、伊朗、伊拉克、以色列、約旦、"
+        "哈薩克、科威特、吉爾吉斯、黎巴嫩、摩爾多瓦、蒙古、阿曼、巴基斯坦、卡達、俄羅斯、沙烏地阿拉伯（沙烏地）、"
+        "敘利亞、塔吉克、土耳其（Republic of Türkiye）、土庫曼、阿聯、烏茲別克、葉門。"
+        "Always use the Taiwan-standard name listed above; NEVER use PRC simplified variants."
+    ),
+    "north_am": (
+        "MANDATORY — Country names for this region: Use the following Taiwan-standard names strictly. "
+        "北美地區 includes: 加拿大、美國。"
+        "Always use the Taiwan-standard name listed above; NEVER use PRC simplified variants."
+    ),
+    "latin_am": (
+        "MANDATORY — Country names for this region: Use the following Taiwan-standard names strictly. "
+        "拉丁美洲及加勒比海地區 includes: 安地卡、阿根廷、巴哈馬、巴貝多、貝里斯、玻利維亞、巴西、智利、"
+        "哥倫比亞、哥斯大黎加、古巴、多米尼克、多明尼加、厄瓜多、薩爾瓦多、格瑞那達、瓜地馬拉、蓋亞那、"
+        "海地、宏都拉斯、牙買加、墨西哥、尼加拉瓜、巴拿馬、巴拉圭、秘魯、聖克里斯多福及尼維斯聯邦、"
+        "聖露西亞、聖文森國、蘇利南、千里達、烏拉圭、委內瑞拉。"
+        "Always use the Taiwan-standard name listed above; NEVER use PRC simplified variants."
+    ),
+    "europe": (
+        "MANDATORY — Country names for this region: Use the following Taiwan-standard names strictly. "
+        "歐洲地區 includes: 阿爾巴尼亞、安道爾、奧地利、比利時、波士尼亞、保加利亞、克羅埃西亞、賽普勒斯、捷克、"
+        "丹麥、愛沙尼亞、歐盟、芬蘭、法國、德國、希臘、教廷、匈牙利、冰島、愛爾蘭、義大利、科索沃、拉脫維亞、"
+        "列支敦斯登、立陶宛、盧森堡、馬爾他、摩納哥、蒙特內哥羅、荷蘭、北馬其頓、挪威、馬爾他騎士團、"
+        "波蘭、葡萄牙、羅馬尼亞、聖馬利諾、塞爾維亞、斯洛伐克、斯洛維尼亞、西班牙、瑞典、瑞士、烏克蘭、英國。"
+        "Always use the Taiwan-standard name listed above; NEVER use PRC simplified variants."
+    ),
+    "africa": (
+        "MANDATORY — Country names for this region: Use the following Taiwan-standard names strictly. "
+        "非洲地區 includes: 阿爾及利亞、安哥拉、貝南、波札那、布吉納法索、蒲隆地、喀麥隆、維德角、中非、查德、"
+        "葛摩、剛果、吉布地、民主剛果、埃及、赤道幾內亞、厄利垂亞、史瓦帝尼（原史瓦濟蘭）、衣索比亞、加彭、"
+        "甘比亞、迦納、幾內亞、幾內亞比索、肯亞、賴索托、賴比瑞亞、利比亞、馬達加斯加、馬拉威、馬利、"
+        "茅利塔尼亞、模里西斯、摩洛哥、莫三比克、納米比亞、尼日、奈及利亞、象牙海岸（Republic of Côte d'Ivoire）、"
+        "盧安達、聖多美、塞內加爾、塞席爾、獅子山、索馬利亞、索馬利蘭、南非、南蘇丹、蘇丹、坦尚尼亞、多哥、"
+        "突尼西亞、烏干達、尚比亞、辛巴威。"
+        "Always use the Taiwan-standard name listed above; NEVER use PRC simplified variants."
+    ),
+}
+
+# Map section id prefix → region key in _REGION_COUNTRY_HINTS
+_SECTION_REGION_KEY: dict[str, str] = {
+    "asia_pacific": "asia_pacific",
+    "west_asia":    "west_asia",
+    "north_am":     "north_am",
+    "latin_am":     "latin_am",
+    "europe":       "europe",
+    "africa":       "africa",
+}
+
 # 19 sections for the segmented report.
 # Each section independently searches Google News with topic-specific keywords.
 # kw_zh = primary Chinese-language query; kw_en = secondary English-language query.
@@ -2734,12 +2794,47 @@ def _generate_multiphase_synthesis(
 
         news_block = _format_item_block(label, sec_items, item_to_sx)
 
+        # ── Build section-specific hints ────────────────────────────────
+        sec_hints_parts = []
+
+        # (A) Country name list for regional sections
+        sec_id = sec["id"]
+        for _prefix, _rkey in _SECTION_REGION_KEY.items():
+            if sec_id.startswith(_prefix):
+                sec_hints_parts.append(_REGION_COUNTRY_HINTS[_rkey])
+                break
+
+        # (B) Chinese media citation requirement for 中國 sections
+        if sec_id in ("cn_external", "cn_domestic"):
+            _cn_items = [
+                it for it in sec_items
+                if "中共官媒" in (it.get("source_category") or it.get("category") or [])
+                or _get_source_group(it.get("source_category") or it.get("category") or []) == "中共官媒"
+            ]
+            if _cn_items:
+                _cn_names = list({
+                    it.get("source") or it.get("subsource") or ""
+                    for it in _cn_items
+                    if it.get("source") or it.get("subsource")
+                })
+                _cn_name_str = "、".join(f"《{n}》" for n in _cn_names if n) or "中共官媒"
+                sec_hints_parts.append(
+                    f"MANDATORY — Chinese official media citation: This section contains articles from "
+                    f"Chinese official media ({_cn_name_str}). You MUST cite these sources and explicitly "
+                    f"name the specific outlet in the text (e.g. 《人民日報》、新華社、《環球時報》). "
+                    f"Clearly label it as Chinese official media perspective 「中方官媒」 where relevant. "
+                    f"This rule has NO exceptions."
+                )
+
+        section_hints = "\n".join(sec_hints_parts)
+
         try:
             mini_text = generate_section_mini_report(
                 section_path=sec["section_path"],
                 section_label=label,
                 news_block=news_block,
                 language=language_label,
+                section_hints=section_hints,
             )
         except Exception as e:
             print(f"[Multiphase] Section mini-report failed for {label}: {e}")
