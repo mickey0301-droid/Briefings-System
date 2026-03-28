@@ -535,7 +535,6 @@ def _render_drive_folder_multiselect(
     default = [_label(f) for f in df_list if f.get("folder_id") in cur_ids]
 
     if not options:
-        st.caption("尚未設定 Google Drive 資料夾，請至格式頁面新增。")
         return cur_ids  # keep previous value
 
     selected_labels = st.multiselect(label, options=options, default=default, key=widget_key)
@@ -544,6 +543,61 @@ def _render_drive_folder_multiselect(
     label_to_fid = {_label(f): f.get("folder_id", "") for f in df_list if f.get("folder_id")}
     selected_ids = [label_to_fid[lbl] for lbl in selected_labels if lbl in label_to_fid]
     return selected_ids
+
+
+def _render_drive_folder_manager(config: dict, save_fn, key_prefix: str):
+    """
+    Render an inline Google Drive folder manager (add / edit / delete).
+    Updates config["drive_folders"] in place and calls save_fn() to persist.
+    key_prefix must be unique per page to avoid widget key collisions.
+    """
+    drive_folders = config.get("drive_folders", [])
+
+    if drive_folders:
+        _h1, _h2, _h3 = st.columns([3, 5, 1])
+        with _h1:
+            st.caption("📝 資料夾名稱")
+        with _h2:
+            st.caption("🔗 Google Drive Folder ID")
+
+    changed = False
+    for _dfi, _df in enumerate(drive_folders):
+        _dfc1, _dfc2, _dfc3 = st.columns([3, 5, 1])
+        with _dfc1:
+            _new_name = st.text_input(
+                "資料夾名稱",
+                value=_df.get("name", ""),
+                key=f"{key_prefix}_df_name_{_dfi}",
+                label_visibility="collapsed",
+                placeholder="例：每日報告…",
+            )
+        with _dfc2:
+            _new_fid = st.text_input(
+                "Folder ID",
+                value=_df.get("folder_id", ""),
+                key=f"{key_prefix}_df_fid_{_dfi}",
+                label_visibility="collapsed",
+                placeholder="貼上 Google Drive 資料夾 ID",
+            )
+        with _dfc3:
+            if st.button("🗑️", key=f"{key_prefix}_df_del_{_dfi}", use_container_width=True):
+                config["drive_folders"].pop(_dfi)
+                save_fn(config)
+                st.rerun()
+        if _new_name != _df.get("name", "") or _new_fid != _df.get("folder_id", ""):
+            config["drive_folders"][_dfi] = {"name": _new_name, "folder_id": _new_fid}
+            changed = True
+
+    _ba, _bb = st.columns([1, 2])
+    with _ba:
+        if st.button("＋ 新增資料夾", key=f"{key_prefix}_add_df", use_container_width=True):
+            config["drive_folders"].append({"name": "", "folder_id": ""})
+            save_fn(config)
+            st.rerun()
+    with _bb:
+        if drive_folders and st.button("💾 儲存資料夾清單", key=f"{key_prefix}_save_df", use_container_width=True, type="primary"):
+            save_fn(config)
+            st.success("✅ 已儲存資料夾清單")
 
 
 def _format_output_formats(value):
@@ -1086,13 +1140,15 @@ if selected_page == "Briefings":
             key="briefings_local_folder",
         )
     with c6:
-        # Google Drive 資料夾多選
+        # Google Drive 資料夾多選 + 管理
         _df_list = auto_export_cfg.get("drive_folders", [])
         _saved_fids = auto_export_cfg.get("default_drive_folder_ids",
                           [auto_export_cfg.get("default_drive_folder_id", "")] if auto_export_cfg.get("default_drive_folder_id") else [])
         google_drive_folder_ids = _render_drive_folder_multiselect(
             _df_list, _saved_fids, widget_key="briefings_gdrive_sel"
         )
+        with st.expander("⚙️ 管理 Google Drive 資料夾清單", expanded=not bool(_df_list)):
+            _render_drive_folder_manager(auto_export_cfg, save_auto_export, key_prefix="brief")
         google_drive_folder_id = google_drive_folder_ids[0] if google_drive_folder_ids else ""
 
     # ── 報告模式 ────────────────────────────────────────────────────────
@@ -2696,6 +2752,8 @@ elif selected_page == "Schedule":
             )
             s["google_drive_folder_ids"] = _sel_sched_ids
             s["google_drive_folder_id"] = _sel_sched_ids[0] if _sel_sched_ids else ""  # backward compat
+            with st.expander("⚙️ 管理 Google Drive 資料夾清單", expanded=not bool(_df_list)):
+                _render_drive_folder_manager(config, save_auto_export, key_prefix=f"sched_{selected_idx}")
 
         with c2:
             s["schedule_mode"] = st.selectbox(
@@ -2923,63 +2981,6 @@ elif selected_page == "Schedule":
                 if _h_msg:
                     st.caption(_h_msg)
 
-    # -------------------------
-    # Google Drive 資料夾管理
-    # -------------------------
-    st.divider()
-    st.markdown("### Google Drive 資料夾")
-
-    drive_folders = config.get("drive_folders", [])
-
-    # 欄位標題
-    if drive_folders:
-        _h1, _h2, _h3 = st.columns([3, 5, 1])
-        with _h1:
-            st.caption("📝 資料夾名稱（自訂，例如「Hourly」）")
-        with _h2:
-            st.caption("🔗 Google Drive Folder ID")
-
-    # 顯示現有資料夾列表
-    if drive_folders:
-        for _dfi, _df in enumerate(drive_folders):
-            _dfc1, _dfc2, _dfc3 = st.columns([3, 5, 1])
-            with _dfc1:
-                _new_name = st.text_input(
-                    "資料夾名稱",
-                    value=_df.get("name", ""),
-                    key=f"df_name_{_dfi}",
-                    label_visibility="collapsed",
-                    placeholder="例：Hourly、每日報告…",
-                )
-            with _dfc2:
-                _new_fid = st.text_input(
-                    "Folder ID",
-                    value=_df.get("folder_id", ""),
-                    key=f"df_fid_{_dfi}",
-                    label_visibility="collapsed",
-                    placeholder="貼上 Google Drive 資料夾 ID",
-                )
-            with _dfc3:
-                if st.button("🗑️", key=f"df_del_{_dfi}", use_container_width=True):
-                    config["drive_folders"].pop(_dfi)
-                    _sync_notify(save_auto_export(config))
-                    st.rerun()
-            # 若有修改則即時更新
-            if _new_name != _df.get("name", "") or _new_fid != _df.get("folder_id", ""):
-                config["drive_folders"][_dfi] = {"name": _new_name, "folder_id": _new_fid}
-    else:
-        st.caption("尚未設定任何資料夾。點「＋ 新增資料夾」開始設定。")
-
-    _btn_c1, _btn_c2 = st.columns([1, 2])
-    with _btn_c1:
-        if st.button("＋ 新增資料夾", key="add_drive_folder", use_container_width=True):
-            config["drive_folders"].append({"name": "", "folder_id": ""})
-            _sync_notify(save_auto_export(config))
-            st.rerun()
-    with _btn_c2:
-        if drive_folders and st.button("💾 儲存資料夾設定", key="save_drive_folders", use_container_width=True, type="primary"):
-            _sync_notify(save_auto_export(config))
-            st.success("✅ 已儲存資料夾設定")
 
 
 # =========================================================
