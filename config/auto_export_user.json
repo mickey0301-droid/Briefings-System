@@ -991,6 +991,10 @@
   ],
   "drive_folders": [
     {
+      "name": "Daily Briefings",
+      "folder_id": "1-xuCkAUqeGvOgUjkH8V33O9pxozQSFeO"
+    },
+    {
       "name": "",
       "folder_id": ""
     }
