@@ -234,6 +234,7 @@ def generate_section_mini_report(
     section_label: str,
     news_block: str,
     language: str = "繁體中文",
+    section_hints: str = "",
 ) -> str:
     """
     Generate a focused 2-3 paragraph mini-report for one specific section.
@@ -242,7 +243,10 @@ def generate_section_mini_report(
     section_path: e.g. "三、台美中要聞" or "六、區域情勢｜（一）亞太地區｜1. 國際要聞研析"
     section_label: short display label, e.g. "三、台美中要聞"
     news_block: formatted news items block (from _format_item_block)
+    section_hints: optional extra instructions injected after core rules
     """
+    hints_block = f"\n{section_hints.strip()}\n" if section_hints.strip() else ""
+
     system_prompt = f"""You are a senior strategic intelligence analyst.
 
 Write a concise mini-report in {language} for the following section of a strategic intelligence briefing:
@@ -260,8 +264,7 @@ Requirements:
 7. MANDATORY — Organizations: Chinese name（English Name）on first mention.
 8. MANDATORY — Place names: Use Taiwan (ROC) standard Chinese place names, NOT simplified Chinese or PRC variants. E.g. 奈及利亞（NOT 尼日利亞）、沙烏地阿拉伯（NOT 沙特阿拉伯）、烏克蘭（NOT 乌克兰）. Follow ROC government standard conventions throughout.
 9. Begin your response directly with the section content (no extra headers needed since the section title is already provided).
-10. If the provided articles genuinely have no relevant content for this section, write: 「本期搜尋結果未見符合本節主旨的相關新聞。」
-"""
+10. If the provided articles genuinely have no relevant content for this section, write: 「本期搜尋結果未見符合本節主旨的相關新聞。」{hints_block}"""
 
     user_content = (
         f"Please write the mini-report for: {section_label}\n\n"

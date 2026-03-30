@@ -504,6 +504,101 @@ def _format_output_targets(value):
     return [value] if value else []
 
 
+def _render_drive_folder_multiselect(
+    df_list: list,
+    saved_folder_ids,          # str or list[str] – previously saved selection
+    widget_key: str,
+    label: str = "Google Drive 資料夾",
+) -> list:
+    """
+    Render a multiselect for Google Drive folders.
+    Each option shows: 「名稱（Folder ID）」
+    Returns a list of selected folder_ids (may be empty).
+    """
+    # Normalise saved_folder_ids to a list of strings
+    if isinstance(saved_folder_ids, str):
+        cur_ids = [saved_folder_ids] if saved_folder_ids else []
+    else:
+        cur_ids = [fid for fid in (saved_folder_ids or []) if fid]
+
+    # Build option labels: "名稱（ID）"
+    def _label(f):
+        n = f.get("name", "").strip()
+        fid = f.get("folder_id", "").strip()
+        if n and fid:
+            return f"{n}（{fid}）"
+        return n or fid
+
+    options = [_label(f) for f in df_list if f.get("folder_id")]
+    # Pre-select options whose folder_id is in cur_ids
+    default = [_label(f) for f in df_list if f.get("folder_id") in cur_ids]
+
+    if not options:
+        return cur_ids  # keep previous value
+
+    selected_labels = st.multiselect(label, options=options, default=default, key=widget_key)
+
+    # Map labels back to folder_ids
+    label_to_fid = {_label(f): f.get("folder_id", "") for f in df_list if f.get("folder_id")}
+    selected_ids = [label_to_fid[lbl] for lbl in selected_labels if lbl in label_to_fid]
+    return selected_ids
+
+
+def _render_drive_folder_manager(config: dict, save_fn, key_prefix: str):
+    """
+    Render an inline Google Drive folder manager (add / edit / delete).
+    Updates config["drive_folders"] in place and calls save_fn() to persist.
+    key_prefix must be unique per page to avoid widget key collisions.
+    """
+    drive_folders = config.get("drive_folders", [])
+
+    if drive_folders:
+        _h1, _h2, _h3 = st.columns([3, 5, 1])
+        with _h1:
+            st.caption("📝 資料夾名稱")
+        with _h2:
+            st.caption("🔗 Google Drive Folder ID")
+
+    changed = False
+    for _dfi, _df in enumerate(drive_folders):
+        _dfc1, _dfc2, _dfc3 = st.columns([3, 5, 1])
+        with _dfc1:
+            _new_name = st.text_input(
+                "資料夾名稱",
+                value=_df.get("name", ""),
+                key=f"{key_prefix}_df_name_{_dfi}",
+                label_visibility="collapsed",
+                placeholder="例：每日報告…",
+            )
+        with _dfc2:
+            _new_fid = st.text_input(
+                "Folder ID",
+                value=_df.get("folder_id", ""),
+                key=f"{key_prefix}_df_fid_{_dfi}",
+                label_visibility="collapsed",
+                placeholder="貼上 Google Drive 資料夾 ID",
+            )
+        with _dfc3:
+            if st.button("🗑️", key=f"{key_prefix}_df_del_{_dfi}", use_container_width=True):
+                config["drive_folders"].pop(_dfi)
+                save_fn(config)
+                st.rerun()
+        if _new_name != _df.get("name", "") or _new_fid != _df.get("folder_id", ""):
+            config["drive_folders"][_dfi] = {"name": _new_name, "folder_id": _new_fid}
+            changed = True
+
+    _ba, _bb = st.columns([1, 2])
+    with _ba:
+        if st.button("＋ 新增資料夾", key=f"{key_prefix}_add_df", use_container_width=True):
+            config["drive_folders"].append({"name": "", "folder_id": ""})
+            save_fn(config)
+            st.rerun()
+    with _bb:
+        if drive_folders and st.button("💾 儲存資料夾清單", key=f"{key_prefix}_save_df", use_container_width=True, type="primary"):
+            save_fn(config)
+            st.success("✅ 已儲存資料夾清單")
+
+
 def _format_output_formats(value):
     if isinstance(value, list):
         return value
@@ -1082,42 +1177,16 @@ if selected_page == "Briefings":
             key="briefings_local_folder",
         )
     with c6:
-        # Google Drive 資料夾選擇（同 Schedule 頁面邏輯）
+        # Google Drive 資料夾多選 + 管理
         _df_list = auto_export_cfg.get("drive_folders", [])
-        _df_names = [f.get("name", "") or f.get("folder_id", "") for f in _df_list]
-        _cur_fid = default_drive_folder
-        _cur_idx = next(
-            (i for i, f in enumerate(_df_list) if f.get("folder_id") == _cur_fid),
-            None,
+        _saved_fids = auto_export_cfg.get("default_drive_folder_ids",
+                          [auto_export_cfg.get("default_drive_folder_id", "")] if auto_export_cfg.get("default_drive_folder_id") else [])
+        google_drive_folder_ids = _render_drive_folder_multiselect(
+            _df_list, _saved_fids, widget_key="briefings_gdrive_sel"
         )
-        if _df_names:
-            _options = ["（手動輸入）"] + _df_names
-            _sel = st.selectbox(
-                "Google Drive 資料夾",
-                options=_options,
-                index=(_cur_idx + 1) if _cur_idx is not None else 0,
-                key="briefings_gdrive_sel",
-            )
-            if _sel == "（手動輸入）":
-                google_drive_folder_id = st.text_input(
-                    "Folder ID（手動輸入）",
-                    value=_cur_fid,
-                    key="briefings_gdrive_manual",
-                )
-            else:
-                _chosen = next(
-                    (f for f in _df_list if (f.get("name") or f.get("folder_id")) == _sel),
-                    None,
-                )
-                google_drive_folder_id = _chosen.get("folder_id", "") if _chosen else ""
-                st.caption(f"Folder ID：`{google_drive_folder_id}`")
-        else:
-            google_drive_folder_id = st.text_input(
-                "Google Drive Folder ID",
-                value=_cur_fid,
-                key="briefings_gdrive",
-                help="先在 Schedule 頁面的「Google Drive 資料夾」區塊新增資料夾，之後可在此選擇。",
-            )
+        with st.expander("⚙️ 管理 Google Drive 資料夾清單", expanded=not bool(_df_list)):
+            _render_drive_folder_manager(auto_export_cfg, save_auto_export, key_prefix="brief")
+        google_drive_folder_id = google_drive_folder_ids[0] if google_drive_folder_ids else ""
 
     # ── 報告模式 ────────────────────────────────────────────────────────
     _rmode_col1, _rmode_col2 = st.columns([1, 2])
@@ -1314,17 +1383,21 @@ if selected_page == "Briefings":
 
                 if "google_drive" in output_targets:
                     for f in generated_files:
-                        uploaded, err = _try_upload_to_drive(str(f), google_drive_folder_id)
-                        if err:
-                            output_logs.append(f"Google Drive 上傳失敗（{f.name}）：{err}")
-                        else:
-                            output_logs.append(f"Google Drive 已上傳：{f.name}")
+                        for _fid in (google_drive_folder_ids or [google_drive_folder_id]):
+                            if not _fid:
+                                continue
+                            uploaded, err = _try_upload_to_drive(str(f), _fid)
+                            if err:
+                                output_logs.append(f"Google Drive 上傳失敗（{f.name} → {_fid}）：{err}")
+                            else:
+                                output_logs.append(f"Google Drive 已上傳：{f.name}（→ {_fid}）")
 
                 progress.progress(100)
                 status.success("完成")
                 # 儲存預設輸出設定
                 auto_export_cfg["default_output_targets"] = output_targets
-                auto_export_cfg["default_drive_folder_id"] = google_drive_folder_id
+                auto_export_cfg["default_drive_folder_ids"] = google_drive_folder_ids
+                auto_export_cfg["default_drive_folder_id"] = google_drive_folder_id  # backward compat
                 auto_export_cfg["default_local_folder"] = local_folder
 
                 _sync_notify(save_auto_export(auto_export_cfg))
@@ -1454,8 +1527,8 @@ elif selected_page == "Sources":
     # 導致新增來源在後續「儲存XX媒體編輯」時被覆蓋消失。
     _src_v = st.session_state.get("_src_version", 0)
 
-    src_tab_add, src_tab_tw, src_tab_intl, src_tab_experts, src_tab_global, src_tab_cn, src_tab_social = st.tabs([
-        "新增來源", "自訂台灣媒體", "自訂國際媒體", "自訂專家", "全球媒體", "中國媒體", "自訂社群網站"
+    src_tab_tw, src_tab_intl, src_tab_experts, src_tab_global, src_tab_cn, src_tab_social = st.tabs([
+        "自訂台灣媒體", "自訂國際媒體", "自訂專家", "全球媒體", "中國媒體", "自訂社群網站"
     ])
 
     tw_sources = [s for s in editable_sources if "自訂台灣媒體" in (s.get("category") or [])]
@@ -1465,91 +1538,6 @@ elif selected_page == "Sources":
     global_sources_ui = [s for s in all_sources if "全球媒體" in (s.get("category") or [])]
     cn_editable_sources = [s for s in editable_sources if "中共官媒" in (s.get("category") or [])]
     social_sources = [s for s in editable_sources if "自訂社群網站" in (s.get("category") or [])]
-
-    # ── 新增來源 ──────────────────────────────────────────────────────────────
-    with src_tab_add:
-        target_cat = st.selectbox(
-            "加入至媒體分類",
-            options=["自訂台灣媒體", "自訂國際媒體"],
-            key="src_add_target_cat",
-        )
-
-        with st.expander("單筆新增來源", expanded=False):
-            c1, c2 = st.columns(2)
-            with c1:
-                src_name = st.text_input("name", key="single_src_name")
-                src_type = st.selectbox("type", options=["rss", "domain"], key="single_src_type")
-                src_url = st.text_input("url", key="single_src_url")
-            with c2:
-                src_region = st.text_input("region", key="single_src_region")
-                src_enabled = st.checkbox("enabled", value=True, key="single_src_enabled")
-                src_description = st.text_area("description", key="single_src_description", height=120)
-
-            if st.button("新增來源", key="add_single_source"):
-                new_item = editor_row_to_source({
-                    "name": src_name,
-                    "type": src_type,
-                    "url": src_url,
-                    "category": target_cat,
-                    "region": src_region,
-                    "enabled": src_enabled,
-                    "description": src_description,
-                })
-                current = load_sources(editable_only=True)
-                if not new_item["name"]:
-                    st.error("來源名稱不可空白。")
-                else:
-                    current.append(new_item)
-                    _sync_notify(save_sources(current))
-                    st.success(f"已新增來源至「{target_cat}」。")
-                    st.session_state["_src_version"] = _src_v + 1
-                    st.rerun()
-
-        st.markdown("### 批次貼上新增來源")
-        st.caption(f"複製多列資料貼到下表，再按「批次加入」，category 將自動設為「{target_cat}」。")
-
-        _batch_cols = ["name", "type", "url", "region", "enabled", "description"]
-        _src_batch_default = pd.DataFrame([{c: "" for c in _batch_cols} for _ in range(8)])
-        _src_batch_default["enabled"] = True
-
-        source_batch_df = st.data_editor(
-            _src_batch_default,
-            num_rows="dynamic",
-            use_container_width=True,
-            height=280,
-            key=f"source_batch_editor_{_src_v}",
-            column_config={
-                "name": st.column_config.TextColumn("name"),
-                "type": st.column_config.SelectboxColumn("type", options=["rss", "domain"]),
-                "url": st.column_config.TextColumn("url"),
-                "region": st.column_config.TextColumn("region"),
-                "enabled": st.column_config.CheckboxColumn("enabled", default=True),
-                "description": st.column_config.TextColumn("description"),
-            },
-        )
-
-        if st.button("批次加入來源", key="batch_add_sources"):
-            rows = _clean_batch_df(source_batch_df)
-            if not rows:
-                st.warning("沒有可加入的來源資料。")
-            else:
-                current = load_sources(editable_only=True)
-                name_set = {x.get("name", "").strip() for x in current}
-                added = 0
-                for row in rows:
-                    row["category"] = target_cat
-                    item = editor_row_to_source(row)
-                    if not item["name"]:
-                        continue
-                    if item["name"] in name_set:
-                        current = [x for x in current if x.get("name") != item["name"]]
-                    current.append(item)
-                    name_set.add(item["name"])
-                    added += 1
-                _sync_notify(save_sources(current))
-                st.success(f"已批次加入 {added} 筆來源至「{target_cat}」。")
-                st.session_state["_src_version"] = _src_v + 1
-                st.rerun()
 
     # ── 自訂台灣媒體 ──────────────────────────────────────────────────────────
     with src_tab_tw:
@@ -2792,40 +2780,17 @@ elif selected_page == "Schedule":
                 default=s.get("output_targets", ["local"]),
                 key=f"targets_{selected_idx}",
             )
-            # Google Drive 資料夾選擇
+            # Google Drive 資料夾多選
             _df_list = config.get("drive_folders", [])
-            _df_names = [f.get("name", "") or f.get("folder_id", "") for f in _df_list]
-            _cur_fid = s.get("google_drive_folder_id", "")
-            # 找目前 folder_id 對應的名稱
-            _cur_idx = next(
-                (i for i, f in enumerate(_df_list) if f.get("folder_id") == _cur_fid),
-                None
+            _saved_sched_fids = s.get("google_drive_folder_ids",
+                [s["google_drive_folder_id"]] if s.get("google_drive_folder_id") else [])
+            _sel_sched_ids = _render_drive_folder_multiselect(
+                _df_list, _saved_sched_fids, widget_key=f"gdrive_sel_{selected_idx}"
             )
-            if _df_names:
-                _options = ["（手動輸入）"] + _df_names
-                _sel = st.selectbox(
-                    "Google Drive 資料夾",
-                    options=_options,
-                    index=(_cur_idx + 1) if _cur_idx is not None else 0,
-                    key=f"gdrive_sel_{selected_idx}",
-                )
-                if _sel == "（手動輸入）":
-                    s["google_drive_folder_id"] = st.text_input(
-                        "Folder ID（手動輸入）",
-                        value=_cur_fid,
-                        key=f"gdrive_manual_{selected_idx}",
-                    )
-                else:
-                    _chosen = next((f for f in _df_list if (f.get("name") or f.get("folder_id")) == _sel), None)
-                    s["google_drive_folder_id"] = _chosen.get("folder_id", "") if _chosen else ""
-                    st.caption(f"Folder ID：`{s['google_drive_folder_id']}`")
-            else:
-                s["google_drive_folder_id"] = st.text_input(
-                    "Google Drive Folder ID",
-                    value=_cur_fid,
-                    key=f"gdrive_{selected_idx}",
-                    help="先在上方「Google Drive 資料夾」區塊新增資料夾，之後可在此選擇。",
-                )
+            s["google_drive_folder_ids"] = _sel_sched_ids
+            s["google_drive_folder_id"] = _sel_sched_ids[0] if _sel_sched_ids else ""  # backward compat
+            with st.expander("⚙️ 管理 Google Drive 資料夾清單", expanded=not bool(_df_list)):
+                _render_drive_folder_manager(config, save_auto_export, key_prefix=f"sched_{selected_idx}")
 
         with c2:
             s["schedule_mode"] = st.selectbox(
@@ -3053,63 +3018,6 @@ elif selected_page == "Schedule":
                 if _h_msg:
                     st.caption(_h_msg)
 
-    # -------------------------
-    # Google Drive 資料夾管理
-    # -------------------------
-    st.divider()
-    st.markdown("### Google Drive 資料夾")
-
-    drive_folders = config.get("drive_folders", [])
-
-    # 欄位標題
-    if drive_folders:
-        _h1, _h2, _h3 = st.columns([3, 5, 1])
-        with _h1:
-            st.caption("📝 資料夾名稱（自訂，例如「Hourly」）")
-        with _h2:
-            st.caption("🔗 Google Drive Folder ID")
-
-    # 顯示現有資料夾列表
-    if drive_folders:
-        for _dfi, _df in enumerate(drive_folders):
-            _dfc1, _dfc2, _dfc3 = st.columns([3, 5, 1])
-            with _dfc1:
-                _new_name = st.text_input(
-                    "資料夾名稱",
-                    value=_df.get("name", ""),
-                    key=f"df_name_{_dfi}",
-                    label_visibility="collapsed",
-                    placeholder="例：Hourly、每日報告…",
-                )
-            with _dfc2:
-                _new_fid = st.text_input(
-                    "Folder ID",
-                    value=_df.get("folder_id", ""),
-                    key=f"df_fid_{_dfi}",
-                    label_visibility="collapsed",
-                    placeholder="貼上 Google Drive 資料夾 ID",
-                )
-            with _dfc3:
-                if st.button("🗑️", key=f"df_del_{_dfi}", use_container_width=True):
-                    config["drive_folders"].pop(_dfi)
-                    _sync_notify(save_auto_export(config))
-                    st.rerun()
-            # 若有修改則即時更新
-            if _new_name != _df.get("name", "") or _new_fid != _df.get("folder_id", ""):
-                config["drive_folders"][_dfi] = {"name": _new_name, "folder_id": _new_fid}
-    else:
-        st.caption("尚未設定任何資料夾。點「＋ 新增資料夾」開始設定。")
-
-    _btn_c1, _btn_c2 = st.columns([1, 2])
-    with _btn_c1:
-        if st.button("＋ 新增資料夾", key="add_drive_folder", use_container_width=True):
-            config["drive_folders"].append({"name": "", "folder_id": ""})
-            _sync_notify(save_auto_export(config))
-            st.rerun()
-    with _btn_c2:
-        if drive_folders and st.button("💾 儲存資料夾設定", key="save_drive_folders", use_container_width=True, type="primary"):
-            _sync_notify(save_auto_export(config))
-            st.success("✅ 已儲存資料夾設定")
 
 
 # =========================================================
@@ -3126,7 +3034,9 @@ elif selected_page == "Reports":
         st.caption(f"共 {len(report_files)} 個檔案，儲存於 outputs 資料夾")
         st.markdown("---")
 
-        _reports_drive_folder_id = auto_export_cfg.get("default_drive_folder_id", "")
+        _reports_drive_folder_ids = auto_export_cfg.get("default_drive_folder_ids",
+            [auto_export_cfg.get("default_drive_folder_id", "")] if auto_export_cfg.get("default_drive_folder_id") else [])
+        _reports_drive_folder_id = _reports_drive_folder_ids[0] if _reports_drive_folder_ids else ""
 
         for _rf in report_files:
             _stat = _rf.stat()
