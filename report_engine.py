@@ -2355,9 +2355,14 @@ def _eval_section_query(text: str, query: str) -> bool:
 def _classify_items_to_sections(all_items: list, sections: list) -> dict:
     """
     Classify items into section buckets by matching kw_zh / kw_en queries
-    against each item's title + summary.  An item may appear in multiple sections.
-    Title-matched items are sorted first within each bucket so that the most
-    directly relevant articles lead each section.
+    against each item's title + summary.
+
+    Best-match-wins: each item is assigned to exactly ONE section — the one
+    where it matches most strongly.  Match strength is scored as:
+      2 = title match (kw found in title)
+      1 = summary-only match (kw found in title+summary but not title alone)
+    When an item matches multiple sections with equal score, the section that
+    appears earlier in the `sections` list wins (higher-priority chapters first).
 
     Post-processing rule: regional 「國際要聞」 sub-sections (ids ending with _intl,
     under 六、區域情勢) exclude any item that already matched 「三、台美中要聞」,
@@ -2365,30 +2370,51 @@ def _classify_items_to_sections(all_items: list, sections: list) -> dict:
 
     Returns: {section_id: [item, ...]}
     """
-    # Each bucket entry is (title_matched: bool, item)
-    raw_buckets: dict = {sec["id"]: [] for sec in sections}
+    result: dict = {sec["id"]: [] for sec in sections}
+
+    # Build section index for priority (lower index = higher priority)
+    sec_priority = {sec["id"]: idx for idx, sec in enumerate(sections)}
+
     for item in all_items:
         title     = item.get("title")   or ""
         summary   = item.get("summary") or ""
         full_text = f"{title} {summary}"
+
+        best_score    = 0
+        best_sec_id   = None
+        best_priority = len(sections)  # lower is better
+
         for sec in sections:
             kw_zh = sec.get("kw_zh", "")
             kw_en = sec.get("kw_en", "")
-            # Only add if full text (title+summary) matches
-            if (_eval_section_query(full_text, kw_zh)
-                    or _eval_section_query(full_text, kw_en)):
-                # Title-only match = higher priority
-                title_match = bool(
-                    _eval_section_query(title, kw_zh)
-                    or _eval_section_query(title, kw_en)
-                )
-                raw_buckets[sec["id"]].append((title_match, item))
 
-    # Sort: title-matched items first (sort key 0), summary-only matches second (sort key 1)
-    result: dict = {}
-    for sec_id, entries in raw_buckets.items():
-        entries.sort(key=lambda x: 0 if x[0] else 1)
-        result[sec_id] = [item for _, item in entries]
+            full_match = (
+                _eval_section_query(full_text, kw_zh)
+                or _eval_section_query(full_text, kw_en)
+            )
+            if not full_match:
+                continue
+
+            title_match = bool(
+                _eval_section_query(title, kw_zh)
+                or _eval_section_query(title, kw_en)
+            )
+            score = 2 if title_match else 1
+            priority = sec_priority[sec["id"]]
+
+            # Keep this section if it has a higher score, or same score but higher priority
+            if score > best_score or (score == best_score and priority < best_priority):
+                best_score    = score
+                best_sec_id   = sec["id"]
+                best_priority = priority
+
+        if best_sec_id is not None:
+            result[best_sec_id].append((best_score, item))
+
+    # Sort each bucket: title-matched (score=2) first, then summary-only (score=1)
+    for sec_id in result:
+        result[sec_id].sort(key=lambda x: -x[0])
+        result[sec_id] = [item for _, item in result[sec_id]]
 
     # ── 區域要聞過濾：六大區域「_intl」子節不出現台美中要聞文章 ────────────────
     # IDs of the six regional "_intl" sub-sections under 六、區域情勢
