@@ -6822,5 +6822,120 @@
     "search_names": [
       "Fareed Zakaria"
     ]
+  },
+  {
+    "name_zh": "陳方隅",
+    "name_sc": "",
+    "name_en": "Chen Fang-yu",
+    "aliases": [],
+    "category": [
+      "台灣專家"
+    ],
+    "affiliation": "",
+    "region": "",
+    "language": "",
+    "enabled": true,
+    "description": "",
+    "rss_url": "",
+    "name": "陳方隅",
+    "search_names": [
+      "陳方隅",
+      "Chen Fang-yu"
+    ]
+  },
+  {
+    "name_zh": "李可心",
+    "name_sc": "",
+    "name_en": "",
+    "aliases": [],
+    "category": [
+      "台灣專家"
+    ],
+    "affiliation": "",
+    "region": "",
+    "language": "",
+    "enabled": true,
+    "description": "",
+    "rss_url": "",
+    "name": "李可心",
+    "search_names": [
+      "李可心"
+    ]
+  },
+  {
+    "name_zh": "李喜明",
+    "name_sc": "",
+    "name_en": "",
+    "aliases": [],
+    "category": [
+      "台灣專家"
+    ],
+    "affiliation": "",
+    "region": "",
+    "language": "",
+    "enabled": true,
+    "description": "",
+    "rss_url": "",
+    "name": "李喜明",
+    "search_names": [
+      "李喜明"
+    ]
+  },
+  {
+    "name_zh": "賴怡忠",
+    "name_sc": "",
+    "name_en": "",
+    "aliases": [],
+    "category": [
+      "台灣專家"
+    ],
+    "affiliation": "",
+    "region": "",
+    "language": "",
+    "enabled": true,
+    "description": "",
+    "rss_url": "",
+    "name": "賴怡忠",
+    "search_names": [
+      "賴怡忠"
+    ]
+  },
+  {
+    "name_zh": "陳明祺",
+    "name_sc": "",
+    "name_en": "",
+    "aliases": [],
+    "category": [
+      "台灣專家"
+    ],
+    "affiliation": "",
+    "region": "",
+    "language": "",
+    "enabled": true,
+    "description": "",
+    "rss_url": "",
+    "name": "陳明祺",
+    "search_names": [
+      "陳明祺"
+    ]
+  },
+  {
+    "name_zh": "徐斯儉",
+    "name_sc": "",
+    "name_en": "",
+    "aliases": [],
+    "category": [
+      "台灣專家"
+    ],
+    "affiliation": "",
+    "region": "",
+    "language": "",
+    "enabled": true,
+    "description": "",
+    "rss_url": "",
+    "name": "徐斯儉",
+    "search_names": [
+      "徐斯儉"
+    ]
   }
 ]
