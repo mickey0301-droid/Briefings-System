@@ -2352,6 +2352,42 @@ def _eval_section_query(text: str, query: str) -> bool:
     return bool(kw) and kw in text_lower
 
 
+_FACTS_ONLY_SECTION_IDS = {
+    "intl_news", "tw_us_cn", "tw_security",
+    "cn_external", "cn_domestic",
+    "asia_pacific_intl", "asia_pacific_twcn",
+    "west_asia_intl", "west_asia_twcn",
+    "north_am_intl", "north_am_twcn",
+    "latin_am_intl", "latin_am_twcn",
+    "europe_intl", "europe_twcn",
+    "africa_intl", "africa_twcn",
+}
+_EXPERT_SECTION_IDS = {"expert_intl", "expert_twcn"}
+
+_FACTS_ONLY_HINT = (
+    "STRICT — Facts only: This chapter (二 through 六) must contain ONLY factual reporting. "
+    "State what happened, what was announced, what was officially said. "
+    "Do NOT add analytical commentary, strategic interpretation, or editorial opinion. "
+    "If an article contains expert or analyst quotes/opinions, omit those quotes entirely — "
+    "expert commentary belongs exclusively in 七、專家研析."
+)
+_EXPERT_HINT = (
+    "EXPERT ANALYSIS — This chapter (七、專家研析) is exclusively for expert and analyst "
+    "perspectives, quotes, and assessments from the provided articles. "
+    "Focus on what experts, scholars, and analysts say. Render expert names in bold (**Name**) "
+    "with full title and affiliation on first mention."
+)
+
+
+def _get_section_role_hint(sec_id: str) -> str:
+    """Return a mandatory role hint for the given section ID."""
+    if sec_id in _FACTS_ONLY_SECTION_IDS:
+        return _FACTS_ONLY_HINT
+    if sec_id in _EXPERT_SECTION_IDS:
+        return _EXPERT_HINT
+    return ""
+
+
 def _classify_items_to_sections(all_items: list, sections: list) -> dict:
     """
     Classify items into section buckets by matching kw_zh / kw_en queries
@@ -2375,6 +2411,14 @@ def _classify_items_to_sections(all_items: list, sections: list) -> dict:
     # Build section index for priority (lower index = higher priority)
     sec_priority = {sec["id"]: idx for idx, sec in enumerate(sections)}
 
+    # Chinese official media items are restricted to 五、中國要聞 sections only
+    _CN_OFFICIAL_IDS = {"cn_external", "cn_domestic"}
+    _cn_sections = [sec for sec in sections if sec["id"] in _CN_OFFICIAL_IDS]
+
+    def _is_cn_official(item: dict) -> bool:
+        cats = item.get("source_category") or item.get("category") or []
+        return "中共官媒" in cats
+
     for item in all_items:
         title     = item.get("title")   or ""
         summary   = item.get("summary") or ""
@@ -2384,7 +2428,10 @@ def _classify_items_to_sections(all_items: list, sections: list) -> dict:
         best_sec_id   = None
         best_priority = len(sections)  # lower is better
 
-        for sec in sections:
+        # Chinese official media: restrict candidate sections to 五、中國要聞 only
+        candidate_sections = _cn_sections if _is_cn_official(item) else sections
+
+        for sec in candidate_sections:
             kw_zh = sec.get("kw_zh", "")
             kw_en = sec.get("kw_en", "")
 
@@ -2605,6 +2652,7 @@ def generate_segmented_report(
                 section_label=label,
                 news_block=news_block,
                 language=language_label,
+                section_hints=_get_section_role_hint(sec["id"]),
             )
         except Exception as e:
             print(f"[Segmented] Section mini-report failed for {label}: {e}")
@@ -2823,8 +2871,13 @@ def _generate_multiphase_synthesis(
         # ── Build section-specific hints ────────────────────────────────
         sec_hints_parts = []
 
-        # (A) Country name list for regional sections
+        # (0) Chapter role hint (facts-only for ch2-6, expert for ch7)
         sec_id = sec["id"]
+        _role_hint = _get_section_role_hint(sec_id)
+        if _role_hint:
+            sec_hints_parts.append(_role_hint)
+
+        # (A) Country name list for regional sections
         for _prefix, _rkey in _SECTION_REGION_KEY.items():
             if sec_id.startswith(_prefix):
                 sec_hints_parts.append(_REGION_COUNTRY_HINTS[_rkey])
