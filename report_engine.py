@@ -923,7 +923,7 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
         for future in as_completed(futures):
             src = futures[future]
             try:
-                items = future.result(timeout=20)
+                items = future.result(timeout=90)
                 all_items.extend(items)
                 completed += 1
                 if status_callback:
