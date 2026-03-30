@@ -182,7 +182,7 @@ def _filter_experts_by_selection(experts, selected_categories, selected_names):
 # ── 來源群組定義（label, main_cat_keys, sub_cat_keys）──────────────────────────
 # sub_cat_keys: 群組內的次分類，選擇後自動展開為該次分類的所有來源名稱
 _SOURCE_GROUPS = [
-    ("自訂媒體",  ["自訂台灣媒體", "自訂國際媒體"],  ["自訂台灣媒體", "自訂國際媒體"]),
+    ("自訂媒體",  ["自訂台灣媒體", "自訂國際媒體", "自訂智庫", "自訂雜誌"],  ["自訂台灣媒體", "自訂國際媒體", "自訂智庫", "自訂雜誌"]),
     ("自訂專家",  ["自訂專家"],  ["國際專家", "中國專家", "台灣專家"]),
     ("全球媒體",  ["全球媒體"],
                  ["Asia-Pacific", "歐洲地區", "亞西地區", "北美地區", "拉丁美洲及加勒比海", "非洲地區"]),
@@ -226,9 +226,8 @@ def _render_source_group_picker(all_sources, key_prefix, saved_names):
         sub_cat_to_names: dict[str, list[str]] = {}
         for sk in sub_cat_keys:
             names = [s["name"] for s in group_sources if sk in (s.get("category") or [])]
-            if names:
-                sub_cat_to_names[sk] = names
-        available_sub_cats = list(sub_cat_to_names.keys())
+            sub_cat_to_names[sk] = names  # 永遠列出，即使目前尚無來源
+        available_sub_cats = list(sub_cat_keys)  # 固定顯示群組定義中的所有子分類
 
         # ── Session-state keys ───────────────────────────────────────────────
         sel_key = f"{key_prefix}__{label}__sel"
@@ -942,6 +941,44 @@ with st.sidebar:
         ):
             st.session_state.selected_page = _key
             st.rerun()
+
+    # ── 全資料備份 ─────────────────────────────────────────────────────────
+    st.markdown("<hr style='margin:1.2rem 0 0.8rem 0;border-color:#e0e0e0;'>", unsafe_allow_html=True)
+    import zipfile as _zipfile
+    import io as _io
+    from datetime import datetime as _dt
+    from utils.loaders import BASE_DIR as _BASE_DIR
+
+    _BACKUP_FILES = [
+        "config/sources_user.json",
+        "config/experts_user.json",
+        "config/auto_export_user.json",
+        "config/profiles.json",
+        "config/formats.json",
+        "config/insights.json",
+        "config/report_templates.json",
+    ]
+
+    def _build_backup_zip():
+        _buf = _io.BytesIO()
+        with _zipfile.ZipFile(_buf, "w", _zipfile.ZIP_DEFLATED) as _zf:
+            for _rel in _BACKUP_FILES:
+                _full = _BASE_DIR / _rel
+                if _full.exists():
+                    _zf.write(str(_full), _full.name)
+        _buf.seek(0)
+        return _buf.read()
+
+    _backup_filename = f"briefings_backup_{_dt.now().strftime('%Y%m%d_%H%M%S')}.zip"
+    st.download_button(
+        label="💾 備份全部資料",
+        data=_build_backup_zip(),
+        file_name=_backup_filename,
+        mime="application/zip",
+        use_container_width=True,
+        help="下載包含來源、專家、設定檔等所有用戶資料的 ZIP 備份檔",
+        key="sidebar_backup_btn",
+    )
 
 selected_page = st.session_state.selected_page
 
