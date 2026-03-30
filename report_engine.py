@@ -699,7 +699,7 @@ def _fetch_domain_items(domain, source_name, limit=20, start_time=None, end_time
     return items
 
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait as _futures_wait, FIRST_COMPLETED as _FIRST_COMPLETED
 from collections import defaultdict
 
 
@@ -920,22 +920,35 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
 
     with ThreadPoolExecutor(max_workers=8) as executor:
         futures = {executor.submit(fetch_single, src): src for src in src_list}
-        for future in as_completed(futures):
-            src = futures[future]
-            try:
-                items = future.result(timeout=90)
-                all_items.extend(items)
-                completed += 1
-                if status_callback:
-                    src_name = src.get("name", "?")
-                    if items:
-                        status_callback("rss", f"{src_name}：{len(items)} 篇",
-                                        completed, total, len(all_items))
-                    else:
-                        status_callback("rss_progress", None, completed, total, len(all_items))
-            except Exception as e:
-                completed += 1
-                print(f"[Briefings] fetch_single error for {src.get('name','?')}: {e}")
+        pending = set(futures.keys())
+        # 每次最多等 25 秒讓任意 future 完成；全部最多等 5 分鐘（300 秒）
+        import time as _time
+        _deadline = _time.monotonic() + 300
+        while pending and _time.monotonic() < _deadline:
+            remaining = max(1, _deadline - _time.monotonic())
+            done, pending = _futures_wait(pending, timeout=min(25, remaining),
+                                          return_when=_FIRST_COMPLETED)
+            for future in done:
+                src = futures[future]
+                try:
+                    items = future.result()
+                    all_items.extend(items)
+                    completed += 1
+                    if status_callback:
+                        src_name = src.get("name", "?")
+                        if items:
+                            status_callback("rss", f"{src_name}：{len(items)} 篇",
+                                            completed, total, len(all_items))
+                        else:
+                            status_callback("rss_progress", None, completed, total, len(all_items))
+                except Exception as e:
+                    completed += 1
+                    print(f"[Briefings] fetch_single error for {src.get('name','?')}: {e}")
+        # 超時未完成的 future 直接跳過並取消
+        for future in pending:
+            future.cancel()
+            completed += 1
+            print(f"[Briefings] fetch_single timeout, skipped: {futures[future].get('name','?')}")
 
     return all_items
 
