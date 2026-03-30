@@ -918,12 +918,12 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
             item["source_type"] = src.get("type", "rss")
         return fetched
 
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    with ThreadPoolExecutor(max_workers=20) as executor:
         futures = {executor.submit(fetch_single, src): src for src in src_list}
         for future in as_completed(futures):
             src = futures[future]
             try:
-                items = future.result()
+                items = future.result(timeout=20)
                 all_items.extend(items)
                 completed += 1
                 if status_callback:
