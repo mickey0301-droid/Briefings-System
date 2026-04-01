@@ -869,6 +869,11 @@ DEFAULT_CATEGORY_KEYWORDS: dict = {
         "中國 OR 中共 OR 解放軍 OR 共軍 OR 習近平 OR 兩岸 OR 台海 OR 北京 OR "
         "台積電 OR 半導體 OR 印太 OR 南海 OR 東海 OR 美中 OR 中美"
     ),
+    # 舊版 sources.json 中 category="台灣" 的相容別名
+    "台灣": (
+        "中國 OR 中共 OR 解放軍 OR 共軍 OR 習近平 OR 兩岸 OR 台海 OR 北京 OR "
+        "台積電 OR 半導體 OR 印太 OR 南海 OR 東海 OR 美中 OR 中美"
+    ),
     "自訂國際媒體": (
         "taiwan OR 台灣 OR china OR 中國 OR \"cross-strait\" OR 兩岸 OR "
         "\"xi jinping\" OR 習近平 OR tsmc OR 台積電 OR \"chinese military\" OR 解放軍 OR "
