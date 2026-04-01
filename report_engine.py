@@ -750,8 +750,10 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
         cat = cats[0] if cats else ""
         src_name = src.get("name", "")
 
-        # 自訂專家：若有 rss_url 直接抓 RSS；否則用 expert_gnews_urls 生成所有查詢 URL
-        if cat == "自訂專家":
+        # 專家類別：台灣專家 / 國際專家 / 中國專家 / 自訂專家（舊版相容）
+        # 各類別使用對應語系的關鍵字組，結合人名查詢
+        _EXPERT_CATS = {"自訂專家", "台灣專家", "國際專家", "中國專家"}
+        if cat in _EXPERT_CATS:
             expert_name = src_name.strip()
             if not expert_name:
                 return []
@@ -778,16 +780,20 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
                 # Query all URLs, add time params, deduplicate by URL
                 fetched = []
                 _seen_urls: set = set()
+                # 取得該類別的主題關鍵字（台灣/國際/中國專家各有對應組）
+                _cat_topic_kw = category_keywords.get(cat, "")
                 for _label, _base_url in _url_pairs:
-                    # Inject time params into query string
+                    # Inject time params and category topic keywords into query string
                     _sep = "&" if "?" in _base_url else "?"
                     _timed_url = _base_url
-                    if start_time or end_time:
-                        # Extract existing q= param and append date range
+                    if start_time or end_time or _cat_topic_kw:
                         import urllib.parse as _up
                         _parsed = _up.urlparse(_base_url)
                         _qs = _up.parse_qs(_parsed.query)
                         _q = _qs.get("q", [""])[0]
+                        # 注入類別主題關鍵字（AND 邏輯：人名 AND 主題關鍵字）
+                        if _cat_topic_kw and f"({_cat_topic_kw})" not in _q:
+                            _q += f" ({_cat_topic_kw})"
                         if start_time:
                             _q += f" after:{start_time.strftime('%Y/%m/%d')}"
                         if end_time:

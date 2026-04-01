@@ -874,6 +874,21 @@ DEFAULT_CATEGORY_KEYWORDS: dict = {
         "\"xi jinping\" OR 習近平 OR tsmc OR 台積電 OR \"chinese military\" OR 解放軍 OR "
         "\"indo-pacific\" OR 印太 OR \"south china sea\" OR \"taiwan strait\" OR ccp OR 中共"
     ),
+    # 三種專家類別，各自對應不同語言與主題的關鍵字組
+    "台灣專家": (
+        "中國 OR 中共 OR 解放軍 OR 共軍 OR 習近平 OR 兩岸 OR 台海 OR 北京 OR "
+        "台積電 OR 半導體 OR 印太 OR 南海 OR 東海 OR 美中 OR 中美"
+    ),
+    "國際專家": (
+        "taiwan OR 台灣 OR china OR 中國 OR \"cross-strait\" OR 兩岸 OR "
+        "\"xi jinping\" OR 習近平 OR tsmc OR 台積電 OR \"chinese military\" OR 解放軍 OR "
+        "\"indo-pacific\" OR 印太 OR \"south china sea\" OR \"taiwan strait\" OR ccp OR 中共"
+    ),
+    "中國專家": (
+        "台湾 OR 两岸 OR 台海 OR 涉台 OR 国民党 OR 民进党 OR 赖清德 OR 蔡英文 OR "
+        "中美 OR 中共 OR 习近平 OR 解放军 OR 台积电 OR 半导体 OR 印太 OR 南海"
+    ),
+    # 舊版相容（保留，但建議改用上方三個分類）
     "自訂專家": (
         "taiwan OR 台灣 OR china OR 中國 OR \"cross-strait\" OR 兩岸 OR "
         "\"xi jinping\" OR 習近平 OR tsmc OR 台積電 OR \"chinese military\" OR 解放軍 OR "
