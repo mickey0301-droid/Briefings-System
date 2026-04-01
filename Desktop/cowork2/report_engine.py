@@ -231,6 +231,60 @@ def _item_source_identity(item: dict) -> str:
     return "||".join(part for part in [source, country, language] if part)
 
 
+def _diversify_selected_items(selected_items: list, all_items: list, max_per_source: int = 2) -> list:
+    """
+    Rebalance a selected list so one outlet does not dominate a section when
+    plenty of alternatives exist in the section pool.
+    """
+    if not selected_items:
+        return []
+
+    chosen: list = []
+    source_counts: dict[str, int] = {}
+    seen_keys: set[str] = set()
+
+    def _try_add(item: dict, enforce_cap: bool = True) -> bool:
+        key = _item_identity(item)
+        if not key or key in seen_keys:
+            return False
+
+        source_key = _item_source_identity(item) or key
+        if enforce_cap and source_counts.get(source_key, 0) >= max_per_source:
+            return False
+
+        chosen.append(item)
+        seen_keys.add(key)
+        source_counts[source_key] = source_counts.get(source_key, 0) + 1
+        return True
+
+    # Keep original ordering when possible, but cap repeated outlets first.
+    for item in selected_items:
+        _try_add(item, enforce_cap=True)
+
+    # Fill remaining slots with alternative outlets from the full pool.
+    target_len = len(selected_items)
+    if len(chosen) < target_len:
+        for item in all_items:
+            if len(chosen) >= target_len:
+                break
+            _try_add(item, enforce_cap=True)
+
+    # If the pool truly lacks diversity, fill the rest without the cap.
+    if len(chosen) < target_len:
+        for item in selected_items:
+            if len(chosen) >= target_len:
+                break
+            _try_add(item, enforce_cap=False)
+
+    if len(chosen) < target_len:
+        for item in all_items:
+            if len(chosen) >= target_len:
+                break
+            _try_add(item, enforce_cap=False)
+
+    return chosen
+
+
 def _select_diverse_topics(
     items: list,
     n_topics: int = 4,
@@ -1250,6 +1304,22 @@ def _strip_ai_link_markers(report_text):
     return text
 
 
+_TW_TERMINOLOGY_REPLACEMENTS = [
+    (r"卡塔爾半島電視台", "半島電視台（Al Jazeera）"),
+    (r"卡達半島電視台", "半島電視台（Al Jazeera）"),
+    (r"卡塔爾", "卡達"),
+    (r"土耳其里拉", "土耳其里拉"),
+    (r"杜拜", "杜拜"),
+]
+
+
+def _normalize_tw_terminology(text: str) -> str:
+    normalized = text or ""
+    for pattern, replacement in _TW_TERMINOLOGY_REPLACEMENTS:
+        normalized = re.sub(pattern, replacement, normalized)
+    return normalized
+
+
 _SUPERSCRIPT_TABLE = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 
 
@@ -1281,7 +1351,7 @@ def _render_citations(report_text, source_map, format_options):
     notes_style = format_options.get("notes", {}).get("style", "endnote")
     link_mode = format_options.get("links", {}).get("placement", "none")
 
-    text = _strip_ai_link_markers(report_text)
+    text = _normalize_tw_terminology(_strip_ai_link_markers(report_text))
 
     # 無論任何模式，都把 [Sx] 或 [ Sx ] 清掉或換成上標
     if notes_style == "none" and link_mode == "none":
@@ -1706,22 +1776,63 @@ def _group_items_for_report(items):
 
     # 各章節：選出被最多來源報導的前 5 個不同議題，每議題取 2 篇
     # → 每章最多 10 篇，涵蓋 4-5 個獨立話題，確保各章有足夠素材
-    groups["國際要聞"]     = _select_diverse_topics(groups["國際要聞"],     n_topics=5, articles_per_topic=2)
-    groups["台美中要聞"]   = _select_diverse_topics(groups["台美中要聞"],   n_topics=5, articles_per_topic=2)
-    groups["台灣國安要聞"] = _select_diverse_topics(groups["台灣國安要聞"], n_topics=5, articles_per_topic=2)
+    raw_global_items = list(groups["國際要聞"])
+    raw_tw_us_cn_items = list(groups["台美中要聞"])
+    raw_tw_security_items = list(groups["台灣國安要聞"])
+    raw_cn_external_items = list(groups["中國對外情勢"])
+    raw_cn_domestic_items = list(groups["中國內部情勢"])
+    raw_cn_items = list(groups["中國要聞"])
+
+    groups["國際要聞"]     = _diversify_selected_items(
+        _select_diverse_topics(groups["國際要聞"], n_topics=5, articles_per_topic=2),
+        raw_global_items,
+        max_per_source=1,
+    )
+    groups["台美中要聞"]   = _diversify_selected_items(
+        _select_diverse_topics(groups["台美中要聞"], n_topics=5, articles_per_topic=2),
+        raw_tw_us_cn_items,
+        max_per_source=1,
+    )
+    groups["台灣國安要聞"] = _diversify_selected_items(
+        _select_diverse_topics(groups["台灣國安要聞"], n_topics=5, articles_per_topic=2),
+        raw_tw_security_items,
+        max_per_source=1,
+    )
     # 第五章：兩個子節各取 5 個議題 × 2 篇 = 各 10 篇
-    groups["中國對外情勢"] = _select_diverse_topics(groups["中國對外情勢"], n_topics=5, articles_per_topic=2)
-    groups["中國內部情勢"] = _select_diverse_topics(groups["中國內部情勢"], n_topics=5, articles_per_topic=2)
+    groups["中國對外情勢"] = _diversify_selected_items(
+        _select_diverse_topics(groups["中國對外情勢"], n_topics=5, articles_per_topic=2),
+        raw_cn_external_items,
+        max_per_source=1,
+    )
+    groups["中國內部情勢"] = _diversify_selected_items(
+        _select_diverse_topics(groups["中國內部情勢"], n_topics=5, articles_per_topic=2),
+        raw_cn_domestic_items,
+        max_per_source=1,
+    )
     # 整體中國要聞仍保留（供舊版 fallback 使用）
-    groups["中國要聞"]     = _select_diverse_topics(groups["中國要聞"],     n_topics=5, articles_per_topic=2)
+    groups["中國要聞"]     = _diversify_selected_items(
+        _select_diverse_topics(groups["中國要聞"], n_topics=5, articles_per_topic=2),
+        raw_cn_items,
+        max_per_source=1,
+    )
 
     for region in REGION_ORDER:
+        raw_region_items = list(groups["區域情勢"][region]["區域要聞"])
+        raw_region_twcn_items = list(groups["區域情勢"][region]["台灣與中國相關要聞"])
         # 區域情勢：各子節選 3 個議題，每議題 1 篇（資料較少，保持精簡）
-        groups["區域情勢"][region]["區域要聞"] = _select_diverse_topics(
-            groups["區域情勢"][region]["區域要聞"], n_topics=3, articles_per_topic=1
+        groups["區域情勢"][region]["區域要聞"] = _diversify_selected_items(
+            _select_diverse_topics(
+                groups["區域情勢"][region]["區域要聞"], n_topics=3, articles_per_topic=1
+            ),
+            raw_region_items,
+            max_per_source=1,
         )
-        groups["區域情勢"][region]["台灣與中國相關要聞"] = _select_diverse_topics(
-            groups["區域情勢"][region]["台灣與中國相關要聞"], n_topics=3, articles_per_topic=1
+        groups["區域情勢"][region]["台灣與中國相關要聞"] = _diversify_selected_items(
+            _select_diverse_topics(
+                groups["區域情勢"][region]["台灣與中國相關要聞"], n_topics=3, articles_per_topic=1
+            ),
+            raw_region_twcn_items,
+            max_per_source=1,
         )
 
     return groups
@@ -2464,6 +2575,7 @@ Requirements:
 6. CRITICAL — Citation codes [S1][S2][S3]... are embedded in the sub-reports. You MUST preserve every [Sx] code exactly as it appears — do NOT renumber, merge, drop, or invent any [Sx] marker. When you incorporate a fact from a sub-report that has a citation code, carry that exact code into the synthesis text. These codes are the only link to the source bibliography and must NOT be lost.
 7. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
 7a. MANDATORY — Media country attribution: When citing a non-Chinese / non-English language media outlet, you MUST note which country it is from on first mention. Format: 「[媒體名稱]（[國家名稱]）」. Examples: 《朝日新聞》（日本）、《韓聯社》（韓國）、《明鏡週刊》（德國）、《費加羅報》（法國）。For articles that carry a language tag such as [日文], [韓文], [德文] etc. in their title, treat them as coming from the corresponding country. This rule has NO exceptions.
+7b. MANDATORY — Use Taiwan terminology and Traditional Chinese usage throughout. Avoid PRC-style translations. For example, write 「卡達」 not 「卡塔爾」, and prefer 「半島電視台（Al Jazeera）」 rather than 「卡塔爾半島電視台」.
 8. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name in Chinese characters (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English/romanised name in parentheses. ADDITIONAL RULE for Japanese, Korean, and Vietnamese names: after the Chinese characters, add the romanised form in square brackets, e.g. 岸田文雄[Kishida Fumio]、尹錫悅[Yoon Suk-yeol]、阮富仲[Nguyễn Phú Trọng]. Format: [Title][Chinese name][Romanised]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄[Kishida Fumio]（Fumio Kishida）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）、越南國家主席阮富仲[Nguyễn Phú Trọng]（Nguyễn Phú Trọng）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
 9a. MANDATORY — Expert names: whenever an expert or analyst is cited in 七、專家研析, render their name in bold (**Name**) and include their full title and affiliation on first mention. E.g. **美國智庫戰略與國際研究中心（CSIS）資深研究員王大維（David Wang）**。
 9. MANDATORY — Organizations and institutions: On first mention, always provide both Chinese and English names. Format: Chinese name（English Name）. Examples: 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）、美國在台協會（American Institute in Taiwan, AIT）. This rule has NO exceptions.
@@ -2799,6 +2911,7 @@ Requirements:
 11. Keep citations light and readable. Do not attach a citation to every single sentence unless necessary.
 12. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
 12a. MANDATORY — Media country attribution: When citing a non-Chinese / non-English language media outlet, you MUST note which country it is from on first mention. Format: 「[媒體名稱]（[國家名稱]）」. Examples: 《朝日新聞》（日本）、《韓聯社》（韓國）、《明鏡週刊》（德國）、《費加羅報》（法國）。For articles that carry a language tag such as [日文], [韓文], [德文] etc. in their title, treat them as coming from the corresponding country. The news data also includes "來源" with a country in parentheses — use that country when provided. This rule has NO exceptions.
+12b. MANDATORY — Use Taiwan terminology and Traditional Chinese usage throughout. Avoid PRC-style translations. For example, write 「卡達」 not 「卡塔爾」, and prefer 「半島電視台（Al Jazeera）」 rather than 「卡塔爾半島電視台」.
 13. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form: Western figures use surname only (e.g., 川普、拜登、馬克宏、梅洛尼、奧斯汀); East Asian figures use the full name in Chinese characters (e.g., 岸田文雄、尹錫悅、習近平、賴清德). On first mention, follow with the full English/romanised name in parentheses. ADDITIONAL RULE for Japanese, Korean, and Vietnamese names: after the Chinese characters, add the romanised form in square brackets, e.g. 岸田文雄[Kishida Fumio]、尹錫悅[Yoon Suk-yeol]、阮富仲[Nguyễn Phú Trọng]. Format: [Title][Chinese name][Romanised]（Full English Name）. Examples: 美國總統川普（Donald Trump）、日本首相岸田文雄[Kishida Fumio]（Fumio Kishida）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）、越南國家主席阮富仲[Nguyễn Phú Trọng]（Nguyễn Phú Trọng）、中華民國總統賴清德（Lai Ching-te）. This rule has NO exceptions.
 13a. MANDATORY — Expert names: whenever an expert or analyst is cited in 七、專家研析, render their name in bold (**Name**) and include their full title and affiliation on first mention. E.g. **美國智庫戰略與國際研究中心（CSIS）資深研究員王大維（David Wang）**。
 14. MANDATORY — Organizations and institutions: On first mention, always provide both Chinese and English names. Format: Chinese name（English Name）. Examples: 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）、美國在台協會（American Institute in Taiwan, AIT）、中華民國國防部（Ministry of National Defense, ROC）. This rule has NO exceptions.
