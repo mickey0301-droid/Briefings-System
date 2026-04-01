@@ -139,10 +139,23 @@ def _build_source_fetch_preview_rows(sources):
     category_keywords = load_category_keywords()
     rows = []
 
+    def _normalize_category_name(value: str) -> str:
+        text = (value or "").strip()
+        if not text:
+            return ""
+        try:
+            repaired = text.encode("latin-1").decode("utf-8")
+            if repaired:
+                text = repaired
+        except Exception:
+            pass
+        return text.strip()
+
     for src in sources:
         cats = src.get("category", []) or []
         if isinstance(cats, str):
             cats = [cats]
+        cats = [_normalize_category_name(cat) for cat in cats if _normalize_category_name(cat)]
 
         merged_keywords = ""
         try:

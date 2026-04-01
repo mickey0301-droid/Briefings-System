@@ -742,13 +742,32 @@ def _resolve_category_keywords(categories, category_keywords: dict) -> str:
     if not categories:
         return ""
 
+    def _normalize_category_name(value: str) -> str:
+        text = (value or "").strip()
+        if not text:
+            return ""
+        # Repair common UTF-8 -> latin1 mojibake from legacy saved config.
+        try:
+            repaired = text.encode("latin-1").decode("utf-8")
+            if repaired:
+                text = repaired
+        except Exception:
+            pass
+        return text.strip()
+
     if isinstance(categories, str):
         categories = [categories]
+
+    normalized_keyword_map = {
+        _normalize_category_name(k): (v or "")
+        for k, v in (category_keywords or {}).items()
+    }
 
     merged: list[str] = []
     seen: set[str] = set()
     for cat in categories:
-        kw = (category_keywords.get(cat, "") or "").strip()
+        normalized_cat = _normalize_category_name(cat)
+        kw = (normalized_keyword_map.get(normalized_cat, "") or "").strip()
         if kw and kw not in seen:
             seen.add(kw)
             merged.append(kw)
