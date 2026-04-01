@@ -1,0 +1,46 @@
+Streamlit Cloud × Google Drive 設定步驟
+一、建立 Service Account
+
+前往 https://console.cloud.google.com/
+選擇你的專案（或新建）
+左側選單 → IAM 與管理 → 服務帳戶
+點 建立服務帳戶，填入名稱後完成建立
+點進剛建立的服務帳戶 → 金鑰 → 新增金鑰 → JSON
+下載 JSON 檔案，妥善保存（不要上傳到 GitHub）
+
+
+二、確認 Google Drive API 已啟用
+
+左側 → API 和服務 → 已啟用的 API 和服務
+搜尋 Google Drive API → 確認已啟用（若無則點啟用）
+
+
+三、授權 Drive 資料夾
+
+打開下載的 JSON 檔，找到 client_email 欄位，複製那個 email（格式像 xxx@yyy.iam.gserviceaccount.com）
+前往 Google Drive，找到 Folder ID 為 1kvHvl_p6vxbaZT2dEHnnUHYX-52h_Dl8 的資料夾
+右鍵 → 共用 → 貼上剛才的 email → 權限設為編輯者 → 送出
+
+
+四、設定 Streamlit Cloud Secrets
+
+前往 https://share.streamlit.io/，進入你的 App
+右上角 → Settings → Secrets
+貼上以下內容（替換成你 JSON 檔裡的實際值）：
+
+toml[gcp_service_account]
+type = "service_account"
+project_id = "填入JSON裡的project_id"
+private_key_id = "填入JSON裡的private_key_id"
+private_key = "填入JSON裡的private_key（包含BEGIN/END那幾行）"
+client_email = "填入JSON裡的client_email"
+client_id = "填入JSON裡的client_id"
+token_uri = "https://oauth2.googleapis.com/token"
+
+點 Save
+
+
+五、修改程式碼（回來後告訴我，我來改）
+google_drive.py 需要改成讀取 st.secrets 而非本機的 credentials.json，這步等你回來後讓我幫你修改即可。
+
+完成前四步後，把 JSON 的內容準備好，回來告訴我，我就幫你把程式碼改好！
