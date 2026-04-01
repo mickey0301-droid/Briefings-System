@@ -135,6 +135,59 @@ def _filter_experts_by_selection(experts, selected_categories, selected_names):
     return filtered
 
 
+def _build_source_fetch_preview_rows(sources):
+    category_keywords = load_category_keywords()
+    rows = []
+
+    for src in sources:
+        cats = src.get("category", []) or []
+        if isinstance(cats, str):
+            cats = [cats]
+
+        merged_keywords = ""
+        try:
+            merged_keywords = report_engine._resolve_category_keywords(cats, category_keywords)
+        except Exception:
+            merged_keywords = ""
+
+        src_type = src.get("type", "rss")
+        url_field = src.get("url", "") or ""
+        direct_rss = (
+            src.get("rss") or src.get("rss_url")
+            or src.get("feed") or src.get("feed_url")
+        )
+        if not direct_rss and src_type == "rss" and str(url_field).startswith("http"):
+            direct_rss = url_field
+
+        google_rss_url = ""
+        if not direct_rss:
+            try:
+                domain = (
+                    src.get("domain") or src.get("site")
+                    or report_engine._extract_news_domain(url_field) or url_field
+                )
+                if domain:
+                    domain = str(domain).lower().replace("www.", "")
+                    google_rss_url = report_engine._build_google_news_rss_for_domain(
+                        domain,
+                        keywords=merged_keywords,
+                    )
+            except Exception:
+                google_rss_url = ""
+
+        rows.append({
+            "name": src.get("name", ""),
+            "type": src_type,
+            "category": ", ".join(cats),
+            "source_url": url_field,
+            "keywords_used": merged_keywords,
+            "google_rss_url": google_rss_url,
+            "effective_fetch_url": direct_rss or google_rss_url,
+        })
+
+    return rows
+
+
 def _call_generate_report(
     start_time,
     end_time,
@@ -929,6 +982,13 @@ with tab_sources:
     fixed_rows = [source_to_editor_row(x) for x in fixed_sources]
     fixed_df = pd.DataFrame(fixed_rows) if fixed_rows else pd.DataFrame(columns=source_batch_columns)
     st.dataframe(fixed_df, use_container_width=True, hide_index=True)
+
+    st.markdown("### 實際抓取 URL 預覽")
+    st.caption("domain 類型會顯示實際生成的 Google News RSS URL，並納入此來源所有 category 對應的關鍵字。")
+    preview_rows = _build_source_fetch_preview_rows(load_sources())
+    preview_df = pd.DataFrame(preview_rows)
+    if not preview_df.empty:
+        st.dataframe(preview_df, use_container_width=True, hide_index=True)
 
     st.markdown("---")
     st.subheader("Experts 管理（仍在 Sources 頁下方）")

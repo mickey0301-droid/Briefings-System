@@ -734,6 +734,32 @@ def _extract_news_domain(url: str) -> str | None:
     return domain or None
 
 
+def _resolve_category_keywords(categories, category_keywords: dict) -> str:
+    """
+    Merge keywords from all assigned categories/tabs for a source so the
+    generated Google News RSS URL matches what the report pipeline expects.
+    """
+    if not categories:
+        return ""
+
+    if isinstance(categories, str):
+        categories = [categories]
+
+    merged: list[str] = []
+    seen: set[str] = set()
+    for cat in categories:
+        kw = (category_keywords.get(cat, "") or "").strip()
+        if kw and kw not in seen:
+            seen.add(kw)
+            merged.append(kw)
+
+    if not merged:
+        return ""
+    if len(merged) == 1:
+        return merged[0]
+    return " OR ".join(f"({kw})" for kw in merged)
+
+
 def _build_google_news_rss_for_domain(domain, start_time=None, end_time=None, keywords=None,
                                        lang_params=None):
     """
@@ -843,20 +869,19 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
         cats = src.get("category", []) or []
         if isinstance(cats, str):
             cats = [cats]
-        cat = cats[0] if cats else ""
         src_name = src.get("name", "")
+        merged_cat_kw = _resolve_category_keywords(cats, category_keywords)
 
         # 專家類別：用名字查詢，並依類別帶入對應主題關鍵字
         # 支援 台灣專家 / 國際專家 / 中國專家 / 自訂專家（舊版相容）
         _EXPERT_CATEGORIES = {"自訂專家", "台灣專家", "國際專家", "中國專家"}
-        if cat in _EXPERT_CATEGORIES:
+        if any(c in _EXPERT_CATEGORIES for c in cats):
             expert_name = src_name.strip()
             if not expert_name:
                 return []
             # 人名作為必要條件，類別關鍵字作為主題過濾（AND 邏輯）
-            cat_kw = category_keywords.get(cat, "")
-            if cat_kw:
-                kw = f'"{expert_name}" ({cat_kw})'
+            if merged_cat_kw:
+                kw = f'"{expert_name}" ({merged_cat_kw})'
             else:
                 kw = f'"{expert_name}"'
             if start_time:
@@ -864,9 +889,9 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
             if end_time:
                 kw += f" before:{end_time.strftime('%Y/%m/%d')}"
             # 台灣專家用繁體中文介面，國際專家用英文，中國專家用簡體中文
-            if cat == "國際專家":
+            if "國際專家" in cats:
                 rss_url = f"https://news.google.com/rss/search?q={quote(kw)}&hl=en-US&gl=US&ceid=US:en"
-            elif cat == "中國專家":
+            elif "中國專家" in cats:
                 rss_url = f"https://news.google.com/rss/search?q={quote(kw)}&hl=zh-CN&gl=CN&ceid=CN:zh-Hans"
             else:
                 rss_url = f"https://news.google.com/rss/search?q={quote(kw)}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
@@ -973,9 +998,8 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
             if not domain:
                 return []
             domain = domain.lower().replace("www.", "")
-            cat_kw = category_keywords.get(cat, "")
             rss_url = _build_google_news_rss_for_domain(
-                domain, start_time=start_time, end_time=end_time, keywords=cat_kw
+                domain, start_time=start_time, end_time=end_time, keywords=merged_cat_kw
             )
 
         fetched = _fetch_rss_items(rss_url, src_name, limit=limit_per_source)
@@ -1020,9 +1044,6 @@ def debug_fetch_source(src: dict, start_time=None, end_time=None) -> dict:
     src_type  = src.get("type", "rss")
     url_field = src.get("url", "")
     cats      = src.get("category", []) or []
-    if isinstance(cats, str):
-        cats = [cats]
-    cat = cats[0] if cats else ""
 
     # ── 決定 rss_url（與 fetch_single 完全相同邏輯） ──
     rss_url = None
@@ -1041,7 +1062,7 @@ def debug_fetch_source(src: dict, start_time=None, end_time=None) -> dict:
                        or _extract_news_domain(url_field) or url_field)
         if domain_used:
             domain_used = domain_used.lower().replace("www.", "")
-        cat_kw = category_keywords.get(cat, "")
+        cat_kw = _resolve_category_keywords(cats, category_keywords)
         rss_url = _build_google_news_rss_for_domain(
             domain_used or "", start_time=start_time, end_time=end_time, keywords=cat_kw
         )
