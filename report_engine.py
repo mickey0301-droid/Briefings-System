@@ -2982,6 +2982,63 @@ def _select_section_items_by_rules(sec: dict, items: list, min_score: int = 4, m
     return selected[:effective_max_total]
 
 
+def _extract_cited_codes(text: str) -> set[str]:
+    if not text:
+        return set()
+    codes = re.findall(r"\[\[\s*CITE\s*:\s*(S\d+)\s*\]\]", text, flags=re.IGNORECASE)
+    codes += re.findall(r"\[\s*(S\d+)\s*\]", text, flags=re.IGNORECASE)
+    return {c.upper() for c in codes}
+
+
+def _required_bucket_codes(items: list, item_to_sx: dict[str, str]) -> dict[str, str]:
+    """
+    Pick one mandatory citation code per media bucket that appears in this section.
+    """
+    by_bucket: dict[str, str] = {}
+    for it in items or []:
+        if not isinstance(it, dict):
+            continue
+        bucket = _item_media_category_bucket(it)
+        if bucket == "其他":
+            continue
+        url = (it.get("original_url") or it.get("url") or "").strip()
+        title = (it.get("title") or "").strip()
+        key = f"{url}||{title}".lower().strip()
+        sx = item_to_sx.get(key, "")
+        if not sx:
+            continue
+        if bucket not in by_bucket:
+            by_bucket[bucket] = sx
+    return by_bucket
+
+
+def _enforce_section_category_coverage_text(
+    text: str,
+    required_bucket_codes: dict[str, str],
+    source_map: dict[str, dict],
+) -> str:
+    """
+    If a mini-report still misses some mandatory category codes after retry,
+    append a short factual coverage line to guarantee category-coverage compliance.
+    """
+    if not required_bucket_codes:
+        return text
+    cited = _extract_cited_codes(text)
+    missing = [(b, c) for b, c in required_bucket_codes.items() if c not in cited]
+    if not missing:
+        return text
+
+    labels = []
+    code_tokens = []
+    for bucket, code in missing:
+        src = source_map.get(code, {})
+        src_name = (src.get("source") or bucket).strip() or bucket
+        labels.append(f"{bucket}（{src_name}）")
+        code_tokens.append(_cite_token(code))
+    suffix = f"補充來源覆蓋：本節亦參考{ '、'.join(labels) }之報導。{''.join(code_tokens)}"
+    return (text.rstrip() + "\n\n" + suffix).strip()
+
+
 _FACTS_ONLY_SECTION_IDS = {
     "intl_news", "tw_us_cn", "tw_security",
     "cn_external", "cn_domestic",
@@ -3341,6 +3398,16 @@ def generate_segmented_report(
             _cn_hint = _build_cn_mandatory_hint(sec["id"], items)
             if _cn_hint:
                 _hints.append(_cn_hint)
+            required_bucket_sx = _required_bucket_codes(items, item_to_sx)
+            if len(required_bucket_sx) >= 2:
+                _hints.append(
+                    "MANDATORY — Source-category coverage: this section includes multiple source categories. "
+                    "You MUST cite at least one article from each listed category in this section text."
+                )
+                _hints.append(
+                    "Required categories and citation tokens: "
+                    + "；".join([f"{b}:{_cite_token(c)}" for b, c in required_bucket_sx.items()])
+                )
             # Generate mini-report for this section
             _cb("stage", f"✍️  [{idx}/{total_sections}] AI 撰寫：{label}…")
             try:
@@ -3351,6 +3418,27 @@ def generate_segmented_report(
                     language=language_label,
                     section_hints="\n".join([h for h in _hints if h]),
                 )
+                # One retry if mandatory bucket citations are missing.
+                if len(required_bucket_sx) >= 2:
+                    cited = _extract_cited_codes(mini_text)
+                    missing = [(b, c) for b, c in required_bucket_sx.items() if c not in cited]
+                    if missing:
+                        retry_hints = _hints + [
+                            "RETRY STRICTLY — Previous draft missed required source-category citations. "
+                            "You MUST include all required category tokens listed below in this section."
+                        ]
+                        mini_text = generate_section_mini_report(
+                            section_path=sec["section_path"],
+                            section_label=label,
+                            news_block=news_block,
+                            language=language_label,
+                            section_hints="\n".join([h for h in retry_hints if h]),
+                        )
+                        mini_text = _enforce_section_category_coverage_text(
+                            mini_text,
+                            required_bucket_sx,
+                            source_map,
+                        )
             except Exception as e:
                 print(f"[Segmented] Section mini-report failed for {label}: {e}")
                 mini_text = "本期搜尋結果未見符合本節主旨的相關新聞。"
@@ -3585,6 +3673,15 @@ def _generate_multiphase_synthesis(
             sec_hints_parts.append(_cn_hint)
 
         section_hints = "\n".join(sec_hints_parts)
+        required_bucket_sx = _required_bucket_codes(sec_items, item_to_sx)
+        if len(required_bucket_sx) >= 2:
+            section_hints = (
+                section_hints
+                + "\nMANDATORY — Source-category coverage: this section includes multiple source categories. "
+                  "You MUST cite at least one article from each listed category in this section."
+                + "\nRequired categories and citation tokens: "
+                + "；".join([f"{b}:{_cite_token(c)}" for b, c in required_bucket_sx.items()])
+            ).strip()
 
         if not sec_items:
             mini_text = "本期搜尋結果未見符合本節主旨的相關新聞。"
@@ -3597,6 +3694,27 @@ def _generate_multiphase_synthesis(
                     language=language_label,
                     section_hints=section_hints,
                 )
+                if len(required_bucket_sx) >= 2:
+                    cited = _extract_cited_codes(mini_text)
+                    missing = [(b, c) for b, c in required_bucket_sx.items() if c not in cited]
+                    if missing:
+                        retry_hints = (
+                            section_hints
+                            + "\nRETRY STRICTLY — Previous draft missed required source-category citations. "
+                              "You MUST include all required category tokens listed above in this section."
+                        )
+                        mini_text = generate_section_mini_report(
+                            section_path=sec["section_path"],
+                            section_label=label,
+                            news_block=news_block,
+                            language=language_label,
+                            section_hints=retry_hints,
+                        )
+                        mini_text = _enforce_section_category_coverage_text(
+                            mini_text,
+                            required_bucket_sx,
+                            source_map,
+                        )
             except Exception as e:
                 print(f"[Multiphase] Section mini-report failed for {label}: {e}")
                 mini_text = "本期搜尋結果未見符合本節主旨的相關新聞。"
