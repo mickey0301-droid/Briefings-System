@@ -265,6 +265,8 @@ Requirements:
 1. Write 2-3 focused analytical paragraphs (NOT bullet points) covering the most important developments for this specific section.
 2. Use ONLY the provided news articles as your source material. If articles are insufficient, write what you can and note gaps.
 3. CRITICAL — Citation: preserve [S1][S2]... codes if present in the input. Append the code after the relevant sentence.
+3a. STRICT EVIDENCE GATE — Every substantive factual sentence in this section must be supportable by at least one provided [Sx] article. If you cannot support a claim with [Sx], do not write that claim.
+3b. Do NOT invent events, wars, operations, meetings, statements, or statistics not explicitly shown in the provided news block.
 4. Do NOT place raw URLs in the body text.
 4a. CRITICAL — Chapter role rules (apply based on the Section field above):
     • Chapters 二 through 六 (二、國際要聞 / 三、台美中要聞 / 四、台灣國安要聞 / 五、中國要聞 / 六、區域情勢):
@@ -280,7 +282,7 @@ Requirements:
 7. MANDATORY — Organizations: Chinese name（English Name）on first mention.
 8. MANDATORY — Place names: Use Taiwan (ROC) standard Chinese place names, NOT simplified Chinese or PRC variants. E.g. 奈及利亞（NOT 尼日利亞）、沙烏地阿拉伯（NOT 沙特阿拉伯）、烏克蘭（NOT 乌克兰）. Follow ROC government standard conventions throughout.
 9. Begin your response directly with the section content (no extra headers needed since the section title is already provided).
-10. If the provided articles genuinely have no relevant content for this section, write: 「本期搜尋結果未見符合本節主旨的相關新聞。」{hints_block}"""
+10. If the provided articles genuinely have no relevant content for this section, write exactly: 「本期搜尋結果未見符合本節主旨的相關新聞。」{hints_block}"""
 
     user_content = (
         f"Please write the mini-report for: {section_label}\n\n"

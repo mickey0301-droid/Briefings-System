@@ -1248,7 +1248,7 @@ def select_relevant_insights(news_items, insights):
 # Citation engine
 # =====================================================
 
-def _build_citation_source_map(items, max_sources=12):
+def _build_citation_source_map(items, max_sources=30):
 
     source_map = {}
     ordered = []
@@ -1289,6 +1289,8 @@ def _build_citation_source_map(items, max_sources=12):
             "url": url,
             "published_at": published_str,
             "edition": (item.get("edition") or "").strip(),
+            "summary": (item.get("summary") or "").strip(),
+            "content_hint": (item.get("content") or "")[:1200].strip(),
         })
 
         if len(ordered) >= max_sources:
@@ -1399,6 +1401,163 @@ def _render_citations(report_text, source_map, format_options):
         lines.append(_format_chicago_note(idx, src))
 
     return text + "\n" + "\n".join(lines)
+
+
+def _extract_text_features(text: str) -> set[str]:
+    """
+    Build lightweight matching features from a sentence/source text:
+    - CJK bigrams
+    - ASCII words (len >= 4)
+    """
+    s = (text or "").lower()
+    s = re.sub(r"https?://\S+", " ", s)
+    s = re.sub(r"[\[\]（）(){}「」『』【】,，。．；;：:！!？?\-\u3000]", " ", s)
+
+    feats: set[str] = set()
+    ascii_words = re.findall(r"[a-z][a-z0-9\-]{3,}", s)
+    feats.update(ascii_words)
+
+    cjk = "".join(re.findall(r"[\u4e00-\u9fff]", s))
+    for i in range(len(cjk) - 1):
+        bg = cjk[i:i + 2]
+        if bg.strip():
+            feats.add(bg)
+
+    return feats
+
+
+def _pick_best_source_code(text: str, source_feats: dict[str, set[str]]) -> tuple[str, int]:
+    line_feats = _extract_text_features(text)
+    if not line_feats:
+        return "", 0
+    best_code = ""
+    best_score = 0
+    for code, feats in source_feats.items():
+        if not feats:
+            continue
+        score = len(line_feats & feats)
+        if score > best_score:
+            best_score = score
+            best_code = code
+    return best_code, best_score
+
+
+def _major_heading_bucket(line: str) -> str:
+    s = (line or "").strip()
+    if s.startswith("## "):
+        s = s[3:].strip()
+    if s.startswith("二、"):
+        return "facts"
+    if s.startswith("三、"):
+        return "facts"
+    if s.startswith("四、"):
+        return "facts"
+    if s.startswith("五、"):
+        return "facts"
+    if s.startswith("六、"):
+        return "facts"
+    if s.startswith("七、"):
+        return "expert"
+    if s.startswith("八、"):
+        return "analysis"
+    return ""
+
+
+def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
+    """
+    Guardrail:
+    - Remove non-standard brackets (keep only [Sx] before final render)
+    - For facts/expert chapters, each substantive line must be supportable by source text
+      (keyword overlap heuristic). Unsupported lines are dropped.
+    - If a line lacks [Sx] but is supportable, inject best [Sx].
+    - If a line has wrong [Sx], rewrite to best [Sx].
+    """
+    if not report_text:
+        return report_text
+    if not source_map:
+        return report_text
+
+    source_feats: dict[str, set[str]] = {}
+    for code, src in (source_map or {}).items():
+        corpus = " ".join([
+            src.get("title", "") or "",
+            src.get("summary", "") or "",
+            src.get("content_hint", "") or "",
+            src.get("source", "") or "",
+        ])
+        source_feats[code] = _extract_text_features(corpus)
+
+    lines = report_text.splitlines()
+    out: list[str] = []
+    bucket = ""
+    min_supported_score = 2
+
+    for line in lines:
+        raw = line
+        stripped = raw.strip()
+
+        b = _major_heading_bucket(stripped)
+        if b:
+            bucket = b
+            out.append(raw)
+            continue
+
+        if not stripped:
+            out.append(raw)
+            continue
+        if stripped.startswith("#"):
+            out.append(raw)
+            continue
+
+        # Keep explicit no-data sentences.
+        if "本期無相關新聞" in stripped or "本期搜尋結果未見符合本節主旨的相關新聞" in stripped:
+            out.append(raw)
+            continue
+
+        # Remove all bracket markers except [Sx] before matching.
+        clean = re.sub(r"\[(?!\s*S\d+\s*\])[^]]+\]", "", raw).strip()
+        cited_codes = re.findall(r"\[\s*(S\d+)\s*\]", clean)
+
+        # Only enforce strictly in factual/expert sections.
+        needs_strict = bucket in {"facts", "expert"}
+        if not needs_strict:
+            out.append(clean)
+            continue
+
+        # Ignore very short lines (e.g., subsection labels).
+        text_wo_cite = re.sub(r"\[\s*S\d+\s*\]", "", clean).strip()
+        if len(text_wo_cite) < 12:
+            out.append(clean)
+            continue
+
+        best_code, best_score = _pick_best_source_code(text_wo_cite, source_feats)
+        best_cited_score = 0
+        if cited_codes:
+            line_feats = _extract_text_features(text_wo_cite)
+            for c in cited_codes:
+                feats = source_feats.get(c, set())
+                if feats:
+                    best_cited_score = max(best_cited_score, len(line_feats & feats))
+
+        # 1) Good existing citation: keep
+        if cited_codes and best_cited_score >= min_supported_score:
+            out.append(clean)
+            continue
+
+        # 2) Replace / inject with best supportable citation
+        if best_code and best_score >= min_supported_score:
+            rebuilt = re.sub(r"\[\s*S\d+\s*\]", "", clean).rstrip()
+            rebuilt = re.sub(r"\s{2,}", " ", rebuilt).rstrip()
+            rebuilt = f"{rebuilt}[{best_code}]"
+            out.append(rebuilt)
+            continue
+
+        # 3) Unsupported factual line: drop
+        continue
+
+    text = "\n".join(out)
+    text = re.sub(r"\n{3,}", "\n\n", text).strip()
+    return text
 
 
 # =====================================================
@@ -1856,9 +2015,15 @@ def _build_news_data_block(groups, source_map=None):
     item_to_sx = {}
     if source_map:
         for sx, info in source_map.items():
-            key = (info.get("url") or info.get("title") or "").lower().strip()
-            if key:
-                item_to_sx[key] = sx
+            url = (info.get("url") or "").strip()
+            title = (info.get("title") or "").strip()
+            key_combo = f"{url}||{title}".lower().strip()
+            if key_combo:
+                item_to_sx[key_combo] = sx
+            if url:
+                item_to_sx[url.lower().strip()] = sx
+            if title:
+                item_to_sx[title.lower().strip()] = sx
 
     blocks = []
     blocks.append(_format_item_block("國際要聞", groups["國際要聞"], item_to_sx))
@@ -2819,9 +2984,10 @@ def generate_segmented_report(
     # ── 6. 套用來源引用渲染（同 generate_report / _generate_multiphase_synthesis）
     # 先清除 AI 可能自行寫入的 [文字] 標記（字母開頭），再清除純數字括號如 [1] [12]
     # （純數字括號是 AI 自行編號而非合法 [Sx] 代碼，若保留會與尾註編號對不上）
-    final_report = re.sub(r'\[\s*(?!S\d+\s*\])([A-Za-z][^\]]{0,40})\]', '', final_report)
+    final_report = re.sub(r'\[(?!\s*S\d+\s*\])[^]]+\]', '', final_report)  # remove non-[Sx] brackets
     final_report = re.sub(r'\[(\d{1,3})\]', '', final_report)   # strip AI-written [1] [2]…[999]
     final_report = re.sub(r'[ \t]+', ' ', final_report)
+    final_report = _enforce_supported_citations(final_report, source_map)
     final_report = _render_citations(final_report, source_map, format_options)
 
     # ── 7. 強制補上尾註（確保即使 AI 未引用 [Sx]，仍在報告末附上來源清單）──
@@ -3068,9 +3234,10 @@ def _generate_multiphase_synthesis(
     final_report = "\n".join(report_lines)
 
     # ── 7. Clean up and render citations ────────────────────────────────
-    final_report = re.sub(r'\[\s*(?!S\d+\s*\])([A-Za-z][^\]]{0,40})\]', '', final_report)
+    final_report = re.sub(r'\[(?!\s*S\d+\s*\])[^]]+\]', '', final_report)
     final_report = re.sub(r'\[(\d{1,3})\]', '', final_report)
     final_report = re.sub(r'[ \t]+', ' ', final_report)
+    final_report = _enforce_supported_citations(final_report, source_map)
     final_report = _render_citations(final_report, source_map, format_options)
 
     # Force endnotes if not already present
@@ -3275,7 +3442,7 @@ def generate_report(
         )
 
     # 先建 source_map，再傳給 news_data_block，讓每篇新聞旁邊標 [Sx]
-    source_map = _build_citation_source_map(items, max_sources=12)
+    source_map = _build_citation_source_map(items, max_sources=30)
 
     groups = _group_items_for_report(items)
     news_data_block = _build_news_data_block(groups, source_map=source_map)
@@ -3332,6 +3499,8 @@ Requirements:
 9. You may cite multiple sources together, for example [S1][S3].
 10. Only use source markers that exist in the provided News data.
 11. Keep citations light and readable. Do not attach a citation to every single sentence unless necessary.
+11a. STRICT EVIDENCE GATE — Do NOT write any concrete event, person action, date, casualty, military operation, or policy claim unless it is explicitly present in the provided News data and can be cited with [Sx]. If no supporting [Sx] exists, you MUST omit the claim.
+11b. If a section has insufficient evidence from the provided News data, write 「本期搜尋結果未見符合本節主旨的相關新聞。」 and do not speculate.
 12. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
 12a. MANDATORY — Media country attribution: When citing a non-Chinese / non-English language media outlet, you MUST note which country it is from on first mention. Format: 「[媒體名稱]（[國家名稱]）」. Examples: 《朝日新聞》（日本）、《韓聯社》（韓國）、《明鏡週刊》（德國）、《費加羅報》（法國）。For articles that carry a language tag such as [日文], [韓文], [德文] etc. in their title, treat them as coming from the corresponding country. The news data also includes "來源" with a country in parentheses — use that country when provided. This rule has NO exceptions.
 13. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form (e.g., 川普、岸田文雄、習近平、賴清德). ENGLISH NAME RULES BY NATIONALITY — (A) Taiwan/ROC officials and PRC/China officials: DO NOT add a parenthetical English name. Write the Chinese name only (e.g., 行政院長卓榮泰, NOT 卓榮泰（Cho Jung-tai）; 國家主席習近平, NOT 習近平（Xi Jinping））. (B) Western figures: on first mention, follow with the common English name in parentheses — surname only. e.g. 美國總統川普（Donald Trump）、美國國務卿魯比歐（Marco Rubio）. (C) Japanese, Korean, Vietnamese: add the romanised form in square brackets after the Chinese name, then English in parentheses. e.g. 日本首相石破茂[Ishiba Shigeru]（Shigeru Ishiba）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）. (D) Other East Asian (Singapore, Thailand, Malaysia, etc.): use the person's internationally recognised English name in parentheses. CRITICAL — Before writing any parenthetical English name, be 100% certain. Known errors to avoid: 黃循財 = Lawrence Wong (Singapore PM since 2024), NOT Heng Swee Keat (who is 王瑞杰, former DPM). If uncertain of a name, OMIT the parenthetical entirely rather than guess. CRITICAL — The name inside the parentheses must contain ONLY the English name, no titles (correct: 川普（Donald Trump）; WRONG: 川普（President Donald Trump）). CRITICAL — Only assign a ministerial/official title to a person if the provided news articles explicitly confirm they currently hold that position; DO NOT rely on memory for current cabinet assignments. This rule has NO exceptions.
@@ -3417,14 +3586,15 @@ News data:
 
     report = response.output_text
 
-    # 清除 AI 可能生成的 [DW.com] / [BBC] 等來源標籤（非 [Sx] 格式）
-    report = re.sub(r'\[\s*(?!S\d+\s*\])([A-Za-z][^\]]{0,40})\]', '', report)
+    # 清除 AI 可能生成的非 [Sx] 方括號標記（如 [DW.com] / [上報] / [1]）
+    report = re.sub(r'\[(?!\s*S\d+\s*\])[^]]+\]', '', report)
     report = re.sub(r'[ \t]+', ' ', report)
 
     # 建立 citation source map
-    source_map = _build_citation_source_map(items, max_sources=12)
+    source_map = _build_citation_source_map(items, max_sources=30)
 
     # 插入 citation
+    report = _enforce_supported_citations(report, source_map)
     report = _render_citations(report, source_map, format_options)
 
     return report, items
