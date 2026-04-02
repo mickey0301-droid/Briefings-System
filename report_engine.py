@@ -2828,6 +2828,22 @@ def _classify_items_to_sections(all_items: list, sections: list) -> dict:
         cats = item.get("source_category") or item.get("category") or []
         return "中共官媒" in cats
 
+    def _published_epoch(item: dict) -> float:
+        p = item.get("published")
+        if isinstance(p, datetime):
+            try:
+                return p.timestamp()
+            except Exception:
+                return 0.0
+        s = str(p or "").strip()
+        m = re.match(r"(\d{4})-(\d{2})-(\d{2})", s)
+        if m:
+            try:
+                return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3))).timestamp()
+            except Exception:
+                return 0.0
+        return 0.0
+
     for item in all_items:
         title     = item.get("title")   or ""
         summary   = item.get("summary") or ""
@@ -2865,12 +2881,15 @@ def _classify_items_to_sections(all_items: list, sections: list) -> dict:
                 best_priority = priority
 
         if best_sec_id is not None:
-            result[best_sec_id].append((best_score, item))
+            result[best_sec_id].append((best_score, -best_priority, _published_epoch(item), item))
 
-    # Sort each bucket: title-matched (score=2) first, then summary-only (score=1)
+    # Sort each bucket by:
+    # 1) title-matched first
+    # 2) section-priority winner
+    # 3) newer article first
     for sec_id in result:
-        result[sec_id].sort(key=lambda x: -x[0])
-        result[sec_id] = [item for _, item in result[sec_id]]
+        result[sec_id].sort(key=lambda x: (-x[0], -x[1], -x[2]))
+        result[sec_id] = [item for _, _, _, item in result[sec_id]]
 
     # ── 區域要聞過濾：六大區域「_intl」子節不出現台美中要聞文章 ────────────────
     # IDs of the six regional "_intl" sub-sections under 六、區域情勢
@@ -2901,18 +2920,48 @@ def _cap_items_per_source(items: list, max_per_source: int = 3,
     contributes more than max_per_source items.  The input order (title-match
     first) is preserved so the best items are kept.
     """
-    source_counts: dict = {}
-    result: list = []
-    for item in items:
+    if not items:
+        return []
+
+    def _src_key(item: dict) -> str:
         src = (item.get("source") or "").strip().lower()
-        count = source_counts.get(src, 0)
-        if count >= max_per_source:
-            continue
-        source_counts[src] = count + 1
-        result.append(item)
-        if len(result) >= max_total:
+        if src:
+            return src
+        u = (item.get("original_url") or item.get("url") or "").strip().lower()
+        m = re.search(r"https?://([^/]+)", u)
+        return (m.group(1) if m else u or "unknown").strip()
+
+    # Build per-source buckets in current ranked order.
+    per_source: dict[str, list] = {}
+    source_order: list[str] = []
+    for item in items:
+        sk = _src_key(item)
+        if sk not in per_source:
+            per_source[sk] = []
+            source_order.append(sk)
+        per_source[sk].append(item)
+
+    # Round-robin selection across sources to avoid "front-of-list" dominance.
+    selected: list = []
+    source_counts: dict[str, int] = {k: 0 for k in source_order}
+    round_idx = 0
+    while len(selected) < max_total:
+        progressed = False
+        for sk in source_order:
+            if source_counts.get(sk, 0) >= max_per_source:
+                continue
+            bucket = per_source.get(sk, [])
+            if round_idx < len(bucket):
+                selected.append(bucket[round_idx])
+                source_counts[sk] = source_counts.get(sk, 0) + 1
+                progressed = True
+                if len(selected) >= max_total:
+                    break
+        if not progressed:
             break
-    return result
+        round_idx += 1
+
+    return selected
 
 
 def _unique_source_count(items: list) -> int:
