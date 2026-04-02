@@ -2906,6 +2906,7 @@ def _select_section_items_by_rules(sec: dict, items: list, min_score: int = 4, m
     selected = []
     used_urls = set()
     source_counts = {}
+    mandatory_bucket_selected = set()
 
     def _append_record(rec):
         if len(selected) >= max_total:
@@ -2932,6 +2933,26 @@ def _select_section_items_by_rules(sec: dict, items: list, min_score: int = 4, m
                 _append_record(people_records[0])
             cn_records.sort(key=lambda r: (r["score"], r["topic_rep"], r["published_epoch"]), reverse=True)
             _append_record(cn_records[0])
+            mandatory_bucket_selected.add("中國媒體")
+
+    # HARD RULE: if a source category has any >=4 article, at least one article
+    # from that category MUST be selected.
+    by_bucket_all = {}
+    for r in records:
+        by_bucket_all.setdefault(r["bucket"], []).append(r)
+    for bkt in by_bucket_all:
+        by_bucket_all[bkt].sort(key=lambda r: (r["score"], r["topic_rep"], r["published_epoch"]), reverse=True)
+
+    for bkt, recs in by_bucket_all.items():
+        if not recs:
+            continue
+        if bkt in mandatory_bucket_selected:
+            continue
+        _append_record(recs[0])
+        mandatory_bucket_selected.add(bkt)
+
+    # If mandatory picks exceed max_total, expand cap to preserve the hard rule.
+    effective_max_total = max(max_total, len(selected))
 
     # Main selection by score bands with category spread first.
     for score_band in [5, 4]:
@@ -2953,12 +2974,12 @@ def _select_section_items_by_rules(sec: dict, items: list, min_score: int = 4, m
         # Fill remaining slots from the same band.
         for r in band:
             _append_record(r)
-            if len(selected) >= max_total:
+            if len(selected) >= effective_max_total:
                 break
-        if len(selected) >= max_total:
+        if len(selected) >= effective_max_total:
             break
 
-    return selected[:max_total]
+    return selected[:effective_max_total]
 
 
 _FACTS_ONLY_SECTION_IDS = {
