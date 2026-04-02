@@ -1252,7 +1252,15 @@ def _build_citation_source_map(items, max_sources=30):
 
     source_map = {}
     ordered = []
-    seen = set()
+    seen_combo = set()
+    seen_url = set()
+    seen_title = set()
+
+    def _canon_title(t: str) -> str:
+        s = (t or "").lower()
+        s = re.sub(r"https?://\S+", " ", s)
+        s = re.sub(r"[\W_]+", "", s, flags=re.UNICODE)
+        return s.strip()
 
     for item in items:
         if not isinstance(item, dict):
@@ -1274,15 +1282,28 @@ def _build_citation_source_map(items, max_sources=30):
             except Exception:
                 published_str = str(raw_pub)[:10]
 
-        # 用 url+title 組合鍵，允許同一 URL 不同標題的文章（如新聞聯播各則）各自建立尾註
+        # 去重策略（更嚴格）：
+        # 1) 同 URL 僅保留 1 筆
+        # 2) 同 canonical title 僅保留 1 筆（避免同新聞多次進入尾註）
+        # 3) 保留原本 url+title 組合鍵作最後一道保險
         key = f"{url}||{title}".lower().strip()
         if not key:
             continue
+        title_key = _canon_title(title)
+        url_key = url.lower().strip()
 
-        if key in seen:
+        if key in seen_combo:
+            continue
+        if url_key and url_key in seen_url:
+            continue
+        if title_key and title_key in seen_title:
             continue
 
-        seen.add(key)
+        seen_combo.add(key)
+        if url_key:
+            seen_url.add(url_key)
+        if title_key:
+            seen_title.add(title_key)
         ordered.append({
             "title": title,
             "source": source,
@@ -1467,6 +1488,33 @@ def _pick_best_source_code(text: str, source_feats: dict[str, set[str]]) -> tupl
     return best_code, best_score
 
 
+def _pick_top_source_codes(text: str, source_feats: dict[str, set[str]], top_k: int = 2) -> list[tuple[str, int]]:
+    """Return top-k source codes by feature-overlap score for one sentence."""
+    line_feats = _extract_text_features(text)
+    if not line_feats:
+        return []
+    scored: list[tuple[str, int]] = []
+    for code, feats in source_feats.items():
+        if not feats:
+            continue
+        score = len(line_feats & feats)
+        if score > 0:
+            scored.append((code, score))
+    scored.sort(key=lambda x: x[1], reverse=True)
+    return scored[:max(1, top_k)]
+
+
+def _dedupe_keep_order(values: list[str]) -> list[str]:
+    seen = set()
+    out: list[str] = []
+    for v in values:
+        if v in seen:
+            continue
+        seen.add(v)
+        out.append(v)
+    return out
+
+
 def _major_heading_bucket(line: str) -> str:
     s = (line or "").strip()
     if s.startswith("## "):
@@ -1488,6 +1536,57 @@ def _major_heading_bucket(line: str) -> str:
     if s.startswith("八、"):
         return "analysis"
     return ""
+
+
+def _is_subsection_heading_line(line: str) -> bool:
+    s = (line or "").strip()
+    if re.match(r"^####\s+.+$", s):
+        return True
+    if re.match(r"^\d+\.\s*(國際要聞研析|台美中要聞研析)\s*$", s):
+        return True
+    return False
+
+
+def _fill_empty_subsections(report_text: str) -> str:
+    """
+    Ensure leaf subsections are never blank:
+    - `#### ...`
+    - chapter 8 lines like `1. 國際要聞研析`, `2. 台美中要聞研析`
+    """
+    if not report_text:
+        return report_text
+
+    lines = report_text.splitlines()
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        out.append(line)
+        if not _is_subsection_heading_line(line):
+            i += 1
+            continue
+
+        j = i + 1
+        has_content = False
+        while j < len(lines):
+            nxt = lines[j]
+            nxt_s = (nxt or "").strip()
+            if re.match(r"^#{1,4}\s+.+$", nxt_s) or _is_subsection_heading_line(nxt):
+                break
+            if nxt_s:
+                has_content = True
+                break
+            j += 1
+
+        if not has_content:
+            out.append("")
+            out.append("本期搜尋結果未見符合本節主旨的相關新聞。")
+
+        i += 1
+
+    text = "\n".join(out)
+    text = re.sub(r"\n{3,}", "\n\n", text).strip()
+    return text
 
 
 def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
@@ -1562,25 +1661,37 @@ def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
             out.append(clean)
             continue
 
-        best_code, best_score = _pick_best_source_code(text_wo_cite, source_feats)
-        best_cited_score = 0
-        if cited_codes:
-            line_feats = _extract_text_features(text_wo_cite)
-            for c in cited_codes:
-                feats = source_feats.get(c, set())
+        required_sources = 2 if bucket in {"summary", "analysis"} else 1
+        line_feats = _extract_text_features(text_wo_cite)
+        code_scores: dict[str, int] = {}
+        if line_feats:
+            for c, feats in source_feats.items():
                 if feats:
-                    best_cited_score = max(best_cited_score, len(line_feats & feats))
+                    code_scores[c] = len(line_feats & feats)
 
-        # 1) Good existing citation: keep
-        if cited_codes and best_cited_score >= min_supported_score:
+        cited_codes = _dedupe_keep_order(cited_codes)
+        supported_cited = [
+            c for c in cited_codes
+            if code_scores.get(c, 0) >= min_supported_score
+        ]
+
+        # 1) Existing citations already satisfy support threshold
+        if len(supported_cited) >= required_sources:
             out.append(clean)
             continue
 
-        # 2) Replace / inject with best supportable citation
-        if best_code and best_score >= min_supported_score:
+        # 2) Replace / inject with top-N supportable citations
+        top_codes = [
+            c for c, score in _pick_top_source_codes(
+                text_wo_cite, source_feats, top_k=max(2, required_sources)
+            )
+            if score >= min_supported_score
+        ]
+        top_codes = _dedupe_keep_order(top_codes)
+        if len(top_codes) >= required_sources:
             rebuilt = re.sub(r"\[\s*S\d+\s*\]", "", clean).rstrip()
             rebuilt = re.sub(r"\s{2,}", " ", rebuilt).rstrip()
-            rebuilt = f"{rebuilt}{_cite_token(best_code)}"
+            rebuilt += "".join(_cite_token(c) for c in top_codes[:required_sources])
             out.append(rebuilt)
             continue
 
@@ -1610,6 +1721,7 @@ def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
         i += 1
     text = "\n".join(repaired)
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
+    text = _fill_empty_subsections(text)
     return text
 
 
@@ -2803,6 +2915,35 @@ def _cap_items_per_source(items: list, max_per_source: int = 3,
     return result
 
 
+def _unique_source_count(items: list) -> int:
+    """Count distinct sources in a section bucket (source name first, URL domain fallback)."""
+    seen: set[str] = set()
+    for item in items or []:
+        if not isinstance(item, dict):
+            continue
+        src = (item.get("source") or "").strip().lower()
+        if not src:
+            url = (item.get("original_url") or item.get("url") or "").strip().lower()
+            if url:
+                m = re.search(r"https?://([^/]+)", url)
+                src = (m.group(1) if m else url).strip()
+        if src:
+            seen.add(src)
+    return len(seen)
+
+
+def _section_meets_source_diversity(sec_id: str, items: list) -> bool:
+    """
+    Enforce per-section source diversity floor to reduce single-source dominance:
+    - facts sections: >= 3 unique sources
+    - expert sections: >= 2 unique sources
+    """
+    if not items:
+        return False
+    min_unique = 2 if sec_id in _EXPERT_SECTION_IDS else 3
+    return _unique_source_count(items) >= min_unique
+
+
 def _enrich_items_with_content(items: list, max_workers: int = 12) -> None:
     """
     Fetch full article text for every item that lacks content, in parallel.
@@ -2914,6 +3055,8 @@ def generate_segmented_report(
     for _sec in _SEGMENTED_SECTIONS:
         _raw = section_buckets.get(_sec["id"], [])
         _chosen = _cap_items_per_source(_raw, max_per_source=3, max_total=12)
+        if not _section_meets_source_diversity(_sec["id"], _chosen):
+            _chosen = []
         selected_per_section[_sec["id"]] = _chosen
         for _item in _chosen:
             _url = (_item.get("original_url") or _item.get("url") or "").lower().strip()
@@ -2941,19 +3084,22 @@ def generate_segmented_report(
         # Build news block for this section — pass item_to_sx so AI gets [Sx] codes
         news_block = _format_item_block(label, items, item_to_sx)
 
-        # Generate mini-report for this section
-        _cb("stage", f"✍️  [{idx}/{total_sections}] AI 撰寫：{label}…")
-        try:
-            mini_text = generate_section_mini_report(
-                section_path=sec["section_path"],
-                section_label=label,
-                news_block=news_block,
-                language=language_label,
-                section_hints=_get_section_role_hint(sec["id"]),
-            )
-        except Exception as e:
-            print(f"[Segmented] Section mini-report failed for {label}: {e}")
-            mini_text = f"本期資料不足，無法生成{label}小報告。"
+        if not items:
+            mini_text = "本期搜尋結果未見符合本節主旨的相關新聞。"
+        else:
+            # Generate mini-report for this section
+            _cb("stage", f"✍️  [{idx}/{total_sections}] AI 撰寫：{label}…")
+            try:
+                mini_text = generate_section_mini_report(
+                    section_path=sec["section_path"],
+                    section_label=label,
+                    news_block=news_block,
+                    language=language_label,
+                    section_hints=_get_section_role_hint(sec["id"]),
+                )
+            except Exception as e:
+                print(f"[Segmented] Section mini-report failed for {label}: {e}")
+                mini_text = "本期搜尋結果未見符合本節主旨的相關新聞。"
 
         section_mini_reports.append((label, mini_text))
         section_mini_secs.append(sec)
@@ -3146,6 +3292,8 @@ def _generate_multiphase_synthesis(
                 if (ei.get("url") or "").lower() not in chosen_urls:
                     _chosen.append(ei)
                     chosen_urls.add((ei.get("url") or "").lower())
+        if not _section_meets_source_diversity(_sec["id"], _chosen):
+            _chosen = []
         selected_per_section[_sec["id"]] = _chosen
 
     # ── 4. Generate each section mini-report ────────────────────────────
@@ -3201,17 +3349,20 @@ def _generate_multiphase_synthesis(
 
         section_hints = "\n".join(sec_hints_parts)
 
-        try:
-            mini_text = generate_section_mini_report(
-                section_path=sec["section_path"],
-                section_label=label,
-                news_block=news_block,
-                language=language_label,
-                section_hints=section_hints,
-            )
-        except Exception as e:
-            print(f"[Multiphase] Section mini-report failed for {label}: {e}")
-            mini_text = f"本期資料不足，無法生成{label}小報告。"
+        if not sec_items:
+            mini_text = "本期搜尋結果未見符合本節主旨的相關新聞。"
+        else:
+            try:
+                mini_text = generate_section_mini_report(
+                    section_path=sec["section_path"],
+                    section_label=label,
+                    news_block=news_block,
+                    language=language_label,
+                    section_hints=section_hints,
+                )
+            except Exception as e:
+                print(f"[Multiphase] Section mini-report failed for {label}: {e}")
+                mini_text = "本期搜尋結果未見符合本節主旨的相關新聞。"
 
         section_mini_reports.append((label, mini_text))
         section_mini_secs.append(sec)
