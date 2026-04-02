@@ -1406,22 +1406,34 @@ def _render_citations(report_text, source_map, format_options):
 def _extract_text_features(text: str) -> set[str]:
     """
     Build lightweight matching features from a sentence/source text:
-    - CJK bigrams
+    - CJK trigrams
     - ASCII words (len >= 4)
     """
     s = (text or "").lower()
     s = re.sub(r"https?://\S+", " ", s)
     s = re.sub(r"[\[\]（）(){}「」『』【】,，。．；;：:！!？?\-\u3000]", " ", s)
 
+    stop_ascii = {
+        "with", "from", "that", "this", "have", "has", "were", "been", "being",
+        "will", "would", "could", "should", "about", "after", "before", "under",
+        "over", "their", "there", "which", "where", "when", "said", "says",
+        "report", "reports", "analysis", "global", "international", "security",
+        "china", "taiwan", "iran", "trump",
+    }
+    stop_cjk = {
+        "國際", "局勢", "安全", "報導", "指出", "表示", "相關", "新聞", "目前",
+        "可能", "中國", "台灣", "美國", "伊朗", "戰略", "分析", "地區",
+    }
+
     feats: set[str] = set()
     ascii_words = re.findall(r"[a-z][a-z0-9\-]{3,}", s)
-    feats.update(ascii_words)
+    feats.update(w for w in ascii_words if w not in stop_ascii)
 
     cjk = "".join(re.findall(r"[\u4e00-\u9fff]", s))
-    for i in range(len(cjk) - 1):
-        bg = cjk[i:i + 2]
-        if bg.strip():
-            feats.add(bg)
+    for i in range(len(cjk) - 2):
+        tg = cjk[i:i + 3]
+        if tg.strip() and tg not in stop_cjk:
+            feats.add(tg)
 
     return feats
 
@@ -1446,6 +1458,8 @@ def _major_heading_bucket(line: str) -> str:
     s = (line or "").strip()
     if s.startswith("## "):
         s = s[3:].strip()
+    if s.startswith("一、"):
+        return "summary"
     if s.startswith("二、"):
         return "facts"
     if s.startswith("三、"):
@@ -1467,7 +1481,7 @@ def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
     """
     Guardrail:
     - Remove non-standard brackets (keep only [Sx] before final render)
-    - For facts/expert chapters, each substantive line must be supportable by source text
+    - For all major chapters, each substantive line must be supportable by source text
       (keyword overlap heuristic). Unsupported lines are dropped.
     - If a line lacks [Sx] but is supportable, inject best [Sx].
     - If a line has wrong [Sx], rewrite to best [Sx].
@@ -1490,7 +1504,7 @@ def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
     lines = report_text.splitlines()
     out: list[str] = []
     bucket = ""
-    min_supported_score = 2
+    min_supported_score = 1
 
     for line in lines:
         raw = line
@@ -1516,10 +1530,12 @@ def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
 
         # Remove all bracket markers except [Sx] before matching.
         clean = re.sub(r"\[(?!\s*S\d+\s*\])[^]]+\]", "", raw).strip()
+        # Remove parenthesized pseudo-citations like (S29), (29), （S29）, （29）
+        clean = re.sub(r"[（(]\s*S?\d{1,3}\s*[)）]", "", clean).strip()
         cited_codes = re.findall(r"\[\s*(S\d+)\s*\]", clean)
 
-        # Only enforce strictly in factual/expert sections.
-        needs_strict = bucket in {"facts", "expert"}
+        # Enforce strictly in all substantive chapters (摘要/二~八).
+        needs_strict = bucket in {"summary", "facts", "expert", "analysis"}
         if not needs_strict:
             out.append(clean)
             continue
@@ -1556,6 +1572,27 @@ def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
         continue
 
     text = "\n".join(out)
+    # If a major section becomes empty after filtering, insert explicit no-data sentence.
+    lines2 = text.splitlines()
+    repaired: list[str] = []
+    i = 0
+    while i < len(lines2):
+        line = lines2[i]
+        repaired.append(line)
+        b = _major_heading_bucket((line or "").strip())
+        if b in {"summary", "facts", "expert", "analysis"}:
+            j = i + 1
+            has_content = False
+            while j < len(lines2) and not _major_heading_bucket((lines2[j] or "").strip()):
+                if (lines2[j] or "").strip() and not (lines2[j] or "").strip().startswith("#"):
+                    has_content = True
+                    break
+                j += 1
+            if not has_content:
+                repaired.append("")
+                repaired.append("本期搜尋結果未見符合本節主旨的相關新聞。")
+        i += 1
+    text = "\n".join(repaired)
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     return text
 
@@ -2504,6 +2541,11 @@ Do NOT repeat the content of the 19 section reports — synthesize and elevate.
 Do NOT place URLs in the body text.
 MANDATORY: cite specific outlet names (Chinese + English on first mention).
 MANDATORY: cite specific people with their titles.
+STRICT EVIDENCE GATE:
+- You MUST preserve and reuse [Sx] citations that already exist in the mini-reports.
+- Every substantive factual sentence in 一、摘要 and 八、研析 must include at least one valid [Sx].
+- Do NOT introduce any new event, operation, quote, or statistic that is not explicitly present in the mini-reports with [Sx].
+- If evidence is insufficient for a subsection, write exactly: 「本期搜尋結果未見符合本節主旨的相關新聞。」.
 
 Strategic Context:
 {insights_block or "None"}
@@ -2990,14 +3032,8 @@ def generate_segmented_report(
     final_report = _enforce_supported_citations(final_report, source_map)
     final_report = _render_citations(final_report, source_map, format_options)
 
-    # ── 7. 強制補上尾註（確保即使 AI 未引用 [Sx]，仍在報告末附上來源清單）──
-    # 先判斷 _render_citations 是否已加入 Notes/Sources；若已加入則不重複
-    if source_map and "## Notes" not in final_report and "## Sources" not in final_report:
-        endnote_lines = ["", "## 尾註", ""]
-        # 使用循序編號 1, 2, 3… 而非原始 S-number（S1=1, S5=5 等無意義映射）
-        for seq_idx, (_sx, info) in enumerate(source_map.items(), start=1):
-            endnote_lines.append(_format_chicago_note(seq_idx, info))
-        final_report = final_report + "\n" + "\n".join(endnote_lines)
+    # 不再強制附加「全來源尾註」；僅保留正文實際使用到的引用，
+    # 避免 Notes 與正文錯配。
 
     return final_report, all_items
 
@@ -3240,12 +3276,8 @@ def _generate_multiphase_synthesis(
     final_report = _enforce_supported_citations(final_report, source_map)
     final_report = _render_citations(final_report, source_map, format_options)
 
-    # Force endnotes if not already present
-    if source_map and "## Notes" not in final_report and "## Sources" not in final_report:
-        endnote_lines = ["", "## 尾註", ""]
-        for seq_idx, (_sx, info) in enumerate(source_map.items(), start=1):
-            endnote_lines.append(_format_chicago_note(seq_idx, info))
-        final_report = final_report + "\n" + "\n".join(endnote_lines)
+    # 不再強制附加「全來源尾註」；僅保留正文實際使用到的引用，
+    # 避免 Notes 與正文錯配。
 
     return final_report, items
 
@@ -3501,6 +3533,7 @@ Requirements:
 11. Keep citations light and readable. Do not attach a citation to every single sentence unless necessary.
 11a. STRICT EVIDENCE GATE — Do NOT write any concrete event, person action, date, casualty, military operation, or policy claim unless it is explicitly present in the provided News data and can be cited with [Sx]. If no supporting [Sx] exists, you MUST omit the claim.
 11b. If a section has insufficient evidence from the provided News data, write 「本期搜尋結果未見符合本節主旨的相關新聞。」 and do not speculate.
+11c. Every substantive factual sentence in sections 二 through 八 must carry at least one valid [Sx] marker.
 12. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
 12a. MANDATORY — Media country attribution: When citing a non-Chinese / non-English language media outlet, you MUST note which country it is from on first mention. Format: 「[媒體名稱]（[國家名稱]）」. Examples: 《朝日新聞》（日本）、《韓聯社》（韓國）、《明鏡週刊》（德國）、《費加羅報》（法國）。For articles that carry a language tag such as [日文], [韓文], [德文] etc. in their title, treat them as coming from the corresponding country. The news data also includes "來源" with a country in parentheses — use that country when provided. This rule has NO exceptions.
 13. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form (e.g., 川普、岸田文雄、習近平、賴清德). ENGLISH NAME RULES BY NATIONALITY — (A) Taiwan/ROC officials and PRC/China officials: DO NOT add a parenthetical English name. Write the Chinese name only (e.g., 行政院長卓榮泰, NOT 卓榮泰（Cho Jung-tai）; 國家主席習近平, NOT 習近平（Xi Jinping））. (B) Western figures: on first mention, follow with the common English name in parentheses — surname only. e.g. 美國總統川普（Donald Trump）、美國國務卿魯比歐（Marco Rubio）. (C) Japanese, Korean, Vietnamese: add the romanised form in square brackets after the Chinese name, then English in parentheses. e.g. 日本首相石破茂[Ishiba Shigeru]（Shigeru Ishiba）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）. (D) Other East Asian (Singapore, Thailand, Malaysia, etc.): use the person's internationally recognised English name in parentheses. CRITICAL — Before writing any parenthetical English name, be 100% certain. Known errors to avoid: 黃循財 = Lawrence Wong (Singapore PM since 2024), NOT Heng Swee Keat (who is 王瑞杰, former DPM). If uncertain of a name, OMIT the parenthetical entirely rather than guess. CRITICAL — The name inside the parentheses must contain ONLY the English name, no titles (correct: 川普（Donald Trump）; WRONG: 川普（President Donald Trump）). CRITICAL — Only assign a ministerial/official title to a person if the provided news articles explicitly confirm they currently hold that position; DO NOT rely on memory for current cabinet assignments. This rule has NO exceptions.
