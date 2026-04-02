@@ -1321,6 +1321,11 @@ def _to_superscript(n: int) -> str:
     return f"[{n}]"
 
 
+def _cite_token(code: str) -> str:
+    """Internal citation placeholder token used during drafting/merge."""
+    return f"[[CITE:{code}]]"
+
+
 def _format_chicago_note(idx: int, src: dict) -> str:
     """
     Chicago Notes & Bibliography – Web page format:
@@ -1368,15 +1373,15 @@ def _render_citations(report_text, source_map, format_options):
 
     text = _strip_ai_link_markers(report_text)
 
-    # 無論任何模式，都把 [Sx] 或 [ Sx ] 清掉或換成上標
+    # 無論任何模式，都把 internal cite placeholders 清掉或換成上標
     if notes_style == "none" and link_mode == "none":
+        text = re.sub(r'\[\[\s*CITE\s*:\s*S\d+\s*\]\]', '', text, flags=re.IGNORECASE)
         text = re.sub(r'\[\s*S\d+\s*\]', '', text)
         return text
 
     used_codes = []
 
-    def replace_code(match):
-        code = match.group(1)
+    def _record_code(code: str) -> str:
         if code not in source_map:
             return ""
         if code not in used_codes:
@@ -1384,7 +1389,15 @@ def _render_citations(report_text, source_map, format_options):
         idx = used_codes.index(code) + 1
         return _to_superscript(idx)
 
-    text = re.sub(r'\[\s*(S\d+)\s*\]', replace_code, text)
+    # Preferred placeholder format: [[CITE:Sx]]
+    text = re.sub(
+        r'\[\[\s*CITE\s*:\s*(S\d+)\s*\]\]',
+        lambda m: _record_code(m.group(1)),
+        text,
+        flags=re.IGNORECASE,
+    )
+    # Backward-compatible old format: [Sx]
+    text = re.sub(r'\[\s*(S\d+)\s*\]', lambda m: _record_code(m.group(1)), text)
 
     # 清理多餘空白
     text = re.sub(r'[ \t]+', ' ', text)
@@ -1480,11 +1493,11 @@ def _major_heading_bucket(line: str) -> str:
 def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
     """
     Guardrail:
-    - Remove non-standard brackets (keep only [Sx] before final render)
+    - Remove non-standard brackets (keep only [[CITE:Sx]]/[Sx] before final render)
     - For all major chapters, each substantive line must be supportable by source text
       (keyword overlap heuristic). Unsupported lines are dropped.
-    - If a line lacks [Sx] but is supportable, inject best [Sx].
-    - If a line has wrong [Sx], rewrite to best [Sx].
+    - If a line lacks citation but is supportable, inject best token.
+    - If a line has wrong citation, rewrite to best token.
     """
     if not report_text:
         return report_text
@@ -1528,8 +1541,11 @@ def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
             out.append(raw)
             continue
 
-        # Remove all bracket markers except [Sx] before matching.
-        clean = re.sub(r"\[(?!\s*S\d+\s*\])[^]]+\]", "", raw).strip()
+        # Remove all bracket markers except [[CITE:Sx]] and [Sx] before matching.
+        protected = re.sub(r"\[\[\s*CITE\s*:\s*(S\d+)\s*\]\]", r"@@CITE:\1@@", raw, flags=re.IGNORECASE)
+        protected = re.sub(r"\[\s*(S\d+)\s*\]", r"@@CITE:\1@@", protected)
+        clean = re.sub(r"\[[^]]+\]", "", protected).strip()
+        clean = re.sub(r"@@CITE:(S\d+)@@", r"[\1]", clean)
         # Remove parenthesized pseudo-citations like (S29), (29), （S29）, （29）
         clean = re.sub(r"[（(]\s*S?\d{1,3}\s*[)）]", "", clean).strip()
         cited_codes = re.findall(r"\[\s*(S\d+)\s*\]", clean)
@@ -1564,7 +1580,7 @@ def _enforce_supported_citations(report_text: str, source_map: dict) -> str:
         if best_code and best_score >= min_supported_score:
             rebuilt = re.sub(r"\[\s*S\d+\s*\]", "", clean).rstrip()
             rebuilt = re.sub(r"\s{2,}", " ", rebuilt).rstrip()
-            rebuilt = f"{rebuilt}[{best_code}]"
+            rebuilt = f"{rebuilt}{_cite_token(best_code)}"
             out.append(rebuilt)
             continue
 
@@ -2020,7 +2036,7 @@ def _format_item_block(label, items, item_to_sx=None):
         if item_to_sx:
             key = f"{url}||{title}".lower().strip()
             sx_code = item_to_sx.get(key, "")
-        sx_label = f" [{sx_code}]" if sx_code else ""
+        sx_label = f" {_cite_token(sx_code)}" if sx_code else ""
 
         lines.append(f"{idx}.{sx_label} 標題: {title}")
         # 來源＋國家（供 AI 在報告中提及媒體國籍）
@@ -2542,9 +2558,9 @@ Do NOT place URLs in the body text.
 MANDATORY: cite specific outlet names (Chinese + English on first mention).
 MANDATORY: cite specific people with their titles.
 STRICT EVIDENCE GATE:
-- You MUST preserve and reuse [Sx] citations that already exist in the mini-reports.
-- Every substantive factual sentence in 一、摘要 and 八、研析 must include at least one valid [Sx].
-- Do NOT introduce any new event, operation, quote, or statistic that is not explicitly present in the mini-reports with [Sx].
+- You MUST preserve and reuse citation tokens like [[CITE:Sx]] that already exist in the mini-reports.
+- Every substantive factual sentence in 一、摘要 and 八、研析 must include at least one valid [[CITE:Sx]] token.
+- Do NOT introduce any new event, operation, quote, or statistic that is not explicitly present in the mini-reports with citation token support.
 - If evidence is insufficient for a subsection, write exactly: 「本期搜尋結果未見符合本節主旨的相關新聞。」.
 
 Strategic Context:
@@ -3026,7 +3042,9 @@ def generate_segmented_report(
     # ── 6. 套用來源引用渲染（同 generate_report / _generate_multiphase_synthesis）
     # 先清除 AI 可能自行寫入的 [文字] 標記（字母開頭），再清除純數字括號如 [1] [12]
     # （純數字括號是 AI 自行編號而非合法 [Sx] 代碼，若保留會與尾註編號對不上）
-    final_report = re.sub(r'\[(?!\s*S\d+\s*\])[^]]+\]', '', final_report)  # remove non-[Sx] brackets
+    final_report = re.sub(r'\[\[\s*CITE\s*:\s*(S\d+)\s*\]\]', r'@@CITE:\1@@', final_report, flags=re.IGNORECASE)
+    final_report = re.sub(r'\[(?!\s*S\d+\s*\])[^]]+\]', '', final_report)
+    final_report = re.sub(r'@@CITE:(S\d+)@@', r'[[CITE:\1]]', final_report)
     final_report = re.sub(r'\[(\d{1,3})\]', '', final_report)   # strip AI-written [1] [2]…[999]
     final_report = re.sub(r'[ \t]+', ' ', final_report)
     final_report = _enforce_supported_citations(final_report, source_map)
@@ -3270,7 +3288,9 @@ def _generate_multiphase_synthesis(
     final_report = "\n".join(report_lines)
 
     # ── 7. Clean up and render citations ────────────────────────────────
+    final_report = re.sub(r'\[\[\s*CITE\s*:\s*(S\d+)\s*\]\]', r'@@CITE:\1@@', final_report, flags=re.IGNORECASE)
     final_report = re.sub(r'\[(?!\s*S\d+\s*\])[^]]+\]', '', final_report)
+    final_report = re.sub(r'@@CITE:(S\d+)@@', r'[[CITE:\1]]', final_report)
     final_report = re.sub(r'\[(\d{1,3})\]', '', final_report)
     final_report = re.sub(r'[ \t]+', ' ', final_report)
     final_report = _enforce_supported_citations(final_report, source_map)
@@ -3523,17 +3543,17 @@ Requirements:
 1. Write in formal report style with coherent paragraphs.
 2. Do NOT place URLs anywhere in the body text.
 3. Do NOT write the string 【連結】 anywhere.
-4. Do NOT write source names in brackets such as [DW.com], [Reuters.com], [BBC]. Only use [S1], [S2] style markers.
+4. Do NOT write source names in brackets such as [DW.com], [Reuters.com], [BBC]. Only use citation tokens like [[CITE:S1]], [[CITE:S2]].
 5. Use ONLY the provided news items as source material.
 6. Strategic Context is analyst guidance only. Do NOT cite it as evidence.
 7. Synthesize multiple news items into broader analysis instead of summarizing one article at a time.
-8. When making a factual claim based on a source, append source markers like [S1], [S2].
-9. You may cite multiple sources together, for example [S1][S3].
-10. Only use source markers that exist in the provided News data.
+8. When making a factual claim based on a source, append citation tokens like [[CITE:S1]], [[CITE:S2]].
+9. You may cite multiple sources together, for example [[CITE:S1]][[CITE:S3]].
+10. Only use citation tokens that exist in the provided News data.
 11. Keep citations light and readable. Do not attach a citation to every single sentence unless necessary.
-11a. STRICT EVIDENCE GATE — Do NOT write any concrete event, person action, date, casualty, military operation, or policy claim unless it is explicitly present in the provided News data and can be cited with [Sx]. If no supporting [Sx] exists, you MUST omit the claim.
+11a. STRICT EVIDENCE GATE — Do NOT write any concrete event, person action, date, casualty, military operation, or policy claim unless it is explicitly present in the provided News data and can be cited with [[CITE:Sx]]. If no supporting citation token exists, you MUST omit the claim.
 11b. If a section has insufficient evidence from the provided News data, write 「本期搜尋結果未見符合本節主旨的相關新聞。」 and do not speculate.
-11c. Every substantive factual sentence in sections 二 through 八 must carry at least one valid [Sx] marker.
+11c. Every substantive factual sentence in sections 二 through 八 must carry at least one valid [[CITE:Sx]] token.
 12. MANDATORY — Media outlets: NEVER use vague collective terms such as "歐洲媒體", "西方媒體", "美國媒體", "外媒". Always write the specific outlet name. On first mention, provide both Chinese and English, e.g. 德國之聲（Deutsche Welle）、法新社（Agence France-Presse, AFP）、路透社（Reuters）、《紐約時報》（New York Times）. This rule has NO exceptions.
 12a. MANDATORY — Media country attribution: When citing a non-Chinese / non-English language media outlet, you MUST note which country it is from on first mention. Format: 「[媒體名稱]（[國家名稱]）」. Examples: 《朝日新聞》（日本）、《韓聯社》（韓國）、《明鏡週刊》（德國）、《費加羅報》（法國）。For articles that carry a language tag such as [日文], [韓文], [德文] etc. in their title, treat them as coming from the corresponding country. The news data also includes "來源" with a country in parentheses — use that country when provided. This rule has NO exceptions.
 13. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form (e.g., 川普、岸田文雄、習近平、賴清德). ENGLISH NAME RULES BY NATIONALITY — (A) Taiwan/ROC officials and PRC/China officials: DO NOT add a parenthetical English name. Write the Chinese name only (e.g., 行政院長卓榮泰, NOT 卓榮泰（Cho Jung-tai）; 國家主席習近平, NOT 習近平（Xi Jinping））. (B) Western figures: on first mention, follow with the common English name in parentheses — surname only. e.g. 美國總統川普（Donald Trump）、美國國務卿魯比歐（Marco Rubio）. (C) Japanese, Korean, Vietnamese: add the romanised form in square brackets after the Chinese name, then English in parentheses. e.g. 日本首相石破茂[Ishiba Shigeru]（Shigeru Ishiba）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）. (D) Other East Asian (Singapore, Thailand, Malaysia, etc.): use the person's internationally recognised English name in parentheses. CRITICAL — Before writing any parenthetical English name, be 100% certain. Known errors to avoid: 黃循財 = Lawrence Wong (Singapore PM since 2024), NOT Heng Swee Keat (who is 王瑞杰, former DPM). If uncertain of a name, OMIT the parenthetical entirely rather than guess. CRITICAL — The name inside the parentheses must contain ONLY the English name, no titles (correct: 川普（Donald Trump）; WRONG: 川普（President Donald Trump）). CRITICAL — Only assign a ministerial/official title to a person if the provided news articles explicitly confirm they currently hold that position; DO NOT rely on memory for current cabinet assignments. This rule has NO exceptions.
@@ -3620,7 +3640,9 @@ News data:
     report = response.output_text
 
     # 清除 AI 可能生成的非 [Sx] 方括號標記（如 [DW.com] / [上報] / [1]）
+    report = re.sub(r'\[\[\s*CITE\s*:\s*(S\d+)\s*\]\]', r'@@CITE:\1@@', report, flags=re.IGNORECASE)
     report = re.sub(r'\[(?!\s*S\d+\s*\])[^]]+\]', '', report)
+    report = re.sub(r'@@CITE:(S\d+)@@', r'[[CITE:\1]]', report)
     report = re.sub(r'[ \t]+', ' ', report)
 
     # 建立 citation source map
