@@ -723,6 +723,27 @@ def _kw_matches(item: dict, keywords_str: str) -> bool:
     return any(t in text for t in terms)
 
 
+def _resolve_category_keywords(categories, category_keywords: dict) -> str:
+    """
+    合併來源所屬多個 category 的關鍵字，避免只吃到第一個 category。
+    例：["自訂台灣媒體", "全球媒體"] -> "kwA OR kwB OR kwC"
+    """
+    cats = categories or []
+    if isinstance(cats, str):
+        cats = [cats]
+
+    merged_terms: list[str] = []
+    seen: set[str] = set()
+    for cat in cats:
+        kw = (category_keywords or {}).get((cat or "").strip(), "") or ""
+        for term in kw.split(" OR "):
+            t = term.strip()
+            if t and t not in seen:
+                seen.add(t)
+                merged_terms.append(t)
+    return " OR ".join(merged_terms)
+
+
 def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_source=20,
                               start_time=None, end_time=None, status_callback=None):
     """
@@ -891,29 +912,41 @@ def fetch_items_from_sources(selected_sources, all_sources=None, limit_per_sourc
             return all_phase
         # ── 一般來源（非全球媒體）：原有邏輯 ────────────────────────────────
 
-        # type=rss：優先使用 rss/rss_url/feed/feed_url，
-        #           再看 url 是否為完整 http 網址（使用者手填的真實 RSS feed）
-        # type=domain（或其他）：永遠走 Google News RSS site: 查詢
+        # 一般來源 URL 決策：
+        # - 有分類關鍵字時：rss/domain 一致，優先走 Google News site:domain 關鍵字查詢
+        # - 無分類關鍵字時：rss 優先直接 feed，domain/其他走 Google News site:domain
+        merged_cat_kw = _resolve_category_keywords(cats, category_keywords)
         rss_url = None
+        direct_rss = None
         if src_type == "rss":
-            rss_url = (
+            direct_rss = (
                 src.get("rss") or src.get("rss_url")
                 or src.get("feed") or src.get("feed_url")
             )
-            if not rss_url and url_field.startswith("http"):
-                rss_url = url_field
+            if not direct_rss and url_field.startswith("http"):
+                direct_rss = url_field
 
-        if not rss_url:
-            # domain 或沒有直接 feed URL → Google News site: 查詢（帶關鍵字）
-            domain = (src.get("domain") or src.get("site")
-                      or _extract_news_domain(url_field) or url_field)
-            if not domain:
-                return []
+        domain = (
+            src.get("domain") or src.get("site")
+            or _extract_news_domain(url_field)
+            or _extract_news_domain(direct_rss or "")
+            or url_field
+        )
+        if domain:
             domain = domain.lower().replace("www.", "")
-            cat_kw = category_keywords.get(cat, "")
+
+        if merged_cat_kw and domain:
             rss_url = _build_google_news_rss_for_domain(
-                domain, start_time=start_time, end_time=end_time, keywords=cat_kw
+                domain, start_time=start_time, end_time=end_time, keywords=merged_cat_kw
             )
+        elif direct_rss:
+            rss_url = direct_rss
+        elif domain:
+            rss_url = _build_google_news_rss_for_domain(
+                domain, start_time=start_time, end_time=end_time, keywords=merged_cat_kw
+            )
+        else:
+            return []
 
         fetched = _fetch_rss_items(rss_url, src_name, limit=limit_per_source)
 
@@ -978,23 +1011,37 @@ def debug_fetch_source(src: dict, start_time=None, end_time=None) -> dict:
     rss_url = None
     domain_used = None
 
+    direct_rss = None
     if src_type == "rss":
-        rss_url = (
+        direct_rss = (
             src.get("rss") or src.get("rss_url")
             or src.get("feed") or src.get("feed_url")
         )
-        if not rss_url and url_field.startswith("http"):
-            rss_url = url_field
+        if not direct_rss and url_field.startswith("http"):
+            direct_rss = url_field
 
-    if not rss_url:
-        domain_used = (src.get("domain") or src.get("site")
-                       or _extract_news_domain(url_field) or url_field)
-        if domain_used:
-            domain_used = domain_used.lower().replace("www.", "")
-        cat_kw = category_keywords.get(cat, "")
+    domain_used = (
+        src.get("domain") or src.get("site")
+        or _extract_news_domain(url_field)
+        or _extract_news_domain(direct_rss or "")
+        or url_field
+    )
+    if domain_used:
+        domain_used = domain_used.lower().replace("www.", "")
+    merged_cat_kw = _resolve_category_keywords(cats, category_keywords)
+
+    if merged_cat_kw and domain_used:
         rss_url = _build_google_news_rss_for_domain(
-            domain_used or "", start_time=start_time, end_time=end_time, keywords=cat_kw
+            domain_used or "", start_time=start_time, end_time=end_time, keywords=merged_cat_kw
         )
+    elif direct_rss:
+        rss_url = direct_rss
+    elif domain_used:
+        rss_url = _build_google_news_rss_for_domain(
+            domain_used or "", start_time=start_time, end_time=end_time, keywords=merged_cat_kw
+        )
+    else:
+        rss_url = ""
 
     # ── 發出 HTTP 請求，收集診斷資訊 ──
     result = {

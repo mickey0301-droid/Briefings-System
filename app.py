@@ -1542,7 +1542,7 @@ elif selected_page == "Sources":
     # ── 自訂台灣媒體 ──────────────────────────────────────────────────────────
     with src_tab_tw:
         with st.expander("🔍 Google News RSS 關鍵字篩選", expanded=False):
-            st.caption("此類別的 domain 來源會以下列關鍵字向 Google News 查詢，只抓取符合的報導。用 OR 分隔多個關鍵字，留空代表不篩選。")
+            st.caption("此類別的 rss/domain 來源都會套用下列關鍵字向 Google News 查詢；用 OR 分隔多個關鍵字，留空代表不篩選。")
             _kw_tw = st.text_area(
                 "自訂台灣媒體 關鍵字",
                 value=_cat_kw.get("自訂台灣媒體", DEFAULT_CATEGORY_KEYWORDS.get("自訂台灣媒體", "")),
@@ -1638,7 +1638,7 @@ elif selected_page == "Sources":
     # ── 自訂國際媒體 ──────────────────────────────────────────────────────────
     with src_tab_intl:
         with st.expander("🔍 Google News RSS 關鍵字篩選", expanded=False):
-            st.caption("此類別的 domain 來源會以下列關鍵字向 Google News 查詢，只抓取符合的報導。用 OR 分隔多個關鍵字，留空代表不篩選。")
+            st.caption("此類別的 rss/domain 來源都會套用下列關鍵字向 Google News 查詢；用 OR 分隔多個關鍵字，留空代表不篩選。")
             _kw_intl = st.text_area(
                 "自訂國際媒體 關鍵字",
                 value=_cat_kw.get("自訂國際媒體", DEFAULT_CATEGORY_KEYWORDS.get("自訂國際媒體", "")),
@@ -1924,7 +1924,7 @@ elif selected_page == "Sources":
     # ── 全球媒體 ──────────────────────────────────────────────────────────────
     with src_tab_global:
         with st.expander("🔍 Google News RSS 關鍵字篩選", expanded=False):
-            st.caption("此類別的 domain 來源會以下列關鍵字向 Google News 查詢，只抓取符合的報導。用 OR 分隔多個關鍵字，留空代表不篩選。後段仍依覆蓋熱度排名。")
+            st.caption("此類別的 rss/domain 來源都會套用下列關鍵字向 Google News 查詢；用 OR 分隔多個關鍵字，留空代表不篩選。後段仍依覆蓋熱度排名。")
             _kw_global = st.text_area(
                 "全球媒體 關鍵字",
                 value=_cat_kw.get("全球媒體", DEFAULT_CATEGORY_KEYWORDS.get("全球媒體", "")),
