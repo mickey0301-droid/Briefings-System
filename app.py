@@ -129,6 +129,73 @@ def _clean_batch_df(df: pd.DataFrame):
     return rows
 
 
+def _score_item_section_relevance(item: dict, section: dict, eval_query_fn) -> int:
+    """
+    Score relevance of one item to one report section:
+    0 = no match, 5 = strongest match.
+    """
+    title = str(item.get("title", "") or "")
+    summary = str(item.get("summary", "") or "")
+    full_text = f"{title} {summary}".strip()
+    kw_zh = section.get("kw_zh", "") or ""
+    kw_en = section.get("kw_en", "") or ""
+
+    if not full_text:
+        return 0
+
+    zh_full = bool(eval_query_fn(full_text, kw_zh)) if kw_zh else False
+    en_full = bool(eval_query_fn(full_text, kw_en)) if kw_en else False
+    if not (zh_full or en_full):
+        return 0
+
+    zh_title = bool(eval_query_fn(title, kw_zh)) if kw_zh else False
+    en_title = bool(eval_query_fn(title, kw_en)) if kw_en else False
+
+    score = 3
+    if zh_title or en_title:
+        score = 4
+    if (zh_title and en_title) or (zh_full and en_full):
+        score = 5
+
+    topic_gate = getattr(report_engine, "_section_topic_gate", None)
+    if callable(topic_gate):
+        try:
+            if topic_gate(section.get("id", ""), item):
+                score = min(5, score + 1)
+            else:
+                score = max(0, score - 2)
+        except Exception:
+            pass
+
+    return int(max(0, min(5, score)))
+
+
+def _build_section_relevance_df(candidate_items: list) -> pd.DataFrame:
+    sections = getattr(report_engine, "_SEGMENTED_SECTIONS", []) or []
+    eval_query_fn = getattr(report_engine, "_eval_section_query", None)
+    if not callable(eval_query_fn) or not sections:
+        return pd.DataFrame()
+
+    section_cols = [
+        str(sec.get("label", sec.get("id", "")) or sec.get("id", ""))
+        for sec in sections
+    ]
+
+    rows = []
+    for idx, it in enumerate(candidate_items or [], start=1):
+        if not isinstance(it, dict):
+            continue
+        row = {
+            "id": idx,
+            "title": str(it.get("title", "") or ""),
+        }
+        for sec, col in zip(sections, section_cols):
+            row[col] = _score_item_section_relevance(it, sec, eval_query_fn)
+        rows.append(row)
+
+    return pd.DataFrame(rows, columns=["id", "title"] + section_cols)
+
+
 def _profiles_map(profiles):
     result = {}
     for p in profiles:
@@ -1546,17 +1613,35 @@ if selected_page == "Briefings":
                             table_rows,
                             columns=["id", "title", "source", "published", "region", "category", "url"]
                         )
+                        relevance_df = _build_section_relevance_df(candidate_items)
 
                         with st.expander(f"展開查看本次全部備選資料（{len(candidates_df)} 筆）", expanded=False):
-                            st.dataframe(candidates_df, use_container_width=True, height=360)
-                            st.download_button(
-                                "下載備選資料 CSV",
-                                data=candidates_df.to_csv(index=False).encode("utf-8-sig"),
-                                file_name=f"{base_name}_candidates.csv",
-                                mime="text/csv",
-                                key=f"download_candidates_{base_name}",
-                                use_container_width=True,
-                            )
+                            left_col, right_col = st.columns(2)
+                            with left_col:
+                                st.caption("文章清單")
+                                st.dataframe(candidates_df, use_container_width=True, height=420)
+                                st.download_button(
+                                    "下載備選資料 CSV",
+                                    data=candidates_df.to_csv(index=False).encode("utf-8-sig"),
+                                    file_name=f"{base_name}_candidates.csv",
+                                    mime="text/csv",
+                                    key=f"download_candidates_{base_name}",
+                                    use_container_width=True,
+                                )
+                            with right_col:
+                                st.caption("19章節相關性評估（0~5）")
+                                if relevance_df.empty:
+                                    st.caption("無法建立章節評估表（章節設定或評分函式不可用）。")
+                                else:
+                                    st.dataframe(relevance_df, use_container_width=True, height=420)
+                                    st.download_button(
+                                        "下載相關性評估 CSV",
+                                        data=relevance_df.to_csv(index=False).encode("utf-8-sig"),
+                                        file_name=f"{base_name}_section_relevance.csv",
+                                        mime="text/csv",
+                                        key=f"download_relevance_{base_name}",
+                                        use_container_width=True,
+                                    )
                     else:
                         st.caption("本次沒有可顯示的備選文章資料。")
 
