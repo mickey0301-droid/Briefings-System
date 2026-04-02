@@ -692,7 +692,47 @@ def _maybe_show_sync_warning() -> None:
 
 def _build_source_editor_df(source_items, blank_rows=8):
     columns = ["name", "type", "domain", "language", "url", "category", "region", "enabled", "description"]
-    rows = [source_to_editor_row(x) for x in source_items]
+    category_keywords = load_category_keywords()
+    rows = []
+
+    def _looks_like_gnews_search_url(url: str) -> bool:
+        u = (url or "").strip().lower()
+        return u.startswith("https://news.google.com/rss/search?") or u.startswith("http://news.google.com/rss/search?")
+
+    for src in source_items:
+        row = source_to_editor_row(src)
+
+        cats = src.get("category", []) or []
+        if isinstance(cats, str):
+            cats = [cats]
+        try:
+            merged_kw = report_engine._resolve_category_keywords(cats, category_keywords)
+        except Exception:
+            merged_kw = ""
+
+        # 只有在「可自動生成」的情況才覆寫 url：
+        # 1) 原本 url 為空，或
+        # 2) 原本就是 Google News 搜尋 URL（避免覆蓋手動貼入的自訂 RSS）
+        current_url = (row.get("url") or "").strip()
+        if merged_kw and (not current_url or _looks_like_gnews_search_url(current_url)):
+            raw_domain = (src.get("domain") or row.get("domain") or "").strip()
+            domain = report_engine._extract_news_domain(raw_domain) or raw_domain
+            if not domain:
+                domain = report_engine._extract_news_domain(current_url or "")
+            if domain:
+                domain = domain.replace("https://", "").replace("http://", "").split("/")[0]
+                lang = (row.get("language") or "zh-TW").strip() or "zh-TW"
+                lang_params = report_engine._LANG_NEWS_PARAMS.get(
+                    lang, report_engine._LANG_NEWS_PARAMS.get("zh-TW", {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"})
+                )
+                row["url"] = report_engine._build_google_news_rss_for_domain(
+                    domain=domain,
+                    keywords=merged_kw,
+                    lang_params=lang_params,
+                )
+
+        rows.append(row)
+
     df = pd.DataFrame(rows, columns=columns) if rows else pd.DataFrame(columns=columns)
     df = _append_blank_rows(df, blank_rows=blank_rows)
     return df
