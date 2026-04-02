@@ -690,14 +690,52 @@ def _maybe_show_sync_warning() -> None:
         st.warning(_GITHUB_SYNC_WARNING + detail)
 
 
+def _looks_like_gnews_search_url(url: str) -> bool:
+    u = (url or "").strip().lower()
+    return u.startswith("https://news.google.com/rss/search?") or u.startswith("http://news.google.com/rss/search?")
+
+
+def _build_gnews_search_url_with_keywords(domain: str, language: str, keywords: str) -> str:
+    domain = (domain or "").strip().replace("https://", "").replace("http://", "").split("/")[0]
+    if not domain:
+        return ""
+    lang = (language or "zh-TW").strip() or "zh-TW"
+    lang_params = report_engine._LANG_NEWS_PARAMS.get(
+        lang,
+        report_engine._LANG_NEWS_PARAMS.get("zh-TW", {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"}),
+    )
+    return report_engine._build_google_news_rss_for_domain(
+        domain=domain,
+        keywords=(keywords or "").strip(),
+        lang_params=lang_params,
+    )
+
+
+def _append_keywords_to_gnews_url(url: str, keywords: str) -> str:
+    import urllib.parse as _up
+
+    base = (url or "").strip()
+    kw = (keywords or "").strip()
+    if not base or not kw:
+        return base
+    try:
+        parsed = _up.urlparse(base)
+        qs = _up.parse_qs(parsed.query)
+        q = (qs.get("q", [""])[0] or "").strip()
+        if q and f"({kw})" not in q:
+            q = f"{q} ({kw})"
+            qs["q"] = [q]
+            new_query = _up.urlencode({k: v[0] for k, v in qs.items()})
+            return _up.urlunparse(parsed._replace(query=new_query))
+    except Exception:
+        return base
+    return base
+
+
 def _build_source_editor_df(source_items, blank_rows=8):
     columns = ["name", "type", "domain", "language", "url", "category", "region", "enabled", "description"]
     category_keywords = load_category_keywords()
     rows = []
-
-    def _looks_like_gnews_search_url(url: str) -> bool:
-        u = (url or "").strip().lower()
-        return u.startswith("https://news.google.com/rss/search?") or u.startswith("http://news.google.com/rss/search?")
 
     for src in source_items:
         row = source_to_editor_row(src)
@@ -720,15 +758,10 @@ def _build_source_editor_df(source_items, blank_rows=8):
             if not domain:
                 domain = report_engine._extract_news_domain(current_url or "")
             if domain:
-                domain = domain.replace("https://", "").replace("http://", "").split("/")[0]
-                lang = (row.get("language") or "zh-TW").strip() or "zh-TW"
-                lang_params = report_engine._LANG_NEWS_PARAMS.get(
-                    lang, report_engine._LANG_NEWS_PARAMS.get("zh-TW", {"hl": "zh-TW", "gl": "TW", "ceid": "TW:zh-Hant"})
-                )
-                row["url"] = report_engine._build_google_news_rss_for_domain(
+                row["url"] = _build_gnews_search_url_with_keywords(
                     domain=domain,
+                    language=(row.get("language") or "zh-TW"),
                     keywords=merged_kw,
-                    lang_params=lang_params,
                 )
 
         rows.append(row)
@@ -740,7 +773,28 @@ def _build_source_editor_df(source_items, blank_rows=8):
 
 def _build_expert_editor_df(expert_items, blank_rows=8):
     columns = ["name_zh", "name_sc", "name_en", "aliases", "category", "affiliation", "region", "language", "rss_url", "enabled", "description"]
-    rows = [expert_to_editor_row(x) for x in expert_items]
+    category_keywords = load_category_keywords()
+    from utils.loaders import expert_gnews_urls as _expert_gnews_urls
+
+    rows = []
+    for exp in expert_items:
+        row = expert_to_editor_row(exp)
+        cats = exp.get("category", []) or []
+        if isinstance(cats, str):
+            cats = [cats]
+        try:
+            merged_kw = report_engine._resolve_category_keywords(cats, category_keywords)
+        except Exception:
+            merged_kw = ""
+        current_rss = (row.get("rss_url") or "").strip()
+        if merged_kw and (not current_rss or _looks_like_gnews_search_url(current_rss)):
+            pairs = _expert_gnews_urls(exp)
+            if pairs:
+                row["rss_url"] = _append_keywords_to_gnews_url(pairs[0][1], merged_kw)
+            elif current_rss:
+                row["rss_url"] = _append_keywords_to_gnews_url(current_rss, merged_kw)
+        rows.append(row)
+
     df = pd.DataFrame(rows, columns=columns) if rows else pd.DataFrame(columns=columns)
     df = _append_blank_rows(df, blank_rows=blank_rows)
     return df
@@ -756,6 +810,7 @@ def _render_expert_tab(
 ):
     """Renders add / edit / delete / preview UI for one expert category sub-tab."""
     from utils.loaders import expert_gnews_urls as _expert_gnews_urls
+    _editor_v = st.session_state.get("_src_version", 0)
 
     # ── 關鍵字篩選 ──────────────────────────────────────────────────────────
     with st.expander("🔍 Google News RSS 關鍵字篩選", expanded=False):
@@ -778,6 +833,7 @@ def _render_expert_tab(
             _cat_kw[category_label] = _kw_val.strip()
             _sync_notify(save_category_keywords(_cat_kw))
             st.success("關鍵字已儲存。")
+            st.session_state["_src_version"] = _editor_v + 1
             st.rerun()
 
     # ── 單筆新增 ────────────────────────────────────────────────────────────
@@ -891,7 +947,7 @@ def _render_expert_tab(
         num_rows="dynamic",
         use_container_width=True,
         height=280,
-        key=f"expert_batch_editor_{tab_key}",
+        key=f"expert_batch_editor_{tab_key}_{_editor_v}",
         column_config=_expert_col_cfg,
     )
 
@@ -929,7 +985,7 @@ def _render_expert_tab(
         num_rows="dynamic",
         use_container_width=True,
         height=420,
-        key=f"editable_experts_editor_{tab_key}",
+        key=f"editable_experts_editor_{tab_key}_{_editor_v}",
         column_config=_expert_col_cfg,
     )
 
@@ -1986,16 +2042,24 @@ elif selected_page == "Sources":
         _CONTINENTS = ["Asia-Pacific", "歐洲地區", "亞西地區", "北美地區", "拉丁美洲及加勒比海", "非洲地區"]
 
         # Build editor rows from raw data
+        _global_kw = (_cat_kw.get("全球媒體", DEFAULT_CATEGORY_KEYWORDS.get("全球媒體", "")) or "").strip()
         _gm_editor_rows = []
         for _gm in _raw_global:
             _gm_domain = _gm.get("domain", "") or ""
             _gm_lang   = _gm.get("language", "") or ""
             _gm_rss    = _gm.get("rss", "") or ""
-            _auto_url  = gnews_url_from_domain(_gm_domain, _gm_lang or "zh-TW") if _gm_domain and not _gm_rss else ""
+            _auto_url = _build_gnews_search_url_with_keywords(
+                domain=_gm_domain,
+                language=_gm_lang or "zh-TW",
+                keywords=_global_kw,
+            ) if _gm_domain else ""
+            _effective_rss = _gm_rss
+            if _global_kw and _gm_domain and (not _gm_rss or _looks_like_gnews_search_url(_gm_rss)):
+                _effective_rss = _auto_url
             _gm_editor_rows.append({
                 "name":        _gm.get("name", ""),
                 "domain":      _gm_domain,
-                "rss_url":     _gm_rss,
+                "rss_url":     _effective_rss,
                 "language":    _gm_lang,
                 "continent":   _gm.get("continent", ""),
                 "country":     _gm.get("country", ""),
@@ -2006,7 +2070,7 @@ elif selected_page == "Sources":
         _gm_cols = ["name", "domain", "rss_url", "language", "continent", "country", "enabled", "google_rss"]
         _gm_df = pd.DataFrame(_gm_editor_rows, columns=_gm_cols) if _gm_editor_rows else pd.DataFrame(columns=_gm_cols)
 
-        st.caption(f"共 {len(_raw_global)} 筆　💡 修改後點「儲存」；RSS URL 留空時系統依網域自動生成 Google News URL。")
+        st.caption(f"共 {len(_raw_global)} 筆　💡 儲存關鍵字後，RSS URL（可自動生成者）會同步為含關鍵字的 Google News 搜尋 URL。")
         _edited_gm_df = st.data_editor(
             _gm_df,
             num_rows="dynamic",
@@ -2065,6 +2129,23 @@ elif selected_page == "Sources":
 
     # ── 中國媒體 ──────────────────────────────────────────────────────────────
     with src_tab_cn:
+        with st.expander("🔍 Google News RSS 關鍵字篩選", expanded=False):
+            _kw_cn_media = st.text_area(
+                "中國媒體 關鍵字",
+                value=_cat_kw.get("中共官媒", _cat_kw.get("中國媒體", DEFAULT_CATEGORY_KEYWORDS.get("中國媒體", ""))),
+                height=80,
+                key="kw_editor_cn_media",
+                label_visibility="collapsed",
+            )
+            if st.button("儲存關鍵字", key="save_kw_cn_media", use_container_width=True):
+                _cat_kw["中共官媒"] = _kw_cn_media.strip()
+                _cat_kw["中國媒體"] = _kw_cn_media.strip()
+                _sync_notify(save_category_keywords(_cat_kw))
+                st.success("關鍵字已儲存。")
+                st.session_state["_src_version"] = _src_v + 1
+                st.rerun()
+
+        _cn_kw = (_cat_kw.get("中共官媒", _cat_kw.get("中國媒體", "")) or "").strip()
 
         # ── 新增中共官媒 ───────────────────────────────────────────────────────
         with st.expander("單筆新增中共官媒", expanded=False):
@@ -2072,7 +2153,6 @@ elif selected_page == "Sources":
                 "填入網域後自動生成 Google News zh-CN RSS URL（site:domain 格式），"
                 "也可直接貼上自訂 RSS URL 覆蓋。"
             )
-            from utils.loaders import cn_gnews_url_from_domain as _cn_url_gen
             c1, c2 = st.columns(2)
             with c1:
                 cn_new_name   = st.text_input("顯示名稱", key="cn_new_name")
@@ -2084,7 +2164,11 @@ elif selected_page == "Sources":
                 _cn_sub_opts  = ["（無）", "外交", "軍事", "國防", "涉台"]
                 cn_new_subcat = st.selectbox("次分類", options=_cn_sub_opts, key="cn_new_subcat")
             with c2:
-                _auto_url = _cn_url_gen(cn_new_domain.strip()) if cn_new_domain.strip() else ""
+                _auto_url = _build_gnews_search_url_with_keywords(
+                    domain=cn_new_domain.strip(),
+                    language="zh-CN",
+                    keywords=_cn_kw,
+                ) if cn_new_domain.strip() else ""
                 if _auto_url:
                     st.caption(f"自動生成 URL：")
                     st.code(_auto_url, language=None)
@@ -2133,7 +2217,15 @@ elif selected_page == "Sources":
             {
                 "name":        s.get("name", ""),
                 "domain":      s.get("domain", ""),
-                "url":         s.get("url", ""),
+                "url": (
+                    _build_gnews_search_url_with_keywords(
+                        domain=(s.get("domain", "") or ""),
+                        language="zh-CN",
+                        keywords=_cn_kw,
+                    )
+                    if _cn_kw and (s.get("domain") or "") and (not (s.get("url") or "").strip() or _looks_like_gnews_search_url(s.get("url", "")))
+                    else s.get("url", "")
+                ),
                 "category":    ", ".join(s.get("category") or []),
                 "region":      s.get("region", ""),
                 "enabled":     bool(s.get("enabled", True)),
@@ -2165,7 +2257,6 @@ elif selected_page == "Sources":
         c1, c2 = st.columns(2)
         with c1:
             if st.button("儲存中共官媒編輯", key="save_cn_sources", use_container_width=True):
-                from utils.loaders import cn_gnews_url_from_domain as _cn_url_gen2
                 rows = _clean_batch_df(edited_cn_df)
                 current = load_sources(editable_only=True)
                 non_cn = [s for s in current if "中共官媒" not in (s.get("category") or [])]
@@ -2175,7 +2266,11 @@ elif selected_page == "Sources":
                     _url = str(row.get("url", "") or "").strip()
                     # Auto-generate URL from domain when URL is empty
                     if _dom and not _url:
-                        row["url"] = _cn_url_gen2(_dom)
+                        row["url"] = _build_gnews_search_url_with_keywords(
+                            domain=_dom,
+                            language="zh-CN",
+                            keywords=_cn_kw,
+                        )
                     item = editor_row_to_source(row)
                     item["domain"] = _dom
                     if item["name"]:
@@ -2215,7 +2310,23 @@ elif selected_page == "Sources":
 
     # ── 自訂社群網站 ──────────────────────────────────────────────────────────
     with src_tab_social:
-        st.caption("記錄您追蹤的社群媒體帳號或頁面。目前僅供記錄用途；系統未自動抓取社群平台內容。")
+        with st.expander("🔍 Google News RSS 關鍵字篩選", expanded=False):
+            _kw_social = st.text_area(
+                "自訂社群網站 關鍵字",
+                value=_cat_kw.get("自訂社群網站", DEFAULT_CATEGORY_KEYWORDS.get("自訂社群網站", "")),
+                height=80,
+                key="kw_editor_social",
+                label_visibility="collapsed",
+            )
+            if st.button("儲存關鍵字", key="save_kw_social", use_container_width=True):
+                _cat_kw["自訂社群網站"] = _kw_social.strip()
+                _sync_notify(save_category_keywords(_cat_kw))
+                st.success("關鍵字已儲存。")
+                st.session_state["_src_version"] = _src_v + 1
+                st.rerun()
+
+        _social_kw = (_cat_kw.get("自訂社群網站", DEFAULT_CATEGORY_KEYWORDS.get("自訂社群網站", "")) or "").strip()
+        st.caption("儲存關鍵字後，來源網址會同步轉成含關鍵字的 Google News RSS 搜尋 URL。")
 
         _SOCIAL_PLATFORMS = ["Facebook", "Twitter/X", "Threads"]
         _SOCIAL_ICONS = {"Facebook": "📘", "Twitter/X": "🐦", "Threads": "🧵"}
@@ -2225,7 +2336,15 @@ elif selected_page == "Sources":
             rows = [
                 {
                     "name":        s.get("name", ""),
-                    "url":         s.get("url", ""),
+                    "url": (
+                        _build_gnews_search_url_with_keywords(
+                            domain=(report_engine._extract_news_domain(s.get("url", "")) or s.get("url", "")),
+                            language="zh-TW",
+                            keywords=_social_kw,
+                        )
+                        if _social_kw and (s.get("url", "") or "").strip()
+                        else s.get("url", "")
+                    ),
                     "enabled":     bool(s.get("enabled", True)),
                     "description": s.get("description", ""),
                 }
@@ -2242,10 +2361,16 @@ elif selected_page == "Sources":
                 _u = str(row.get("url", "") or "").strip()
                 if not _n and not _u:
                     continue
+                _domain = report_engine._extract_news_domain(_u) or _u
+                _rss = _build_gnews_search_url_with_keywords(
+                    domain=_domain,
+                    language="zh-TW",
+                    keywords=_social_kw,
+                ) if _social_kw else _u
                 new_entries.append(normalize_source({
                     "name":        _n or _u,
                     "type":        "rss",
-                    "url":         _u,
+                    "url":         _rss,
                     "category":    ["自訂社群網站"],
                     "region":      platform_name,
                     "enabled":     bool(row.get("enabled", True)),
@@ -2259,7 +2384,7 @@ elif selected_page == "Sources":
 
         _soc_col_config = {
             "name":        st.column_config.TextColumn("名稱（顯示用）"),
-            "url":         st.column_config.TextColumn("頁面 / 帳號 URL"),
+            "url":         st.column_config.TextColumn("RSS URL（儲存關鍵字後會同步為搜尋 URL）"),
             "enabled":     st.column_config.CheckboxColumn("啟用", default=True),
             "description": st.column_config.TextColumn("備註"),
         }

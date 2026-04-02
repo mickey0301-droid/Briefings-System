@@ -732,15 +732,23 @@ def _resolve_category_keywords(categories, category_keywords: dict) -> str:
     if isinstance(cats, str):
         cats = [cats]
 
+    alias_map = {
+        "中共官媒": ["中國媒體"],
+        "中國媒體": ["中共官媒"],
+    }
+
     merged_terms: list[str] = []
     seen: set[str] = set()
     for cat in cats:
-        kw = (category_keywords or {}).get((cat or "").strip(), "") or ""
-        for term in kw.split(" OR "):
-            t = term.strip()
-            if t and t not in seen:
-                seen.add(t)
-                merged_terms.append(t)
+        c = (cat or "").strip()
+        lookup_keys = [c] + alias_map.get(c, [])
+        for lk in lookup_keys:
+            kw = (category_keywords or {}).get(lk, "") or ""
+            for term in kw.split(" OR "):
+                t = term.strip()
+                if t and t not in seen:
+                    seen.add(t)
+                    merged_terms.append(t)
     return " OR ".join(merged_terms)
 
 
