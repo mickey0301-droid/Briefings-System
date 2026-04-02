@@ -1,5 +1,5 @@
 {
-  "自訂台灣媒體": "中國 OR 中共 OR 解放軍 OR 共軍 OR 習近平 OR 兩岸 OR 台海 OR 北京 OR 台積電 OR 半導體 OR 印太 OR 南海 OR 東海 OR 美中 OR 中美",
+  "自訂台灣媒體": "中國 OR 中共 OR 解放軍 OR 共軍 OR 習近平 OR 兩岸 OR 台海 OR 北京",
   "台灣": "中國 OR 中共 OR 解放軍 OR 共軍 OR 習近平 OR 兩岸 OR 台海 OR 北京 OR 台積電 OR 半導體 OR 印太 OR 南海 OR 東海 OR 美中 OR 中美",
   "自訂國際媒體": "taiwan OR 台灣 OR china OR 中國 OR \"cross-strait\" OR 兩岸 OR \"xi jinping\" OR 習近平 OR tsmc OR 台積電 OR \"chinese military\" OR 解放軍 OR \"indo-pacific\" OR 印太 OR \"south china sea\" OR \"taiwan strait\" OR ccp OR 中共",
   "台灣專家": "中國 OR 中共 OR 解放軍 OR 共軍 OR 習近平 OR 兩岸 OR 台海 OR 北京 OR 台積電 OR 半導體 OR 印太 OR 南海 OR 東海 OR 美中 OR 中美",
