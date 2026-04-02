@@ -196,6 +196,65 @@ def _build_section_relevance_df(candidate_items: list) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["id", "title"] + section_cols)
 
 
+def _build_top10_per_section_df(candidates_df: pd.DataFrame, relevance_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Build a long-form table:
+    for each section, top 10 most-relevant candidate articles by score (5 -> 0).
+    """
+    if candidates_df is None or candidates_df.empty or relevance_df is None or relevance_df.empty:
+        return pd.DataFrame()
+
+    meta_by_id = {}
+    for _, row in candidates_df.iterrows():
+        aid = row.get("id")
+        if pd.isna(aid):
+            continue
+        try:
+            aid = int(aid)
+        except Exception:
+            continue
+        meta_by_id[aid] = {
+            "source": str(row.get("source", "") or ""),
+            "published": str(row.get("published", "") or ""),
+            "url": str(row.get("url", "") or ""),
+            "region": str(row.get("region", "") or ""),
+            "category": str(row.get("category", "") or ""),
+        }
+
+    section_cols = [c for c in relevance_df.columns if c not in ("id", "title")]
+    out_rows = []
+
+    for section in section_cols:
+        sec_df = relevance_df[["id", "title", section]].copy()
+        sec_df = sec_df.rename(columns={section: "score"})
+        sec_df["score"] = pd.to_numeric(sec_df["score"], errors="coerce").fillna(0).astype(int)
+        # High score first, then stable by id.
+        sec_df = sec_df.sort_values(by=["score", "id"], ascending=[False, True]).head(10)
+
+        rank = 1
+        for _, r in sec_df.iterrows():
+            aid = int(r["id"])
+            meta = meta_by_id.get(aid, {})
+            out_rows.append({
+                "section": section,
+                "rank": rank,
+                "score": int(r["score"]),
+                "id": aid,
+                "title": str(r.get("title", "") or ""),
+                "source": meta.get("source", ""),
+                "published": meta.get("published", ""),
+                "region": meta.get("region", ""),
+                "category": meta.get("category", ""),
+                "url": meta.get("url", ""),
+            })
+            rank += 1
+
+    return pd.DataFrame(
+        out_rows,
+        columns=["section", "rank", "score", "id", "title", "source", "published", "region", "category", "url"],
+    )
+
+
 def _profiles_map(profiles):
     result = {}
     for p in profiles:
@@ -1614,6 +1673,7 @@ if selected_page == "Briefings":
                             columns=["id", "title", "source", "published", "region", "category", "url"]
                         )
                         relevance_df = _build_section_relevance_df(candidate_items)
+                        top10_per_section_df = _build_top10_per_section_df(candidates_df, relevance_df)
 
                         with st.expander(f"展開查看本次全部備選資料（{len(candidates_df)} 筆）", expanded=False):
                             left_col, right_col = st.columns(2)
@@ -1642,6 +1702,19 @@ if selected_page == "Briefings":
                                         key=f"download_relevance_{base_name}",
                                         use_container_width=True,
                                     )
+                            st.markdown("#### 各章節相關性最高前10篇文章")
+                            if top10_per_section_df.empty:
+                                st.caption("目前無法產生各章節 Top10 清單。")
+                            else:
+                                st.dataframe(top10_per_section_df, use_container_width=True, height=420)
+                                st.download_button(
+                                    "下載各章節 Top10 CSV",
+                                    data=top10_per_section_df.to_csv(index=False).encode("utf-8-sig"),
+                                    file_name=f"{base_name}_section_top10.csv",
+                                    mime="text/csv",
+                                    key=f"download_section_top10_{base_name}",
+                                    use_container_width=True,
+                                )
                     else:
                         st.caption("本次沒有可顯示的備選文章資料。")
 
