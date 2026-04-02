@@ -1512,6 +1512,53 @@ if selected_page == "Briefings":
 
                     st.markdown("### 報告預覽")
                     st.text_area("report", value=report_text or "", height=400, label_visibility="collapsed", key="briefings_report_preview")
+                    st.markdown("### 本次備選文章（全部）")
+                    candidate_items = filtered_items or []
+                    if candidate_items:
+                        table_rows = []
+                        for idx, it in enumerate(candidate_items, start=1):
+                            if not isinstance(it, dict):
+                                continue
+
+                            published = it.get("published", "")
+                            if isinstance(published, datetime):
+                                published = published.strftime("%Y-%m-%d %H:%M:%S")
+                            else:
+                                published = str(published or "")
+
+                            cats = it.get("source_category") or it.get("category") or []
+                            if isinstance(cats, list):
+                                cats_str = ", ".join([str(c) for c in cats if str(c).strip()])
+                            else:
+                                cats_str = str(cats or "")
+
+                            table_rows.append({
+                                "id": idx,
+                                "title": str(it.get("title", "") or ""),
+                                "source": str(it.get("source", "") or ""),
+                                "published": published,
+                                "region": str(it.get("source_region", "") or ""),
+                                "category": cats_str,
+                                "url": str(it.get("original_url") or it.get("url") or ""),
+                            })
+
+                        candidates_df = pd.DataFrame(
+                            table_rows,
+                            columns=["id", "title", "source", "published", "region", "category", "url"]
+                        )
+
+                        with st.expander(f"展開查看本次全部備選資料（{len(candidates_df)} 筆）", expanded=False):
+                            st.dataframe(candidates_df, use_container_width=True, height=360)
+                            st.download_button(
+                                "下載備選資料 CSV",
+                                data=candidates_df.to_csv(index=False).encode("utf-8-sig"),
+                                file_name=f"{base_name}_candidates.csv",
+                                mime="text/csv",
+                                key=f"download_candidates_{base_name}",
+                                use_container_width=True,
+                            )
+                    else:
+                        st.caption("本次沒有可顯示的備選文章資料。")
 
             except Exception as e:
                 status.error(f"生成失敗：{e}")
