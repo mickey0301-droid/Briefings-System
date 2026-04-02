@@ -1594,6 +1594,7 @@ elif selected_page == "Sources":
                 _cat_kw["自訂台灣媒體"] = _kw_tw.strip()
                 _sync_notify(save_category_keywords(_cat_kw))
                 st.success("關鍵字已儲存。")
+                st.session_state["_src_version"] = _src_v + 1
                 st.rerun()
         st.caption(f"共 {len(tw_sources)} 筆")
         tw_df = _build_source_editor_df(tw_sources, blank_rows=5)
@@ -1690,6 +1691,7 @@ elif selected_page == "Sources":
                 _cat_kw["自訂國際媒體"] = _kw_intl.strip()
                 _sync_notify(save_category_keywords(_cat_kw))
                 st.success("關鍵字已儲存。")
+                st.session_state["_src_version"] = _src_v + 1
                 st.rerun()
         st.caption(f"共 {len(intl_sources)} 筆")
         intl_df = _build_source_editor_df(intl_sources, blank_rows=5)
@@ -1976,6 +1978,7 @@ elif selected_page == "Sources":
                 _cat_kw["全球媒體"] = _kw_global.strip()
                 _sync_notify(save_category_keywords(_cat_kw))
                 st.success("關鍵字已儲存。")
+                st.session_state["_src_version"] = _src_v + 1
                 st.rerun()
 
         # Load raw global media for editing
