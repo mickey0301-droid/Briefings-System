@@ -1388,53 +1388,50 @@ def _format_chicago_note(idx: int, src: dict) -> str:
 
 
 def _render_citations(report_text, source_map, format_options):
-
-    notes_style = format_options.get("notes", {}).get("style", "endnote")
-    link_mode = format_options.get("links", {}).get("placement", "none")
-
+    # Shift to inline source attribution for stability:
+    # [[CITE:S1]][[CITE:S2]] -> （來源A, 來源B）
     text = _strip_ai_link_markers(report_text)
 
-    # 無論任何模式，都把 internal cite placeholders 清掉或換成上標
-    if notes_style == "none" and link_mode == "none":
-        text = re.sub(r'\[\[\s*CITE\s*:\s*S\d+\s*\]\]', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'\[\s*S\d+\s*\]', '', text)
-        return text
+    def _label_for_code(code: str) -> str:
+        src = source_map.get(code) or {}
+        label = (src.get("source") or "").strip()
+        if label:
+            return label
+        url = (src.get("url") or "").strip()
+        m = re.search(r"https?://([^/]+)", url)
+        return (m.group(1) if m else code).strip()
 
-    used_codes = []
+    token_group_pattern = r'(?:(?:\[\[\s*CITE\s*:\s*S\d+\s*\]\]|\[\s*S\d+\s*\])\s*)+'
 
-    def _record_code(code: str) -> str:
-        if code not in source_map:
+    def _replace_token_group(match):
+        chunk = match.group(0)
+        codes = re.findall(r"S\d+", chunk, flags=re.IGNORECASE)
+        codes = [c.upper() for c in codes]
+        labels = []
+        seen = set()
+        for c in codes:
+            if c in seen or c not in source_map:
+                continue
+            seen.add(c)
+            labels.append(_label_for_code(c))
+        if not labels:
             return ""
-        if code not in used_codes:
-            used_codes.append(code)
-        idx = used_codes.index(code) + 1
-        return _to_superscript(idx)
+        return f"（{', '.join(labels)}）"
 
-    # Preferred placeholder format: [[CITE:Sx]]
-    text = re.sub(
-        r'\[\[\s*CITE\s*:\s*(S\d+)\s*\]\]',
-        lambda m: _record_code(m.group(1)),
-        text,
-        flags=re.IGNORECASE,
-    )
-    # Backward-compatible old format: [Sx]
-    text = re.sub(r'\[\s*(S\d+)\s*\]', lambda m: _record_code(m.group(1)), text)
+    text = re.sub(token_group_pattern, _replace_token_group, text, flags=re.IGNORECASE)
 
-    # 清理多餘空白
+    # Remove any leftover cite tokens (safety)
+    text = re.sub(r'\[\[\s*CITE\s*:\s*S\d+\s*\]\]', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'\[\s*S\d+\s*\]', '', text)
+
+    # Cleanup spacing and duplicated punctuation around generated parentheses
     text = re.sub(r'[ \t]+', ' ', text)
+    text = re.sub(r'（\s*', '（', text)
+    text = re.sub(r'\s*）', '）', text)
+    text = re.sub(r'，\s*，', '，', text)
+    text = re.sub(r'\)\s*\)', '）', text)
     text = re.sub(r'\n{3,}', '\n\n', text).strip()
-
-    if not used_codes:
-        return text
-
-    # Chicago 腳註（footnote 或 endnote 都用同一格式）
-    section_title = "Notes" if notes_style == "footnote" else "Sources"
-    lines = ["", "", f"## {section_title}", ""]
-    for idx, code in enumerate(used_codes, start=1):
-        src = source_map[code]
-        lines.append(_format_chicago_note(idx, src))
-
-    return text + "\n" + "\n".join(lines)
+    return text
 
 
 def _extract_text_features(text: str) -> set[str]:
@@ -3928,6 +3925,7 @@ Requirements:
 12a. MANDATORY — Media country attribution: When citing a non-Chinese / non-English language media outlet, you MUST note which country it is from on first mention. Format: 「[媒體名稱]（[國家名稱]）」. Examples: 《朝日新聞》（日本）、《韓聯社》（韓國）、《明鏡週刊》（德國）、《費加羅報》（法國）。For articles that carry a language tag such as [日文], [韓文], [德文] etc. in their title, treat them as coming from the corresponding country. The news data also includes "來源" with a country in parentheses — use that country when provided. This rule has NO exceptions.
 13. MANDATORY — People: Every person mentioned must be preceded by their full official title or role. Use the conventionally established Chinese name form (e.g., 川普、岸田文雄、習近平、賴清德). ENGLISH NAME RULES BY NATIONALITY — (A) Taiwan/ROC officials and PRC/China officials: DO NOT add a parenthetical English name. Write the Chinese name only (e.g., 行政院長卓榮泰, NOT 卓榮泰（Cho Jung-tai）; 國家主席習近平, NOT 習近平（Xi Jinping））. (B) Western figures: on first mention, follow with the common English name in parentheses — surname only. e.g. 美國總統川普（Donald Trump）、美國國務卿魯比歐（Marco Rubio）. (C) Japanese, Korean, Vietnamese: add the romanised form in square brackets after the Chinese name, then English in parentheses. e.g. 日本首相石破茂[Ishiba Shigeru]（Shigeru Ishiba）、韓國總統尹錫悅[Yoon Suk-yeol]（Yoon Suk-yeol）. (D) Other East Asian (Singapore, Thailand, Malaysia, etc.): use the person's internationally recognised English name in parentheses. CRITICAL — Before writing any parenthetical English name, be 100% certain. Known errors to avoid: 黃循財 = Lawrence Wong (Singapore PM since 2024), NOT Heng Swee Keat (who is 王瑞杰, former DPM). If uncertain of a name, OMIT the parenthetical entirely rather than guess. CRITICAL — The name inside the parentheses must contain ONLY the English name, no titles (correct: 川普（Donald Trump）; WRONG: 川普（President Donald Trump）). CRITICAL — Only assign a ministerial/official title to a person if the provided news articles explicitly confirm they currently hold that position; DO NOT rely on memory for current cabinet assignments. This rule has NO exceptions.
 13a. MANDATORY — Expert names: whenever an expert or analyst is cited in 七、專家研析, render their name in bold (**Name**) and include their full title and affiliation on first mention. E.g. **美國智庫戰略與國際研究中心（CSIS）資深研究員王大維（David Wang）**。
+13b. CRITICAL — Never use anonymous expert phrases such as「專家指出」「學者認為」without a named person. If no named expert is available from source data, write「本期無相關專家意見。」.
 14. MANDATORY — Organizations and institutions: On first mention, always provide both Chinese and English names. Format: Chinese name（English Name）. Examples: 北大西洋公約組織（NATO）、美國國務院（U.S. Department of State）、歐盟委員會（European Commission）、美國在台協會（American Institute in Taiwan, AIT）、中華民國國防部（Ministry of National Defense, ROC）. This rule has NO exceptions.
 
 Output structure:
