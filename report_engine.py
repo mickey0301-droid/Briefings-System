@@ -2761,6 +2761,209 @@ def _eval_section_query(text: str, query: str) -> bool:
     return bool(kw) and kw in text_lower
 
 
+def _score_item_section_relevance(item: dict, sec: dict) -> int:
+    """
+    Relevance score 0~5 for one item against one section.
+    0 = not relevant, 5 = strongest relevance.
+    """
+    title = str(item.get("title") or "")
+    summary = str(item.get("summary") or "")
+    full_text = f"{title} {summary}".strip()
+    kw_zh = sec.get("kw_zh", "") or ""
+    kw_en = sec.get("kw_en", "") or ""
+
+    if not full_text:
+        return 0
+
+    zh_full = bool(_eval_section_query(full_text, kw_zh)) if kw_zh else False
+    en_full = bool(_eval_section_query(full_text, kw_en)) if kw_en else False
+    if not (zh_full or en_full):
+        return 0
+
+    zh_title = bool(_eval_section_query(title, kw_zh)) if kw_zh else False
+    en_title = bool(_eval_section_query(title, kw_en)) if kw_en else False
+
+    score = 3
+    if zh_title or en_title:
+        score = 4
+    if (zh_title and en_title) or (zh_full and en_full):
+        score = 5
+
+    return max(0, min(5, score))
+
+
+def _item_media_category_bucket(item: dict) -> str:
+    """
+    Normalize item source category into user-facing buckets:
+    自選台灣媒體、國際媒體、專家、智庫、雜誌、全球媒體、中國媒體、社群網路
+    """
+    cats = item.get("source_category") or item.get("category") or []
+    if isinstance(cats, str):
+        cats = [cats]
+    cats_str = " ".join([str(c) for c in cats]).lower()
+
+    if item.get("source_type") == "expert" or "自訂專家" in cats_str:
+        return "專家"
+    if "自訂台灣媒體" in cats_str:
+        return "自選台灣媒體"
+    if "自訂國際媒體" in cats_str:
+        return "國際媒體"
+    if "自訂智庫" in cats_str or "智庫" in cats_str:
+        return "智庫"
+    if "自訂雜誌" in cats_str or "雜誌" in cats_str:
+        return "雜誌"
+    if "全球媒體" in cats_str:
+        return "全球媒體"
+    if "中共官媒" in cats_str or "中國媒體" in cats_str or item.get("source_type") == "cn_official":
+        return "中國媒體"
+    if "自訂社群網站" in cats_str or "社群" in cats_str:
+        return "社群網路"
+    return "其他"
+
+
+def _topic_signature(item: dict) -> str:
+    """
+    Lightweight topic signature for 'duplicate topic' preference.
+    """
+    title = (item.get("title") or "").lower()
+    title = re.sub(r"https?://\S+", " ", title)
+    title = re.sub(r"[\W_]+", " ", title, flags=re.UNICODE)
+    tokens = [t for t in title.split() if len(t) >= 2]
+    if not tokens:
+        return "misc"
+    return " ".join(tokens[:6])
+
+
+def _published_epoch(item: dict) -> float:
+    p = item.get("published")
+    if isinstance(p, datetime):
+        try:
+            return p.timestamp()
+        except Exception:
+            return 0.0
+    s = str(p or "").strip()
+    m = re.match(r"(\d{4})-(\d{2})-(\d{2})", s)
+    if m:
+        try:
+            return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3))).timestamp()
+        except Exception:
+            return 0.0
+    return 0.0
+
+
+def _edition_rank(item: dict) -> int:
+    """
+    Lower rank means earlier page/edition (preferred).
+    """
+    e = str(item.get("edition") or "")
+    m = re.search(r"(\d+)", e)
+    if m:
+        try:
+            return int(m.group(1))
+        except Exception:
+            return 999
+    return 999
+
+
+def _is_people_daily(item: dict) -> bool:
+    src = str(item.get("source") or "").lower()
+    return ("人民日報" in src) or ("人民日报" in src) or ("people" in src and "daily" in src)
+
+
+def _select_section_items_by_rules(sec: dict, items: list, min_score: int = 4, max_total: int = 12) -> list:
+    """
+    Selection rules for segmented sections:
+    1) score all items 0~5 for this section
+    2) keep only score >= min_score
+    3) tie-handling: prefer topic with more repeated coverage
+    4) if same score has multiple media categories, ensure category spread
+    5) for 中國章節, force top Chinese-media relevance; if 人民日報 exists, force include it
+    """
+    if not items:
+        return []
+
+    records = []
+    for it in items:
+        if not isinstance(it, dict):
+            continue
+        score = _score_item_section_relevance(it, sec)
+        if score < min_score:
+            continue
+        records.append({"item": it, "score": score})
+    if not records:
+        return []
+
+    topic_counts = {}
+    for r in records:
+        sig = _topic_signature(r["item"])
+        topic_counts[sig] = topic_counts.get(sig, 0) + 1
+
+    for r in records:
+        it = r["item"]
+        r["bucket"] = _item_media_category_bucket(it)
+        r["topic_rep"] = topic_counts.get(_topic_signature(it), 1)
+        r["published_epoch"] = _published_epoch(it)
+        r["source_key"] = (it.get("source") or it.get("url") or "").strip().lower()
+
+    # Chinese chapter mandatory include rules
+    selected = []
+    used_urls = set()
+    source_counts = {}
+
+    def _append_record(rec):
+        if len(selected) >= max_total:
+            return
+        it = rec["item"]
+        u = (it.get("original_url") or it.get("url") or "").strip().lower()
+        if u and u in used_urls:
+            return
+        sk = rec["source_key"] or "unknown"
+        if source_counts.get(sk, 0) >= 3:
+            return
+        selected.append(it)
+        if u:
+            used_urls.add(u)
+        source_counts[sk] = source_counts.get(sk, 0) + 1
+
+    sec_id = sec.get("id", "")
+    if sec_id in {"cn_external", "cn_domestic"}:
+        cn_records = [r for r in records if r["bucket"] == "中國媒體"]
+        if cn_records:
+            people_records = [r for r in cn_records if _is_people_daily(r["item"])]
+            if people_records:
+                people_records.sort(key=lambda r: (r["score"], -r["topic_rep"], -r["published_epoch"], -_edition_rank(r["item"])), reverse=True)
+                _append_record(people_records[0])
+            cn_records.sort(key=lambda r: (r["score"], r["topic_rep"], r["published_epoch"]), reverse=True)
+            _append_record(cn_records[0])
+
+    # Main selection by score bands with category spread first.
+    for score_band in [5, 4]:
+        band = [r for r in records if r["score"] == score_band]
+        if not band:
+            continue
+
+        # Prefer higher repeated-topic coverage within same category and score.
+        band.sort(key=lambda r: (r["topic_rep"], r["published_epoch"]), reverse=True)
+
+        # Category coverage at same score.
+        by_bucket = {}
+        for r in band:
+            by_bucket.setdefault(r["bucket"], []).append(r)
+        if len(by_bucket) > 1:
+            for bucket in by_bucket:
+                _append_record(by_bucket[bucket][0])
+
+        # Fill remaining slots from the same band.
+        for r in band:
+            _append_record(r)
+            if len(selected) >= max_total:
+                break
+        if len(selected) >= max_total:
+            break
+
+    return selected[:max_total]
+
+
 _FACTS_ONLY_SECTION_IDS = {
     "intl_news", "tw_us_cn", "tw_security",
     "cn_external", "cn_domestic",
@@ -2797,28 +3000,58 @@ def _get_section_role_hint(sec_id: str) -> str:
     return ""
 
 
+def _build_cn_mandatory_hint(sec_id: str, sec_items: list) -> str:
+    """
+    For 五、中國要聞兩個子節:
+    - If Chinese media exists, must cite the highest-relevance one.
+    - If People's Daily exists, must cite People's Daily, preferring front-page editions.
+    """
+    if sec_id not in {"cn_external", "cn_domestic"}:
+        return ""
+    if not sec_items:
+        return ""
+
+    cn_items = [it for it in sec_items if _item_media_category_bucket(it) == "中國媒體"]
+    if not cn_items:
+        return ""
+
+    top_cn = sorted(
+        cn_items,
+        key=lambda it: (_score_item_section_relevance(it, next(s for s in _SEGMENTED_SECTIONS if s["id"] == sec_id)), -_published_epoch(it)),
+        reverse=True,
+    )
+    top_cn_name = top_cn[0].get("source") or "中國媒體"
+
+    people = [it for it in cn_items if _is_people_daily(it)]
+    people_clause = ""
+    if people:
+        people_best = sorted(
+            people,
+            key=lambda it: (_score_item_section_relevance(it, next(s for s in _SEGMENTED_SECTIONS if s["id"] == sec_id)), -_edition_rank(it), -_published_epoch(it)),
+            reverse=True,
+        )[0]
+        people_ed = str(people_best.get("edition") or "").strip()
+        people_clause = (
+            " If People's Daily (《人民日報》/人民日报) is present, you MUST cite it explicitly. "
+            f"Prefer earlier edition/page order first (current best candidate edition: {people_ed or 'unknown'})."
+        )
+
+    return (
+        "MANDATORY — Chinese media citation rule: This section includes Chinese media candidates. "
+        f"You MUST cite the highest-relevance Chinese-media article (top outlet: {top_cn_name})."
+        + people_clause
+        + " This rule has NO exceptions."
+    )
+
+
 def _classify_items_to_sections(all_items: list, sections: list) -> dict:
     """
-    Classify items into section buckets by matching kw_zh / kw_en queries
-    against each item's title + summary.
-
-    Best-match-wins: each item is assigned to exactly ONE section — the one
-    where it matches most strongly.  Match strength is scored as:
-      2 = title match (kw found in title)
-      1 = summary-only match (kw found in title+summary but not title alone)
-    When an item matches multiple sections with equal score, the section that
-    appears earlier in the `sections` list wins (higher-priority chapters first).
-
-    Post-processing rule: regional 「國際要聞」 sub-sections (ids ending with _intl,
-    under 六、區域情勢) exclude any item that already matched 「三、台美中要聞」,
-    keeping regional international news free of Taiwan / US-China content.
-
-    Returns: {section_id: [item, ...]}
+    Score every item against every section.
+    Returns per-section candidate lists sorted by:
+      - higher section relevance score (5 -> 0)
+      - newer published time
     """
     result: dict = {sec["id"]: [] for sec in sections}
-
-    # Build section index for priority (lower index = higher priority)
-    sec_priority = {sec["id"]: idx for idx, sec in enumerate(sections)}
 
     # Chinese official media items are restricted to 五、中國要聞 sections only
     _CN_OFFICIAL_IDS = {"cn_external", "cn_domestic"}
@@ -2828,68 +3061,20 @@ def _classify_items_to_sections(all_items: list, sections: list) -> dict:
         cats = item.get("source_category") or item.get("category") or []
         return "中共官媒" in cats
 
-    def _published_epoch(item: dict) -> float:
-        p = item.get("published")
-        if isinstance(p, datetime):
-            try:
-                return p.timestamp()
-            except Exception:
-                return 0.0
-        s = str(p or "").strip()
-        m = re.match(r"(\d{4})-(\d{2})-(\d{2})", s)
-        if m:
-            try:
-                return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3))).timestamp()
-            except Exception:
-                return 0.0
-        return 0.0
-
     for item in all_items:
-        title     = item.get("title")   or ""
-        summary   = item.get("summary") or ""
-        full_text = f"{title} {summary}"
-
-        best_score    = 0
-        best_sec_id   = None
-        best_priority = len(sections)  # lower is better
-
         # Chinese official media: restrict candidate sections to 五、中國要聞 only
         candidate_sections = _cn_sections if _is_cn_official(item) else sections
 
         for sec in candidate_sections:
-            kw_zh = sec.get("kw_zh", "")
-            kw_en = sec.get("kw_en", "")
-
-            full_match = (
-                _eval_section_query(full_text, kw_zh)
-                or _eval_section_query(full_text, kw_en)
-            )
-            if not full_match:
+            rel = _score_item_section_relevance(item, sec)
+            if rel <= 0:
                 continue
+            result[sec["id"]].append((rel, _published_epoch(item), item))
 
-            title_match = bool(
-                _eval_section_query(title, kw_zh)
-                or _eval_section_query(title, kw_en)
-            )
-            score = 2 if title_match else 1
-            priority = sec_priority[sec["id"]]
-
-            # Keep this section if it has a higher score, or same score but higher priority
-            if score > best_score or (score == best_score and priority < best_priority):
-                best_score    = score
-                best_sec_id   = sec["id"]
-                best_priority = priority
-
-        if best_sec_id is not None:
-            result[best_sec_id].append((best_score, -best_priority, _published_epoch(item), item))
-
-    # Sort each bucket by:
-    # 1) title-matched first
-    # 2) section-priority winner
-    # 3) newer article first
+    # Sort each bucket by relevance then recency
     for sec_id in result:
-        result[sec_id].sort(key=lambda x: (-x[0], -x[1], -x[2]))
-        result[sec_id] = [item for _, _, _, item in result[sec_id]]
+        result[sec_id].sort(key=lambda x: (-x[0], -x[1]))
+        result[sec_id] = [item for _, _, item in result[sec_id]]
 
     # ── 區域要聞過濾：六大區域「_intl」子節不出現台美中要聞文章 ────────────────
     # IDs of the six regional "_intl" sub-sections under 六、區域情勢
@@ -3097,15 +3282,13 @@ def generate_segmented_report(
                      if any(item in section_buckets[s["id"]] for s in _SEGMENTED_SECTIONS))
     _cb("stage", f"📂 分類完成：{classified}/{len(all_items)} 篇分入各章節")
 
-    # ── 2b. 每章節套用來源多樣性上限（每來源最多 3 篇），收集所有入選文章 ──
+    # ── 2b. 每章節依規則挑選文章（0~5 分，最低 4 分）──────────────────
     selected_per_section: dict = {}
     all_selected_unique: list = []
     _seen_selected_urls: set = set()
     for _sec in _SEGMENTED_SECTIONS:
         _raw = section_buckets.get(_sec["id"], [])
-        _chosen = _cap_items_per_source(_raw, max_per_source=3, max_total=12)
-        if not _section_meets_source_diversity(_sec["id"], _chosen):
-            _chosen = []
+        _chosen = _select_section_items_by_rules(_sec, _raw, min_score=4, max_total=12)
         selected_per_section[_sec["id"]] = _chosen
         for _item in _chosen:
             _url = (_item.get("original_url") or _item.get("url") or "").lower().strip()
@@ -3136,6 +3319,10 @@ def generate_segmented_report(
         if not items:
             mini_text = "本期搜尋結果未見符合本節主旨的相關新聞。"
         else:
+            _hints = [_get_section_role_hint(sec["id"])]
+            _cn_hint = _build_cn_mandatory_hint(sec["id"], items)
+            if _cn_hint:
+                _hints.append(_cn_hint)
             # Generate mini-report for this section
             _cb("stage", f"✍️  [{idx}/{total_sections}] AI 撰寫：{label}…")
             try:
@@ -3144,7 +3331,7 @@ def generate_segmented_report(
                     section_label=label,
                     news_block=news_block,
                     language=language_label,
-                    section_hints=_get_section_role_hint(sec["id"]),
+                    section_hints="\n".join([h for h in _hints if h]),
                 )
             except Exception as e:
                 print(f"[Segmented] Section mini-report failed for {label}: {e}")
@@ -3327,11 +3514,11 @@ def _generate_multiphase_synthesis(
                      if any(item in section_buckets[s["id"]] for s in _SEGMENTED_SECTIONS))
     _cb("stage", f"📂 分類完成：{classified}/{len(news_items)} 篇分入各章節")
 
-    # Per-section source-diversity cap (same as generate_segmented_report)
+    # Per-section rule-based selection (same as generate_segmented_report)
     selected_per_section: dict = {}
     for _sec in _SEGMENTED_SECTIONS:
         _raw = section_buckets.get(_sec["id"], [])
-        _chosen = _cap_items_per_source(_raw, max_per_source=3, max_total=12)
+        _chosen = _select_section_items_by_rules(_sec, _raw, min_score=4, max_total=12)
         # For expert sections, also append actual expert feed items
         if _sec["id"] in ("expert_intl", "expert_twcn") and expert_items:
             expert_pool = [it for it in expert_items if isinstance(it, dict)]
@@ -3341,8 +3528,8 @@ def _generate_multiphase_synthesis(
                 if (ei.get("url") or "").lower() not in chosen_urls:
                     _chosen.append(ei)
                     chosen_urls.add((ei.get("url") or "").lower())
-        if not _section_meets_source_diversity(_sec["id"], _chosen):
-            _chosen = []
+        # Re-apply rule after expert append, keep min relevance threshold.
+        _chosen = _select_section_items_by_rules(_sec, _chosen, min_score=4, max_total=12)
         selected_per_section[_sec["id"]] = _chosen
 
     # ── 4. Generate each section mini-report ────────────────────────────
@@ -3374,27 +3561,10 @@ def _generate_multiphase_synthesis(
                 sec_hints_parts.append(_REGION_COUNTRY_HINTS[_rkey])
                 break
 
-        # (B) Chinese media citation requirement for 中國 sections
-        if sec_id in ("cn_external", "cn_domestic"):
-            _cn_items = [
-                it for it in sec_items
-                if "中共官媒" in (it.get("source_category") or it.get("category") or [])
-                or _get_source_group(it.get("source_category") or it.get("category") or []) == "中共官媒"
-            ]
-            if _cn_items:
-                _cn_names = list({
-                    it.get("source") or it.get("subsource") or ""
-                    for it in _cn_items
-                    if it.get("source") or it.get("subsource")
-                })
-                _cn_name_str = "、".join(f"《{n}》" for n in _cn_names if n) or "中共官媒"
-                sec_hints_parts.append(
-                    f"MANDATORY — Chinese official media citation: This section contains articles from "
-                    f"Chinese official media ({_cn_name_str}). You MUST cite these sources and explicitly "
-                    f"name the specific outlet in the text (e.g. 《人民日報》、新華社、《環球時報》). "
-                    f"Clearly label it as Chinese official media perspective 「中方官媒」 where relevant. "
-                    f"This rule has NO exceptions."
-                )
+        # (B) Chinese media mandatory citation requirement
+        _cn_hint = _build_cn_mandatory_hint(sec_id, sec_items)
+        if _cn_hint:
+            sec_hints_parts.append(_cn_hint)
 
         section_hints = "\n".join(sec_hints_parts)
 
